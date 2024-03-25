@@ -1,0 +1,27 @@
+{{ template "header.html" .}}
+<br>
+<div class="card card-default">
+    <div class="card-header">
+        <h5 class="card-title">Repository: </h5>
+        <h5 class="card-title">Resource: </h5>
+        <h5 class="card-title">Accession ID: {{ .accession.AccessionNum }}</h5>
+    </div>
+    <div class="card-body">
+        accession state: {{ .accession.AccessionState }} <br>
+        accession note: {{ .accession.AccessionNote }} <br>
+        created by: {{ .accession.CreatedBy }} at: {{ .accession.CreatedAt }} <br>
+        updated by: {{ .accession.UpdatedBy }} at: {{ .accession.UpdatedAt }} 
+    </div>
+</div>
+<br>
+
+<br/>
+<div class="card card-default">
+    <div class="card-header">
+        <h4 class="card-title">Media</h4>
+    </div>
+    <div class="card-body">
+        media container
+    </div>
+</div>
+{{ template "footer.html" .}}

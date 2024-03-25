@@ -1,0 +1,25 @@
+{{ template "header.html" . }}
+
+<br>
+<div class="card card-default">
+  <div class="card-header">
+    <h3 class="card-title">{{ .repository.Name }}</h3>
+    <h4 class="card-title">{{ .resource.Title }}</h4>
+  </div>
+  <div class="card-body">
+    <div class="form-inline">
+      <form action="/accessions/preview" method="POST">
+        <select name="accession_id" id="accession_id">
+          {{ range $relatedAccession := .related_accessions }}
+          <option value="{{ $relatedAccession.AccessionID}}">{{ $relatedAccession.Identifiers }} {{ $relatedAccession.Title }}</option>
+          {{ end }}
+        </select>
+        <input type="hidden" name="repository_id" id="repository_id" value="{{ .repository.ID }}">
+        <input type="hidden" name="resource_id" id="resource_id" value="{{ .resource.ID }}">
+        <input class="btn btn-primary" type="submit" value="Add">
+      </form>
+    </div>
+  </div>
+</div>
+
+{{ template "footer.html" . }}

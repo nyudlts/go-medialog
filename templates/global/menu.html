@@ -1,0 +1,53 @@
+<!--menu.html-->
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Medialog</a>
+    <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            class="navbar-toggler" data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/repositories">Repositories</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/resources">Resources</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/accessions">Accessions</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/media">Media</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/#">Reports</a>
+            </li>
+
+            {{if .isAuthenticated}}
+            <li class="nav-item">
+                <a class="nav-link" href="/users">Users</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/users/logout">Logout</a>
+            </li>
+            {{else}}
+            <li class="nav-item">
+                <a class="nav-link" href="/users/login">Login</a>
+            </li>
+            {{end}}
+            <li class="nav-item">
+                <div class="float-right">
+                    <form method="post" action="/search">
+                        <input type="text" id="query" name="query">
+                        <input type="submit" class="btn btn-primary" value="search">
+                    </form>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Advanced Search</a>
+            </li>
+        </ul>
+    </div>
+</nav>
