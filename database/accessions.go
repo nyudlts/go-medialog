@@ -8,6 +8,14 @@ func FindAccessions() []models.Accession {
 	return accessions
 }
 
+func FindAccessionsByResourceID(id uint) ([]models.Accession, error) {
+	accessions := []models.Accession{}
+	if err := db.Where("collection_id = ?", id).Find(&accessions).Error; err != nil {
+		return accessions, err
+	}
+	return accessions, nil
+}
+
 func FindAccession(id int) (models.Accession, error) {
 	accession := models.Accession{}
 

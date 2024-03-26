@@ -47,13 +47,13 @@ func GetRepository(c *gin.Context) {
 		return
 	}
 
-	repository, err := database.FindRepository(id)
+	repository, err := database.FindRepository(uint(id))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	collections, err := database.FindCollectionsByRepositoryID(repository.ID)
+	collections, err := database.FindResourcesByRepositoryID(repository.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return

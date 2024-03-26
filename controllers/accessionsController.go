@@ -27,16 +27,28 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
-	/*
-		collection, err := database.FindCollection(accession.CollectionID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-	*/
+	resource, err := database.FindResource(uint(accession.CollectionID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	repository, err := database.FindRepository(uint(resource.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	entries, err := database.FindEntriesByAccessionID(accession.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.HTML(http.StatusOK, "accessions-show.html", gin.H{
-		"accession": accession,
-		//"collection": collection,
+		"accession":  accession,
+		"resource":   resource,
+		"repository": repository,
+		"entries":    entries,
 	})
 }

@@ -22,4 +22,8 @@ func LoadRoutes(router *gin.Engine) {
 	repositoryRoutes.POST("", func(c *gin.Context) { controllers.CreateRepository(c) })
 	repositoryRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetRepository(c) })
 
+	//Resources Group
+	resourceRoutes := router.Group("/resources")
+	resourceRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetResource(c) })
+
 }

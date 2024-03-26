@@ -2,23 +2,19 @@
     <table class="table table-striped table-bordered table-sm">
         <thead class="thead-dark">
         <tr>
-            <td>Number</td>
-            <td>Type</td>
-            <td>Subtype</td>
-            <td>Size</td>
-            <td>Refreshed</td>
-            <td>Actions</td>
+            <th>Number</th>
+            <th>Type</th>
+            <th>Refreshed</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         {{ .isAuthenticated }}
         {{ range $entry := .entries }}
         <tr>
-            <td>{{ $entry.Source.MediaID }}</td>
-            <td>{{ $entry.Source.ModelID }}</td>
-            <td>{{ $entry.Source.Subtype }}</td>
-            <td>{{ $entry.Source.HumanSize }}</td>
-            <td></td>
+            <td>{{ $entry.MediaID }}</td>
+            <td>{{ $entry.Mediatype }}</td>
+            <td>{{ $entry.IsRefreshed }}</td>
             <td>
                 <a href="/media/{{ $entry.ID }}/show" class="btn btn-primary">View</a>
                 <a href="/media/{{ $entry.ID }}/edit" class="btn btn-secondary">Edit</a>

@@ -2,9 +2,9 @@
 <br>
 <div class="card card-default">
     <div class="card-header">
-        <h5 class="card-title">Repository: </h5>
-        <h5 class="card-title">Collection: {{ .accession.CollectionID }}</h5>
-        <h5 class="card-title">Accession ID: {{ .accession.AccessionNum }}</h5>
+        <h5 class="card-title"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Title }} ({{ .repository.Slug }})</a></h5>
+        < <h5 class="card-title"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }}: {{ .resource.Title }}</a></h5>
+        <h5 class="card-title">{{ .accession.AccessionNum }}</h5>
     </div>
     <div class="card-body">
         accession state: {{ .accession.AccessionState }} <br>
@@ -18,12 +18,10 @@
 <br/>
 <div class="card card-default">
     <div class="card-header">
-        <h4 class="card-title">Media</h4>
+        <h4 class="card-title">Entries</h4>
     </div>
     <div class="card-body">
-        media container
+        {{ template "entry-table.html" . }}
     </div>
 </div>
-
-{{ .accession.Collection }}
 {{ template "footer.html" .}}

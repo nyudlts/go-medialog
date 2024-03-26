@@ -17,7 +17,7 @@ func FindRepositories() ([]models.Repository, error) {
 	return repositories, nil
 }
 
-func FindRepository(id int) (models.Repository, error) {
+func FindRepository(id uint) (models.Repository, error) {
 	repository := models.Repository{}
 	if err := db.Where("id = ?", id).First(&repository).Error; err != nil {
 		return repository, err

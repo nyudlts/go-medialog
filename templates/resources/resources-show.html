@@ -1,0 +1,50 @@
+{{ template "header.html" .}}
+<br/>
+<div class="card card-default">
+    <div class="card-body">
+        <h5 class="card-title"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Title }} ({{ .repository.Slug }})</a></h5>
+        <h5 class="card-title">{{ .resource.CollectionCode }}: {{ .resource.Title }}</h5>
+    </div>
+</div>
+</br>
+
+<div class="card card-default">
+    <div class="card-header">
+        <h4 class="card-title">Accessions</h4>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>Identifiers</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{ range $accession := .accessions }}
+            <tr>
+                <td>{{ $accession.AccessionNum }}</td>
+                <td>
+                    <a href="/accessions/{{ $accession.ID }}/show" class="btn btn-primary">View</a>
+                    <a href="/accessions/{{ $accession.ID }}/edit" class="btn btn-secondary">Edit</a>
+                    <a href="/accessions/{{ $accession.ID }}/delete" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {{ end }}
+            </tbody>
+        </table>
+        <div class="row">
+            <a href="/accessions/{{ .resource.ID }}/new" class="btn btn-primary">Add Accession</a>
+        </div>
+    </div>
+</div>
+    <br>
+    <div class="card card-default">
+        <div class="card-header">
+            <h4 class="card-title">Entries</h4>
+        </div>
+        <div class="card-body">
+            {{ template "entry-table-resource.html" . }}
+        </div>
+    </div>
+</div>
+{{ template "footer.html" .}}

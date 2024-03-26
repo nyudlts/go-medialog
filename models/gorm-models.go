@@ -37,7 +37,7 @@ type Accession struct {
 	UpdatedBy      int        `json:"updated_by"`
 	CollectionID   int        `json:"collection_id"`
 	Collection     Collection `json:"collection"`
-	RepositoryID   int        `json:repsoitory_id`
+	RepositoryID   int        `json:"repsoitory_id"`
 }
 
 type Entry struct {

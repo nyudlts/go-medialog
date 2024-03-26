@@ -4,13 +4,13 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
-func FindCollections() []models.Collection {
+func FindResources() []models.Collection {
 	collections := []models.Collection{}
 	db.Find(&collections)
 	return collections
 }
 
-func FindCollection(id int) (models.Collection, error) {
+func FindResource(id uint) (models.Collection, error) {
 	collection := models.Collection{}
 	if err := db.Where("id = ?", id).First(&collection).Error; err != nil {
 		return collection, err
@@ -18,7 +18,7 @@ func FindCollection(id int) (models.Collection, error) {
 	return collection, nil
 }
 
-func FindCollectionsByRepositoryID(repositoryID uint) ([]models.Collection, error) {
+func FindResourcesByRepositoryID(repositoryID uint) ([]models.Collection, error) {
 	collections := []models.Collection{}
 	if err := db.Where("repository_id = ?", repositoryID).Find(&collections).Error; err != nil {
 		return collections, err
