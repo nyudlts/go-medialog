@@ -25,10 +25,44 @@ func main() {
 		panic(err)
 	}
 
+	if err := AutoMigrate(); err != nil {
+		panic(err)
+	}
+
+	if err := migrateReposToGorm(); err != nil {
+		panic(err)
+	}
+
+	if err := migrateCollectionsToGorm(); err != nil {
+		panic(err)
+	}
+
+	if err := migrateAccessionsToGorm(); err != nil {
+		panic(err)
+	}
+
+	if err := migrateEntriesToGorm(); err != nil {
+		panic(err)
+	}
+
 	if err := migrateUsersToGorm(); err != nil {
 		panic(err)
 	}
 
+}
+
+func AutoMigrate() error {
+	if err := sqdb.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Collection{}, &models.User{}, &models.Entry{}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func migrateReposToGorm() error {
+	if err := sqdb.AutoMigrate(&models.Repository{}); err != nil {
+		return err
+	}
+	return nil
 }
 
 func migrateUsersToGorm() error {
@@ -45,6 +79,22 @@ func migrateUsersToGorm() error {
 
 	return nil
 }
+
+func migrateEntriesToGorm() error {
+	if err := sqdb.AutoMigrate(&models.Entry{}); err != nil {
+		return err
+	}
+
+	mlog_EntryPGs := []models.Mlog_EntryPG{}
+	pgdb.Find(&mlog_EntryPGs)
+	for _, entryPG := range mlog_EntryPGs {
+		e := entryPG.ToGormModel()
+		sqdb.Create(&e)
+	}
+
+	return nil
+}
+
 func migrateCollectionsToGorm() error {
 	if err := sqdb.AutoMigrate(&models.Collection{}); err != nil {
 		return err
@@ -60,8 +110,10 @@ func migrateCollectionsToGorm() error {
 	return nil
 }
 
-func MigrateAccessionToGorm() {
-	sqdb.AutoMigrate(&models.Accession{})
+func migrateAccessionsToGorm() error {
+	if err := sqdb.AutoMigrate(&models.Accession{}); err != nil {
+		return err
+	}
 	accessionsPG := []models.AccessionPG{}
 	pgdb.Find(&accessionsPG)
 
@@ -69,5 +121,5 @@ func MigrateAccessionToGorm() {
 		a := accessionPG.ToGormModel()
 		sqdb.Create(&a)
 	}
-
+	return nil
 }

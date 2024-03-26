@@ -95,7 +95,7 @@ func (u *UserPG) ToGormModel() User {
 
 type Mlog_EntryPG struct {
 	ID                    uuid.UUID `json:"id"`
-	AccessionNum          string    `json:"accession_num"`
+	AccessionNum          string    `json:"accession_num"` //remove
 	MediaID               string    `json:"media_id"`
 	Mediatype             string    `json:"mediatype"`
 	Manufacturer          string    `json:"manufacturer"`
@@ -150,4 +150,40 @@ type Mlog_EntryPG struct {
 	ContentType           string    `json:"content_type"`
 	Structure             string    `json:"structure"`
 	FileSystems           string    `json:"file_systems"`
+}
+
+func (mlog *Mlog_EntryPG) ToGormModel() Entry {
+	e := Entry{}
+	e.ID = mlog.ID
+	e.CreatedAt = mlog.CreatedAt
+	e.UpdatedAt = mlog.UpdatedAt
+	e.CreatedBy = mlog.CreatedBy
+	e.UpdatedBy = mlog.UpdatedBy
+	e.MediaID = mlog.MediaID
+	e.Mediatype = mlog.Mediatype
+	e.Manufacturer = mlog.Manufacturer
+	e.ManufacturerSerial = mlog.ManufacturerSerial
+	e.LabelText = mlog.LabelText
+	e.MediaNote = mlog.MediaNote
+	e.HDDInterface = mlog.HDD_Interface
+	e.ImagingSuccess = mlog.Imaging_success
+	e.ImageFilename = mlog.ImageFilename
+	e.Interface = mlog.Interface
+	e.ImagingSoftware = mlog.ImagingSoftware
+	e.InterpretationSuccess = mlog.InterpretationSuccess
+	e.ImagedBy = mlog.ImagedBy
+	e.ImagingNote = mlog.ImagingNote
+	e.ImageFormat = mlog.ImageFormat
+	e.BoxNumber = mlog.BoxNumber
+	e.OriginalID = mlog.OriginalID
+	e.DispositionNote = mlog.DispositionNote
+	e.StockUnit = mlog.StockUnit
+	e.StockSizeNum = mlog.StockSizeNum
+	e.CollectionID = mlog.CollectionID
+	e.AccessionID = mlog.AccessionID
+	e.IsRefreshed = mlog.IsRefreshed
+	e.IsTransferred = mlog.IsTransferred
+	e.ContentType = mlog.ContentType
+	e.Structure = mlog.Structure
+	return e
 }

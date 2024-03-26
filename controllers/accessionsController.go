@@ -14,25 +14,11 @@ func GetAccessions(c *gin.Context) {
 }
 
 func GetAccession(c *gin.Context) {
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
-	}
-
-	//pagination
-	var p = 1
-	page := c.Request.URL.Query()["page"]
-
-	if len(page) > 0 {
-		p, err = strconv.Atoi(page[0])
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-		}
-
-		if p == 0 {
-			p = 1
-		}
 	}
 
 	accession, err := database.FindAccession(id)
@@ -41,7 +27,16 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
+	/*
+		collection, err := database.FindCollection(accession.CollectionID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+	*/
+
 	c.HTML(http.StatusOK, "accessions-show.html", gin.H{
 		"accession": accession,
+		//"collection": collection,
 	})
 }

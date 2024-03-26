@@ -10,9 +10,9 @@ func FindAccessions() []models.Accession {
 
 func FindAccession(id int) (models.Accession, error) {
 	accession := models.Accession{}
+
 	if err := db.Where("id = ?", id).First(&accession).Error; err != nil {
 		return accession, err
 	}
-
 	return accession, nil
 }

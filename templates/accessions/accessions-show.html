@@ -3,7 +3,7 @@
 <div class="card card-default">
     <div class="card-header">
         <h5 class="card-title">Repository: </h5>
-        <h5 class="card-title">Resource: </h5>
+        <h5 class="card-title">Collection: {{ .accession.CollectionID }}</h5>
         <h5 class="card-title">Accession ID: {{ .accession.AccessionNum }}</h5>
     </div>
     <div class="card-body">
@@ -24,4 +24,6 @@
         media container
     </div>
 </div>
+
+{{ .accession.Collection }}
 {{ template "footer.html" .}}
