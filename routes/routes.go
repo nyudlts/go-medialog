@@ -15,4 +15,11 @@ func LoadRoutes(router *gin.Engine) {
 	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
 	accessionsRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetAccession(c) })
 
+	//Repository Group
+	repositoryRoutes := router.Group("/repositories")
+	repositoryRoutes.GET("", func(c *gin.Context) { controllers.GetRepositories(c) })
+	repositoryRoutes.GET("/new", func(c *gin.Context) { controllers.NewRepository(c) })
+	repositoryRoutes.POST("", func(c *gin.Context) { controllers.CreateRepository(c) })
+	repositoryRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetRepository(c) })
+
 }

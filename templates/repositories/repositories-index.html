@@ -1,0 +1,32 @@
+<!--index.html -->
+
+<!-- Embed the header.html template at this location-->
+{{ template "header.html" .}}
+<br>
+<div class="card card-default">
+    <div class="card-header">
+        <h3 class="card-title">Repositories</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped table-bordered">
+            <tbody>
+            {{ range $repository := .repositories }}
+            <tr>
+                <td>
+                    {{ $repository.Title }} ({{ $repository.Slug}})
+                </td>
+                <td>
+                    <a class="btn btn-primary" href="/repositories/{{ $repository.ID }}/show">View</a>
+                    <a class="btn btn-secondary" href="/repositories/{{ $repository.ID }}/edit">Edit</a>
+                    <a class="btn btn-danger" href="/repositories/{{ $repository.ID }}/delete">Delete</a>
+                </td>
+            </tr>
+            {{ end }}
+            </tbody>
+        </table>
+        <a href="/repositories/new" class="btn btn-primary">Add Repository</a>
+        
+    </div>
+</div>
+
+{{ template "footer.html" .}}

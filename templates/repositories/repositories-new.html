@@ -1,0 +1,17 @@
+{{ template "header.html" . }}
+<div class="row">
+    <div class="lead">Add a Repository</div>
+</div>
+<div class="card-body">
+    <div class="form">
+      <form action="/repositories" method="POST">
+        <div class="form-row">
+            <input type="number" name="ID" id="ID" placeholder="id"/>
+            <input type="text" name="Title" id="title" placeholder="title"/>
+            <input type="text" name="Slug" id="slug" placeholder="slug"/>
+            <input class="btn btn-primary" type="submit" value="submit" />
+        </div>
+      </form>
+    </div>
+  </div>
+{{ template "footer.html" . }}

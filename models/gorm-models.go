@@ -15,16 +15,15 @@ type Repository struct {
 }
 
 type Collection struct {
-	ID             uint       `json:"id" gorm:"primaryKey"`
-	Title          string     `json:"title"`
-	CollectionCode string     `json:"collection_code"`
-	PartnerCode    string     `json:"partner_code"`
-	CreatedAt      time.Time  `json:"created_at"`
-	UpdatedAt      time.Time  `json:"updated_at"`
-	CreatedBy      int        `json:"created_by"`
-	UpdatedBy      int        `json:"modified_by"`
-	RepositoryID   int        `json:"repository_id"`
-	Repository     Repository `json:"repository"`
+	ID             uint      `json:"id" gorm:"primaryKey"`
+	Title          string    `json:"title"`
+	CollectionCode string    `json:"collection_code"`
+	PartnerCode    string    `json:"partner_code"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	CreatedBy      int       `json:"created_by"`
+	UpdatedBy      int       `json:"modified_by"`
+	RepositoryID   int       `json:"repository_id"`
 }
 
 type Accession struct {
@@ -39,7 +38,6 @@ type Accession struct {
 	CollectionID   int        `json:"collection_id"`
 	Collection     Collection `json:"collection"`
 	RepositoryID   int        `json:repsoitory_id`
-	Repository     Repository `json:repository`
 }
 
 type Entry struct {
@@ -73,7 +71,6 @@ type Entry struct {
 	AccessionID           int        `json:"accession_id"`
 	Accession             Accession  `json:"accession"`
 	RepositoryID          int        `json:"repository_id"`
-	Repository            Repository `json:"repository"`
 	IsRefreshed           bool       `json:"is_refreshed"`
 	IsTransferred         bool       `json:"is_transferred"`
 	ContentType           string     `json:"content_type"`
