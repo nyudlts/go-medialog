@@ -1,12 +1,12 @@
 {{ template "header.html" .}}
-<br/>
-<div class="card card-default">
-    <div class="card-body">
-        <h5 class="card-title"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Title }} ({{ .repository.Slug }})</a></h5>
-        <h5 class="card-title">{{ .resource.CollectionCode }}: {{ .resource.Title }}</h5>
-    </div>
-</div>
-</br>
+<br>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Medialog</a></li>
+      <li class="breadcrumb-item"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Slug }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ .resource.CollectionCode }}: {{ .resource.Title }}</li>
+    </ol>
+</nav>
 
 <div class="card card-default">
     <div class="card-header">

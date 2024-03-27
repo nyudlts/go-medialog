@@ -8,7 +8,7 @@ import (
 func LoadRoutes(router *gin.Engine) {
 
 	//Main Index
-	router.GET("", func(c *gin.Context) { c.JSON(200, "Hello") })
+	router.GET("", func(c *gin.Context) { controllers.GetIndex(c) })
 
 	//Accessions Group
 	accessionRoutes := router.Group("/accessions")

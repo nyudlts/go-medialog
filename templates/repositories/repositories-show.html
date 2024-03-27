@@ -1,22 +1,19 @@
 {{ template "header.html" .}}
 <br/>
-<div class="card card-default">
-    <div class="card-header">
-        <h2 class="card-title">{{ .repository.Title }}</h2>
-    </div>
-    <div class="card-body">
-        slug: {{ .repository.Slug }}</br>
-        created at: {{ .repository.CreatedAt }} <br/>
-        updated at: {{ .repository.UpdatedAt }} <br/>
-    </div>
-</div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Medialog</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ .repository.Slug }}</li>
+    </ol>
+</nav>
 <br/>
 <div class="card card-default">
     <div class="card-header">
-        <h3 class="card-title">Resources</h3>
+        <h5 class="card-title">{{ .repository.Title }}</h5>
     </div>
         <div class="card-body">
             <div class="row mt-2">
+                <h5 class="card-title">Resources</h5>
                 <table class="table table-striped table-bordered table-sm">
                     {{ range $resource := .resources }}
                     <tr>

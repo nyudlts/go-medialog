@@ -1,9 +1,15 @@
 {{ template "header.html" .}}
 <br>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Medialog</a></li>
+      <li class="breadcrumb-item"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Slug}}</a></li>
+      <li class="breadcrumb-item"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }}: {{ .resource.Title }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ .accession.AccessionNum }}</li>
+    </ol>
+</nav>
 <div class="card card-default">
     <div class="card-header">
-        <h5 class="card-title"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Title }} ({{ .repository.Slug }})</a></h5>
-        <h5 class="card-title"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }}: {{ .resource.Title }}</a></h5>
         <h5 class="card-title">{{ .accession.AccessionNum }}</h5>
     </div>
     <div class="card-body">

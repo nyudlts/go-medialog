@@ -9,8 +9,7 @@
             <thead>
                 <tr>
                     <th>repository</th>
-                    <th>identifiers</th>
-                    <th>title</th>
+                    <th>resource</th>
                     <th>extent</th>
                 </tr>
             </thead>
@@ -18,8 +17,7 @@
                 {{ range $resource := .resources }}
                 <tr>
                     <td>{{ $resource.RepositoryID }}</td>
-                    <td>{{ $resource.CollectionCode}}</td>
-                    <td>{{ $resource.Title }}</td>
+                    <td>{{ $resource.CollectionCode}}: {{ $resource.Title }}</td>
                     <td></td>
                 </tr>
                 {{ end }}

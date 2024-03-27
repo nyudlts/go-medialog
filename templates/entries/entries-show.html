@@ -1,11 +1,15 @@
 {{ template "header.html" .}}
 <br>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Slug}}</a></li>
+      <li class="breadcrumb-item"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }}: {{ .resource.Title }}</a></li>
+      <li class="breadcrumb-item"><a href="/accessions/{{ .accession.ID }}/show">{{ .accession.AccessionNum }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ .entry.ID }}</li>
+    </ol>
+</nav>
 <div class="card card-default">
-    <div class="card-header">
-        <h5 class="card-title"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Title }} ({{ .repository.Slug }})</a></h5>
-        <h5 class="card-title"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }}: {{ .resource.Title }}</a></h5>
-        <h5 class="card-title"><a href="/accessions/{{ .accession.ID }}/show">{{ .accession.AccessionNum }}</a></h5>
-    </div>
     <div class="card-body">
         created by: {{ .entry.CreatedBy }} on: {{ .entry.CreatedAt }}<br>
         updated by: {{ .entry.UpdatedBy }} on: {{ .entry.UpdatedAt }}
@@ -25,6 +29,12 @@
             <dd class="col-sm-9">{{ .entry.Mediatype }}</dd>
             <dt class="col-sm-3">Stock Size</dt>
             <dd class="col-sm-9">{{ .entry.StockSizeNum }} {{ .entry.StockUnit }}</dd>
+            <dt class="col-sm-3">Box Number</dt>
+            <dd class="col-sm-9">{{ .entry.BoxNumber }}</dd>
+            <dt class="col-sm-3">Optical Content Type</dt>
+            <dd class="col-sm-9">{{ .entry.ContentType }}</dd>
+            <dt class="col-sm-3">Label Text</dt>
+            <dd class="col-sm-9">{{ .entry.LabelText }}</dd>
             <dt class="col-sm-3">Is Refreshed?</dt>
             <dd class="col-sm-9">{{ .entry.IsRefreshed }}</dd>
         </dl>
