@@ -10,7 +10,9 @@ import (
 
 func GetAccessions(c *gin.Context) {
 	accessions := database.FindAccessions()
-	c.JSON(200, accessions)
+	c.HTML(200, "accessions-index.html", gin.H{
+		"accessions": accessions,
+	})
 }
 
 func GetAccession(c *gin.Context) {

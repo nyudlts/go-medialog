@@ -11,9 +11,9 @@ func LoadRoutes(router *gin.Engine) {
 	router.GET("", func(c *gin.Context) { c.JSON(200, "Hello") })
 
 	//Accessions Group
-	accessionsRoutes := router.Group("/accessions")
-	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
-	accessionsRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetAccession(c) })
+	accessionRoutes := router.Group("/accessions")
+	accessionRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
+	accessionRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetAccession(c) })
 
 	//Repository Group
 	repositoryRoutes := router.Group("/repositories")
@@ -24,6 +24,12 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Resources Group
 	resourceRoutes := router.Group("/resources")
+	resourceRoutes.GET("", func(c *gin.Context) { controllers.GetResources(c) })
 	resourceRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetResource(c) })
+
+	//Entries Group
+	entryRoutes := router.Group("/entries")
+	entryRoutes.GET("", func(c *gin.Context) { controllers.GetEntries(c) })
+	entryRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetEntry(c) })
 
 }

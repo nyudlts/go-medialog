@@ -4,10 +4,12 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
-func FindResources() []models.Collection {
+func FindResources() ([]models.Collection, error) {
 	collections := []models.Collection{}
-	db.Find(&collections)
-	return collections
+	if err := db.Find(&collections).Error; err != nil {
+		return collections, err
+	}
+	return collections, nil
 }
 
 func FindResource(id uint) (models.Collection, error) {

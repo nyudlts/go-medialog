@@ -1,29 +1,30 @@
-<!--index.html -->
-
-<!-- Embed the header.html template at this location-->
 {{ template "header.html" .}}
 
 <br>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Medialog Accessions</h3>
+<div class="card card-default">
+    <div class="card-heading">
+        <h3 class="card-title">Medialog Accessions</h3>
     </div>
 
-    <div class="panel-body">
+    <div class="card-body">
         <table class="table table-striped table-bordered">
             <thead>
             <tr>
-                <th>Identifiers</th>
-                <th>Title</th>
-                <th/>
+                <th>Repository</th>
+                <th>Resource</th>
+                <th>AccessionNum</th>
+                <th>Extent</th>
+                <th>Actions</th>
             </tr>
             </thead>
 
             <tbody>
             {{ range $accession := .accessions }}
             <tr>
-                <td>{{ $accession.Identifiers }}</td>
-                <td>{{ $accession.Title }}</td>
+                <td>{{ $accession.RepositoryID }}</td>
+                <td>{{ $accession.CollectionID }}</td>
+                <td>{{ $accession.AccessionNum }}</td>
+                <td></td>
                 <td>
                     <a href="/accessions/{{ $accession.ID }}/show" class="btn btn-primary">View</a>
                     <a href="/accessions/{{ $accession.ID }}/edit" class="btn btn-secondary">Edit</a>
@@ -35,5 +36,4 @@
         </table>
     </div>
 </div>
-<!--Embed the footer.html template at this location-->
 {{ template "footer.html" .}}

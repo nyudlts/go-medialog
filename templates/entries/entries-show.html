@@ -1,0 +1,42 @@
+{{ template "header.html" .}}
+<br>
+<div class="card card-default">
+    <div class="card-header">
+        <h5 class="card-title"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Title }} ({{ .repository.Slug }})</a></h5>
+        <h5 class="card-title"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }}: {{ .resource.Title }}</a></h5>
+        <h5 class="card-title"><a href="/accessions/{{ .accession.ID }}/show">{{ .accession.AccessionNum }}</a></h5>
+    </div>
+    <div class="card-body">
+        created by: {{ .entry.CreatedBy }} on: {{ .entry.CreatedAt }}<br>
+        updated by: {{ .entry.UpdatedBy }} on: {{ .entry.UpdatedAt }}
+    </div>
+</div>
+<br>
+<div class="card card-default">
+    <div class="card-header">
+        <h5 class="card-title">Physical Data</h5>
+    </div>
+
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">id</dt>
+            <dd class="col-sm-9">{{ .entry.MediaID }}</dd>
+            <dt class="col-sm-3">Media Type</dt>
+            <dd class="col-sm-9">{{ .entry.Mediatype }}</dd>
+            <dt class="col-sm-3">Stock Size</dt>
+            <dd class="col-sm-9">{{ .entry.StockSizeNum }} {{ .entry.StockUnit }}</dd>
+            <dt class="col-sm-3">Is Refreshed?</dt>
+            <dd class="col-sm-9">{{ .entry.IsRefreshed }}</dd>
+        </dl>
+    </div>
+</div>
+<br>
+<div class="card card-default">
+    <div class="card-header">
+        <h5 class="card-title">Image Data</h5>
+    </div>
+    <div class="card-body">
+    </div>
+</div>
+
+{{ template "footer.html" .}}

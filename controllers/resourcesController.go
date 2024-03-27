@@ -47,3 +47,15 @@ func GetResource(c *gin.Context) {
 		"entries":    entries,
 	})
 }
+
+func GetResources(c *gin.Context) {
+	resources, err := database.FindResources()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.HTML(http.StatusOK, "resources-index.html", gin.H{
+		"resources": resources,
+	})
+}

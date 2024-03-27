@@ -9,16 +9,15 @@
         </tr>
         </thead>
         <tbody>
-        {{ .isAuthenticated }}
         {{ range $entry := .entries }}
         <tr>
             <td>{{ $entry.MediaID }}</td>
             <td>{{ $entry.Mediatype }}</td>
             <td>{{ $entry.IsRefreshed }}</td>
             <td>
-                <a href="/media/{{ $entry.ID }}/show" class="btn btn-primary">View</a>
-                <a href="/media/{{ $entry.ID }}/edit" class="btn btn-secondary">Edit</a>
-                <a href="/media/{{ $entry.ID }}/delete" class="btn btn-danger">Delete</a>
+                <a href="/entries/{{ $entry.ID }}/show" class="btn btn-primary">View</a>
+                <a href="/entries/{{ $entry.ID }}/edit" class="btn btn-secondary">Edit</a>
+                <a href="/entries/{{ $entry.ID }}/delete" class="btn btn-danger">Delete</a>
             </td>
         </tr>
         {{ end }}

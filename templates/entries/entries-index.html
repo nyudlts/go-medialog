@@ -1,0 +1,13 @@
+{{ template "header.html" .}}
+
+<br>
+<div class="card card-default">
+    <div class="card-header">
+        <h3 class="card-title">Medialog Entries</h3>
+    </div>
+    <div class="card-body">
+        {{ template "entry-table.html" .}}
+    </div>
+</div>
+
+{{ template "footer.html" . }}
