@@ -11,8 +11,7 @@
 </nav>
 <div class="card card-default">
     <div class="card-body">
-        created by: {{ .entry.CreatedBy }} on: {{ .entry.CreatedAt }}<br>
-        updated by: {{ .entry.UpdatedBy }} on: {{ .entry.UpdatedAt }}
+ 
     </div>
 </div>
 <br>
@@ -37,6 +36,14 @@
             <dd class="col-sm-9">{{ .entry.LabelText }}</dd>
             <dt class="col-sm-3">Is Refreshed?</dt>
             <dd class="col-sm-9">{{ .entry.IsRefreshed }}</dd>
+            <dt class="col-sm-3">created by</dt>
+            <dd class="col-sm-9">{{ .entry.CreatedBy }}</dd>
+            <dt class="col-sm-3">created at</dt>
+            <dd class="col-sm-9">{{ .entry.CreatedAt }}</dd>
+            <dt class="col-sm-3">updated by</dt>
+            <dd class="col-sm-9">{{ .entry.UpdatedBy }}</dd>
+            <dt class="col-sm-3">updated at</dt>
+            <dd class="col-sm-9">{{ .entry.UpdatedAt }}</dd>
         </dl>
     </div>
 </div>

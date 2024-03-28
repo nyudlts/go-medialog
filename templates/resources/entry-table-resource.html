@@ -3,8 +3,9 @@
         <thead class="thead-dark">
         <tr>
             <th>ID</th>
-            <th>mediatype</th>
-            <th></th>
+            <th>Mediatype</th>
+            <th>IsRefreshed</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -12,10 +13,11 @@
         <tr>
             <td>{{ $entry.MediaID }}</td>
             <td>{{ $entry.Mediatype }}</td>
+            <td>{{ $entry.IsRefreshed }}</td>
             <td>
-                <a href="/media/{{ $entry.ID }}/show" class="btn btn-primary">View</a>
-                <a href="/media/{{ $entry.ID }}/edit" class="btn btn-secondary">Edit</a>
-                <a href="/media/{{ $entry.ID }}/delete" class="btn btn-danger">Delete</a>
+                <a href="/entries/{{ $entry.ID }}/show" class="btn btn-primary">view</a>
+                <a href="/entries/{{ $entry.ID }}/edit" class="btn btn-secondary">edit</a>
+                <a href="/entries/{{ $entry.ID }}/delete" class="btn btn-danger">delete</a>
             </td>
         </tr>
         {{ end }}

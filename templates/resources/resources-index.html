@@ -5,20 +5,22 @@
         <h5 class="card-title">Resources</h5>
     </div>
     <div class="card-body">
-        <table class="table">
-            <thead>
+        <table class="table table-sm table-striped">
+            <thead class="thead thead-dark">
                 <tr>
                     <th>repository</th>
                     <th>resource</th>
                     <th>extent</th>
+                    <th>actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="tbody">
                 {{ range $resource := .resources }}
                 <tr>
                     <td>{{ $resource.RepositoryID }}</td>
                     <td>{{ $resource.CollectionCode}}: {{ $resource.Title }}</td>
                     <td></td>
+                    <td><a href="/resources/{{ $resource.ID }}/show" class="btn btn-primary">view</a></td>
                 </tr>
                 {{ end }}
             </tbody>
