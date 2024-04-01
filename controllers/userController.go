@@ -3,7 +3,6 @@ package controllers
 import (
 	"crypto/sha512"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -87,25 +86,12 @@ func AuthenticateUser(c *gin.Context) {
 		return
 	}
 
-	session := models.Session{}
-	sessionKey := GenerateStringRunes(32)
-	session.SessionKey = sessionKey
-	session.UserId = int(user.ID)
-	session.IsActive = true
-
-	if err := database.InsertSesssion(session); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
+	if err := NewSession(user.ID, c); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	sessionCookie, err := c.Cookie("session-key")
-	if err != nil {
-		log.Println("not set")
-		c.SetCookie("session-key", session.SessionKey, 3600, "/", "localhost", false, true)
-	}
-
-	fmt.Println(sessionCookie)
-	GetIndex(c)
+	log.Println(c.Request.Referer())
+	c.Redirect(302, "/")
 }
 
 func LogoutUser(c *gin.Context) {

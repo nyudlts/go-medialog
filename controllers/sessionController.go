@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
 )
 
 func checkSession(c *gin.Context) error {
@@ -43,4 +44,22 @@ func removeSession(c *gin.Context) error {
 
 	return nil
 
+}
+
+func NewSession(id uint, c *gin.Context) error {
+	session := models.Session{}
+	sessionKey := GenerateStringRunes(32)
+	session.SessionKey = sessionKey
+	session.UserId = int(id)
+	session.IsActive = true
+
+	_, err := c.Cookie("session-key")
+	if err != nil {
+		c.SetCookie("session-key", sessionKey, 3600, "/", "localhost", false, true)
+	}
+
+	if err := database.InsertSesssion(session); err != nil {
+		return err
+	}
+	return nil
 }
