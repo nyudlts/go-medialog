@@ -3,6 +3,7 @@
 <div class="card card-default">
     <div class="card-header">
         <h3 class="card-title">Users</h3>
+        <a href="/users/new" class="btn btn-primary">Add User</a>
     </div>
     <div class="card-body">
         <table class="table">
@@ -23,8 +24,17 @@
                     <td>{{ $user.IsAdmin }}</td>
                     <td>{{ $user.SignInCount }}</td>
                     <td>
-                        <input class="btn btn-primary" type="button" value="Deactivate">
-                        <input class="btn btn-primary" type="button" value="Reset Password">
+                        <a href="/users/{{ $user.ID }}/reset_password" class="btn btn-primary" type="button">Reset Password</a>
+                        {{ if eq $user.IsActive true}}
+                        <a href="/users/{{ $user.ID }}/deactivate" class="btn btn-danger" type="button"/>Deactivate</a>
+                        {{ else }}
+                        <a href="/users/{{ $user.ID }}/reactivate" class="btn btn-primary" type="button"/>Reactivate</a>
+                        {{ end }}
+                        {{ if eq $user.IsAdmin false}}
+                        <a href="/users/{{ $user.ID }}/make_admin" class="btn btn-primary" type="button"/>Make Admin</a>
+                        {{ else }}
+                        <a href="/users/{{ $user.ID }}/remove_admin" class="btn btn-danger" type="button"/>Remove Admin</a>
+                        {{ end }}
                     </td>
                 </tr>
             </tbody>

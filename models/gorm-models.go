@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Repository struct {
@@ -89,4 +90,11 @@ type User struct {
 	UpdatedBy         int       `json:"modified_by"`
 	IsActive          bool      `json:"is_active"`
 	IsAdmin           bool      `json:"admin"`
+}
+
+type Session struct {
+	gorm.Model
+	SessionKey string
+	UserId     int
+	IsActive   bool
 }

@@ -1,0 +1,37 @@
+{{ template "header.html" . }}
+<br />
+<div class="card card-default">
+    <div class="card-header">
+        <h2 class="card-title">Create User</h2>
+    </div>
+    <div class="card-body">
+        <form action="/users/create" method="post">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="email">email</label>
+                        <input type="text" name="email" id="email">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="password_1">password</label>
+                        <input type="password" name="password_1" id="password_1">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="password_2">password</label>
+                        <input type="password" name="password_2" id="password_2">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <input type="submit">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{{ template "footer.html" . }}

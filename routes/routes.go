@@ -35,5 +35,16 @@ func LoadRoutes(router *gin.Engine) {
 	//Users Group
 	userRoutes := router.Group("/users")
 	userRoutes.GET("", func(c *gin.Context) { controllers.GetUsers(c) })
+	userRoutes.GET("/new", func(c *gin.Context) { controllers.NewUser(c) })
+	userRoutes.POST("/create", func(c *gin.Context) { controllers.CreateUser(c) })
+	userRoutes.GET("/login", func(c *gin.Context) { controllers.LoginUser(c) })
+	userRoutes.GET("/logout", func(c *gin.Context) { controllers.LogoutUser(c) })
+	userRoutes.POST("/authenticate", func(c *gin.Context) { controllers.AuthenticateUser(c) })
+	userRoutes.GET("/:id/reset_password", func(c *gin.Context) { controllers.ResetUserPassword(c) })
+	userRoutes.POST("/:id/reset_password", func(c *gin.Context) { controllers.ResetPassword(c) })
+	userRoutes.GET("/:id/deactivate", func(c *gin.Context) { controllers.DeactivateUser(c) })
+	userRoutes.GET("/:id/reactivate", func(c *gin.Context) { controllers.ReactivateUser(c) })
+	userRoutes.GET("/:id/make_admin", func(c *gin.Context) { controllers.MakeUserAdmin(c) })
+	userRoutes.GET("/:id/remove_admin", func(c *gin.Context) { controllers.RemoveUserAdmin(c) })
 
 }

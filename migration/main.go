@@ -29,30 +29,32 @@ func main() {
 		panic(err)
 	}
 
-	if err := migrateReposToGorm(); err != nil {
-		panic(err)
-	}
+	/*
+		if err := migrateReposToGorm(); err != nil {
+			panic(err)
+		}
 
-	if err := migrateCollectionsToGorm(); err != nil {
-		panic(err)
-	}
+		if err := migrateCollectionsToGorm(); err != nil {
+			panic(err)
+		}
 
-	if err := migrateAccessionsToGorm(); err != nil {
-		panic(err)
-	}
+		if err := migrateAccessionsToGorm(); err != nil {
+			panic(err)
+		}
 
-	if err := migrateEntriesToGorm(); err != nil {
-		panic(err)
-	}
+		if err := migrateEntriesToGorm(); err != nil {
+			panic(err)
+		}
 
-	if err := migrateUsersToGorm(); err != nil {
-		panic(err)
-	}
+		if err := migrateUsersToGorm(); err != nil {
+			panic(err)
+		}
+	*/
 
 }
 
 func AutoMigrate() error {
-	if err := sqdb.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Collection{}, &models.User{}, &models.Entry{}); err != nil {
+	if err := sqdb.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Collection{}, &models.User{}, &models.Entry{}, &models.Session{}); err != nil {
 		return err
 	}
 	return nil

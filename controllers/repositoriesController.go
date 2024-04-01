@@ -30,14 +30,23 @@ func CreateRepository(c *gin.Context) {
 }
 
 func GetRepositories(c *gin.Context) {
+
+	if err := checkSession(c); err != nil {
+		c.JSON(http.StatusForbidden, err.Error())
+		return
+	}
+
 	repositories, err := database.FindRepositories()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	c.HTML(http.StatusOK, "repositories-index.html", gin.H{
-		"repositories": repositories,
+		"repositories":    repositories,
+		"isAuthenticated": true,
 	})
+
 }
 
 func GetRepository(c *gin.Context) {
