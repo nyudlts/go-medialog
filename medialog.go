@@ -3,18 +3,27 @@ package main
 import (
 	"log"
 	"os"
+	"text/template"
 
 	"github.com/gin-contrib/sessions"
 	gormsessions "github.com/gin-contrib/sessions/gorm"
 	"github.com/gin-gonic/gin"
 	database "github.com/nyudlts/go-medialog/database"
 	routes "github.com/nyudlts/go-medialog/routes"
+	utils "github.com/nyudlts/go-medialog/utils"
 )
 
 var router *gin.Engine
 
 func main() {
 	router = gin.Default()
+
+	//add global funcs
+	router.SetFuncMap(template.FuncMap{
+		"formatAsDate": utils.FormatAsDate,
+		"add":          utils.Add,
+		"subtract":     utils.Subtract,
+	})
 
 	//configure the router
 	router.LoadHTMLGlob("templates/**/*.html")

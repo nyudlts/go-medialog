@@ -25,8 +25,7 @@ func CreateRepository(c *gin.Context) {
 	if err := database.CreateRepository(input); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
-
-	c.JSON(200, input)
+	c.Redirect(302, "/repositories")
 }
 
 func GetRepositories(c *gin.Context) {
@@ -50,6 +49,10 @@ func GetRepositories(c *gin.Context) {
 }
 
 func GetRepository(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())

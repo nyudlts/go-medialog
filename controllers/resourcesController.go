@@ -5,11 +5,15 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/nyudlts/go-medialog/database"
 )
 
 func GetResource(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())

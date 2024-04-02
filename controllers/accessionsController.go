@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	database "github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/database"
 )
 
 func GetAccessions(c *gin.Context) {
@@ -19,10 +19,13 @@ func GetAccessions(c *gin.Context) {
 		"accessions":      accessions,
 		"isAuthenticated": true,
 	})
-	return
 }
 
 func GetAccession(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -55,9 +58,10 @@ func GetAccession(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "accessions-show.html", gin.H{
-		"accession":  accession,
-		"resource":   resource,
-		"repository": repository,
-		"entries":    entries,
+		"accession":        accession,
+		"resource":         resource,
+		"repository":       repository,
+		"entries":          entries,
+		"is_authenticated": true,
 	})
 }

@@ -1,6 +1,8 @@
 package medialog
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/controllers"
 )
@@ -47,4 +49,11 @@ func LoadRoutes(router *gin.Engine) {
 	userRoutes.GET("/:id/make_admin", func(c *gin.Context) { controllers.MakeUserAdmin(c) })
 	userRoutes.GET("/:id/remove_admin", func(c *gin.Context) { controllers.RemoveUserAdmin(c) })
 
+	//Report Group
+	reportRoutes := router.Group("/reports")
+	reportRoutes.GET("", func(c *gin.Context) { c.JSON(http.StatusNotImplemented, "Not Implemented") })
+
+	//Search Group
+	searchRoutes := router.Group("/search")
+	searchRoutes.POST("", func(c *gin.Context) { c.JSON(http.StatusNotImplemented, "Not Implemented") })
 }

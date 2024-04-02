@@ -3,14 +3,20 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-
-	database "github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/utils"
 )
 
 func GetEntry(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -44,10 +50,11 @@ func GetEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-show.html", gin.H{
-		"entry":      entry,
-		"accession":  accession,
-		"resource":   resource,
-		"repository": repository,
+		"entry":           entry,
+		"accession":       accession,
+		"resource":        resource,
+		"repository":      repository,
+		"isAuthenticated": true,
 	})
 }
 
@@ -56,7 +63,24 @@ func GetEntries(c *gin.Context) {
 		c.Redirect(302, "/")
 		return
 	}
-	entries, err := database.FindEntries()
+
+	//pagination
+	var p = 0
+	var err error
+	page := c.Request.URL.Query()["page"]
+
+	if len(page) > 0 {
+		p, err = strconv.Atoi(page[0])
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+
+	}
+
+	pagination := utils.Pagination{Limit: 10, Offset: (p * 10), Sort: "updated_at desc"}
+
+	entries, err := database.FindPaginatedEntries(pagination)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -65,5 +89,6 @@ func GetEntries(c *gin.Context) {
 	c.HTML(http.StatusOK, "entries-index.html", gin.H{
 		"entries":         entries,
 		"isAuthenticated": true,
+		"page":            p,
 	})
 }

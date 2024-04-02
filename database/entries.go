@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/nyudlts/go-medialog/models"
+	"github.com/nyudlts/go-medialog/utils"
 )
 
 func FindEntries() ([]models.Entry, error) {
@@ -42,4 +43,13 @@ func FindEntriesSorted(numRecords int) ([]models.Entry, error) {
 		return entries, err
 	}
 	return entries, nil
+}
+
+func FindPaginatedEntries(pagination utils.Pagination) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
+
 }
