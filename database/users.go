@@ -19,7 +19,7 @@ func UpdateUser(user models.User) error {
 
 func FindUsers() ([]models.User, error) {
 	users := []models.User{}
-	if err := db.Order("email").Find(&users).Error; err != nil {
+	if err := db.Order("is_active desc, is_admin desc, email").Find(&users).Error; err != nil {
 		return users, err
 	}
 	return users, nil

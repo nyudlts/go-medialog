@@ -4,62 +4,33 @@ import (
 	"fmt"
 	"log"
 
+	sessions "github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/nyudlts/go-medialog/database"
-	"github.com/nyudlts/go-medialog/models"
 )
 
 func checkSession(c *gin.Context) error {
-	sessionKey, err := c.Cookie("session-key")
-	if err != nil {
-		return fmt.Errorf("no session key - must authenticate")
+	session := sessions.Default(c)
+	sessionKey := session.Get("session-key")
+	if sessionKey == nil {
+		session.AddFlash("INFO", "no session key found - must authenticate")
+		session.Save()
+		return fmt.Errorf("no session key found")
 	}
-
-	session, err := database.FindSessionByKey(sessionKey)
-	if err != nil {
-		return fmt.Errorf("no session key - must authenticate")
-
-	}
-
-	if session.SessionKey != sessionKey {
-		return fmt.Errorf("invalid session key - must authenticate")
-	}
-
 	return nil
-
 }
 
 func removeSession(c *gin.Context) error {
-	sessionKey, err := c.Cookie("session-key")
-	if err != nil {
-		return err
-	}
-
-	c.SetCookie("session-key", "", -1, "/", "localhost", false, true)
-	log.Println(sessionKey)
-	err = database.DropSession(sessionKey)
-	if err != nil {
-		return err
-	}
-
+	session := sessions.Default(c)
+	session.Delete("session-key")
+	session.Save()
 	return nil
-
 }
 
-func NewSession(id uint, c *gin.Context) error {
-	session := models.Session{}
+func NewSession(c *gin.Context) error {
+	session := sessions.Default(c)
+	log.Println(session)
 	sessionKey := GenerateStringRunes(32)
-	session.SessionKey = sessionKey
-	session.UserId = int(id)
-	session.IsActive = true
-
-	_, err := c.Cookie("session-key")
-	if err != nil {
-		c.SetCookie("session-key", sessionKey, 3600, "/", "localhost", false, true)
-	}
-
-	if err := database.InsertSesssion(session); err != nil {
-		return err
-	}
+	session.Set("session-key", sessionKey)
+	session.Save()
 	return nil
 }

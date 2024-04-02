@@ -54,7 +54,7 @@ func main() {
 }
 
 func AutoMigrate() error {
-	if err := sqdb.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Collection{}, &models.User{}, &models.Entry{}, &models.Session{}); err != nil {
+	if err := sqdb.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Collection{}, &models.User{}, &models.Entry{}); err != nil {
 		return err
 	}
 	return nil

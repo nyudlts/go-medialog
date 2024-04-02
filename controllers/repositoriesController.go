@@ -32,7 +32,7 @@ func CreateRepository(c *gin.Context) {
 func GetRepositories(c *gin.Context) {
 
 	if err := checkSession(c); err != nil {
-		c.JSON(http.StatusForbidden, err.Error())
+		c.Redirect(302, "/")
 		return
 	}
 

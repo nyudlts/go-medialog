@@ -15,6 +15,11 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
 	users, err := database.FindUsers()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -22,7 +27,8 @@ func GetUsers(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "users-index.html", gin.H{
-		"users": users,
+		"users":           users,
+		"isAuthenticated": true,
 	})
 }
 
@@ -86,17 +92,17 @@ func AuthenticateUser(c *gin.Context) {
 		return
 	}
 
-	if err := NewSession(user.ID, c); err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+	if err := NewSession(c); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
-	log.Println(c.Request.Referer())
 	c.Redirect(302, "/")
 }
 
 func LogoutUser(c *gin.Context) {
 	removeSession(c)
-	GetIndex(c)
+	c.Redirect(302, "/")
 }
 
 func ResetUserPassword(c *gin.Context) {

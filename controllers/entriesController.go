@@ -52,6 +52,10 @@ func GetEntry(c *gin.Context) {
 }
 
 func GetEntries(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
 	entries, err := database.FindEntries()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -59,6 +63,7 @@ func GetEntries(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-index.html", gin.H{
-		"entries": entries,
+		"entries":         entries,
+		"isAuthenticated": true,
 	})
 }

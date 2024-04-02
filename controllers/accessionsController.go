@@ -9,10 +9,17 @@ import (
 )
 
 func GetAccessions(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
 	accessions := database.FindAccessions()
 	c.HTML(200, "accessions-index.html", gin.H{
-		"accessions": accessions,
+		"accessions":      accessions,
+		"isAuthenticated": true,
 	})
+	return
 }
 
 func GetAccession(c *gin.Context) {

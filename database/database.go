@@ -17,3 +17,5 @@ func ConnectDatabase() error {
 	}
 	return nil
 }
+
+func GetDB() *gorm.DB { return db }

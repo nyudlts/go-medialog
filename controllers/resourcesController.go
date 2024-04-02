@@ -49,6 +49,11 @@ func GetResource(c *gin.Context) {
 }
 
 func GetResources(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
 	resources, err := database.FindResources()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -56,6 +61,7 @@ func GetResources(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "resources-index.html", gin.H{
-		"resources": resources,
+		"resources":       resources,
+		"isAuthenticated": true,
 	})
 }
