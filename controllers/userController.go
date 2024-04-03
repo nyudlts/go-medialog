@@ -18,6 +18,7 @@ func GetUsers(c *gin.Context) {
 		c.Redirect(302, "/")
 		return
 	}
+	isAdmin := getCookie("is-admin", c)
 
 	users, err := database.FindUsers()
 	if err != nil {
@@ -28,11 +29,21 @@ func GetUsers(c *gin.Context) {
 	c.HTML(http.StatusOK, "users-index.html", gin.H{
 		"users":           users,
 		"isAuthenticated": true,
+		"isAdmin":         isAdmin,
 	})
 }
 
 func NewUser(c *gin.Context) {
-	c.HTML(http.StatusOK, "users-new.html", gin.H{})
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+	isAdmin := getCookie("is-admin", c)
+
+	c.HTML(http.StatusOK, "users-new.html", gin.H{
+		"isAdmin":         isAdmin,
+		"isAuthenticated": true,
+	})
 }
 
 type UserForm struct {
@@ -62,11 +73,11 @@ func CreateUser(c *gin.Context) {
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
 
 	if err := database.InsertUser(&user); err != nil {
-		log.Printf("\t[ERROR]\t[DATABASE]\t%s", err.Error())
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	GetUsers(c)
+
+	c.Redirect(http.StatusMovedPermanently, "/users")
 }
 
 func AuthenticateUser(c *gin.Context) {
@@ -96,15 +107,27 @@ func AuthenticateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, "/")
+	if user.IsAdmin {
+		setCookie("is-admin", true, c)
+	} else {
+		setCookie("is-admin", false, c)
+	}
+
+	c.Redirect(http.StatusMovedPermanently, "/")
 }
 
 func LogoutUser(c *gin.Context) {
 	removeSession(c)
-	c.Redirect(302, "/")
+	c.Redirect(http.StatusMovedPermanently, "/")
 }
 
 func ResetUserPassword(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+	isAdmin := getCookie("is-admin", c)
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -117,7 +140,11 @@ func ResetUserPassword(c *gin.Context) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "users-reset-password.html", gin.H{"user": user})
+	c.HTML(http.StatusOK, "users-reset-password.html", gin.H{
+		"user":            user,
+		"isAdmin":         isAdmin,
+		"isAuthenticated": true,
+	})
 
 }
 
@@ -148,7 +175,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	GetUsers(c)
+	c.Redirect(http.StatusPermanentRedirect, "/users")
 }
 
 func DeactivateUser(c *gin.Context) {
@@ -171,7 +198,7 @@ func DeactivateUser(c *gin.Context) {
 		return
 	}
 
-	GetUsers(c)
+	c.Redirect(http.StatusPermanentRedirect, "/users")
 
 }
 
@@ -195,7 +222,7 @@ func ReactivateUser(c *gin.Context) {
 		return
 	}
 
-	GetUsers(c)
+	c.Redirect(http.StatusPermanentRedirect, "/users")
 
 }
 
@@ -219,7 +246,7 @@ func MakeUserAdmin(c *gin.Context) {
 		return
 	}
 
-	GetUsers(c)
+	c.Redirect(http.StatusPermanentRedirect, "/users")
 }
 
 func RemoveUserAdmin(c *gin.Context) {
@@ -242,7 +269,7 @@ func RemoveUserAdmin(c *gin.Context) {
 		return
 	}
 
-	GetUsers(c)
+	c.Redirect(http.StatusPermanentRedirect, "/users")
 }
 
 func LoginUser(c *gin.Context) { c.HTML(http.StatusOK, "users-login.html", gin.H{}) }

@@ -19,6 +19,17 @@ func checkSession(c *gin.Context) error {
 	return nil
 }
 
+func getCookie(key string, c *gin.Context) interface{} {
+	session := sessions.Default(c)
+	return session.Get(key)
+}
+
+func setCookie(name string, value interface{}, c *gin.Context) {
+	session := sessions.Default(c)
+	session.Set(name, value)
+	session.Save()
+}
+
 func removeSession(c *gin.Context) error {
 	session := sessions.Default(c)
 	session.Delete("session-key")

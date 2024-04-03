@@ -16,6 +16,7 @@ func GetEntry(c *gin.Context) {
 		c.Redirect(302, "/")
 		return
 	}
+	isAdmin := getCookie("is-admin", c)
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -55,6 +56,7 @@ func GetEntry(c *gin.Context) {
 		"resource":        resource,
 		"repository":      repository,
 		"isAuthenticated": true,
+		"isAdmin":         isAdmin,
 	})
 }
 
@@ -63,6 +65,7 @@ func GetEntries(c *gin.Context) {
 		c.Redirect(302, "/")
 		return
 	}
+	isAdmin := getCookie("is-admin", c)
 
 	//pagination
 	var p = 0
@@ -89,6 +92,7 @@ func GetEntries(c *gin.Context) {
 	c.HTML(http.StatusOK, "entries-index.html", gin.H{
 		"entries":         entries,
 		"isAuthenticated": true,
+		"isAdmin":         isAdmin,
 		"page":            p,
 	})
 }

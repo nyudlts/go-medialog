@@ -8,6 +8,7 @@
             <th>Number</th>
             <th>Type</th>
             <th>Refreshed</th>
+            <th>Last Updated</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -20,6 +21,7 @@
             <td>{{ $entry.MediaID }}</td>
             <td>{{ $entry.Mediatype }}</td>
             <td>{{ $entry.IsRefreshed }}</td>
+            <td>{{ formatAsDate $entry.UpdatedAt }}</td>
             <td>
                 <a href="/entries/{{ $entry.ID }}/show" class="btn btn-primary">View</a>
                 <a href="/entries/{{ $entry.ID }}/edit" class="btn btn-secondary">Edit</a>

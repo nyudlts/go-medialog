@@ -11,7 +11,16 @@ import (
 )
 
 func NewRepository(c *gin.Context) {
-	c.HTML(http.StatusOK, "repositories-new.html", gin.H{})
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+	isAdmin := getCookie("is-admin", c)
+
+	c.HTML(http.StatusOK, "repositories-new.html", gin.H{
+		"isAdmin":         isAdmin,
+		"isAuthenticated": true,
+	})
 }
 
 func CreateRepository(c *gin.Context) {
@@ -29,11 +38,11 @@ func CreateRepository(c *gin.Context) {
 }
 
 func GetRepositories(c *gin.Context) {
-
 	if err := checkSession(c); err != nil {
 		c.Redirect(302, "/")
 		return
 	}
+	isAdmin := getCookie("is-admin", c)
 
 	repositories, err := database.FindRepositories()
 	if err != nil {
@@ -44,6 +53,7 @@ func GetRepositories(c *gin.Context) {
 	c.HTML(http.StatusOK, "repositories-index.html", gin.H{
 		"repositories":    repositories,
 		"isAuthenticated": true,
+		"isAdmin":         isAdmin,
 	})
 
 }
@@ -53,6 +63,8 @@ func GetRepository(c *gin.Context) {
 		c.Redirect(302, "/")
 		return
 	}
+	isAdmin := getCookie("is-admin", c)
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -72,7 +84,9 @@ func GetRepository(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "repositories-show.html", gin.H{
-		"repository": repository,
-		"resources":  collections,
+		"repository":      repository,
+		"resources":       collections,
+		"isAdmin":         isAdmin,
+		"isAuthenticated": true,
 	})
 }

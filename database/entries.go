@@ -13,17 +13,17 @@ func FindEntries() ([]models.Entry, error) {
 	return entries, nil
 }
 
-func FindEntriesByResourceID(id uint) ([]models.Entry, error) {
+func FindEntriesByResourceID(id uint, pagination utils.Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Where("collection_id = ?", id).Find(&entries).Error; err != nil {
+	if err := db.Where("collection_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil
 }
 
-func FindEntriesByAccessionID(id uint) ([]models.Entry, error) {
+func FindEntriesByAccessionID(id uint, pagination utils.Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Where("accession_id = ?", id).Find(&entries).Error; err != nil {
+	if err := db.Where("accession_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil
@@ -51,5 +51,4 @@ func FindPaginatedEntries(pagination utils.Pagination) ([]models.Entry, error) {
 		return entries, err
 	}
 	return entries, nil
-
 }

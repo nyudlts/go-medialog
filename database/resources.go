@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/nyudlts/go-medialog/models"
+	"github.com/nyudlts/go-medialog/utils"
 )
 
 func FindResources() ([]models.Collection, error) {
@@ -26,4 +27,12 @@ func FindResourcesByRepositoryID(repositoryID uint) ([]models.Collection, error)
 		return collections, err
 	}
 	return collections, nil
+}
+
+func FindPaginatedResources(pagination utils.Pagination) ([]models.Collection, error) {
+	resources := []models.Collection{}
+	if err := db.Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&resources).Error; err != nil {
+		return resources, err
+	}
+	return resources, nil
 }

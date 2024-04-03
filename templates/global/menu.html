@@ -22,11 +22,13 @@
                 <a class="nav-link" href="/entries">Entries</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/#">Reports</a>
+                <a class="nav-link" href="/reports">Reports</a>
             </li>
+            {{ if .isAdmin }}
             <li class="nav-item">
                 <a class="nav-link" href="/users">Users</a>
             </li>
+            {{ end }}
             {{ if .isAuthenticated }}
             <li class="nav-item">
                 <a class="nav-link" href="/users/logout">Logout</a>

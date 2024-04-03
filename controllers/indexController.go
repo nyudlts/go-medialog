@@ -27,13 +27,16 @@ func GetIndex(c *gin.Context) {
 
 	session := sessions.Default(c)
 	if !isAuthenticated {
-		session.AddFlash("MUST AUTHENTICATE", "WARNING")
+		session.AddFlash("Please authenticate to access this service", "WARNING")
 		session.Save()
 	}
+
+	isAdmin := getCookie("is-admin", c)
 
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"entries":         entries,
 		"isAuthenticated": isAuthenticated,
+		"isAdmin":         isAdmin,
 		"flash":           session.Flashes("WARNING"),
 	})
 

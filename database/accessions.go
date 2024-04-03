@@ -1,6 +1,9 @@
 package database
 
-import "github.com/nyudlts/go-medialog/models"
+import (
+	"github.com/nyudlts/go-medialog/models"
+	"github.com/nyudlts/go-medialog/utils"
+)
 
 func FindAccessions() []models.Accession {
 	accessions := []models.Accession{}
@@ -23,4 +26,12 @@ func FindAccession(id int) (models.Accession, error) {
 		return accession, err
 	}
 	return accession, nil
+}
+
+func FindPaginatedAccessions(pagination utils.Pagination) ([]models.Accession, error) {
+	accessions := []models.Accession{}
+	if err := db.Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&accessions).Error; err != nil {
+		return accessions, err
+	}
+	return accessions, nil
 }
