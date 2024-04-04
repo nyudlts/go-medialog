@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/nyudlts/bytemath"
 	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
 )
@@ -51,4 +52,68 @@ func FindPaginatedEntries(pagination utils.Pagination) ([]models.Entry, error) {
 		return entries, err
 	}
 	return entries, nil
+}
+
+type Summary struct {
+	Mediatype string
+	Count     int
+	Size      float64
+	HumanSize string
+}
+
+type Totals struct {
+	Count     int
+	Size      float64
+	HumanSize string
+}
+
+type Summaries map[string]Summary
+
+func (s Summaries) GetTotals() Totals {
+	totals := Totals{}
+	for _, summary := range s {
+		totals.Count += summary.Count
+		totals.Size += summary.Size
+	}
+	totals.HumanSize = bytemath.ConvertBytesToHumanReadable(int64(totals.Size))
+	return totals
+}
+
+func GetSummaryByAccession(id uint) (Summaries, error) {
+	summaries := Summaries{}
+	entries := []models.Entry{}
+	if err := db.Where("accession_id = ?", id).Find(&entries).Error; err != nil {
+		return summaries, err
+	}
+
+	for _, entry := range entries {
+		if summaryContains(summaries, entry.Mediatype) {
+			s := summaries[entry.Mediatype]
+			s.Count += 1
+			f64 := float64(entry.StockSizeNum)
+			sfx := bytemath.GetSuffixByString(entry.StockUnit)
+			s.Size = s.Size + bytemath.ConvertToBytes(f64, *sfx)
+			s.HumanSize = bytemath.ConvertBytesToHumanReadable(int64(s.Size))
+			summaries[entry.Mediatype] = s
+		} else {
+			s := Summary{Count: 1}
+			s.Mediatype = entry.Mediatype
+			f64 := float64(entry.StockSizeNum)
+			sfx := bytemath.GetSuffixByString(entry.StockUnit)
+			s.Size = bytemath.ConvertToBytes(f64, *sfx)
+			s.HumanSize = bytemath.ConvertBytesToHumanReadable(int64(s.Size))
+			summaries[entry.Mediatype] = s
+		}
+	}
+
+	return summaries, nil
+}
+
+func summaryContains(summaries Summaries, mediatype string) bool {
+	for k, _ := range summaries {
+		if k == mediatype {
+			return true
+		}
+	}
+	return false
 }

@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
+	"gorm.io/gorm/clause"
 )
 
 func FindAccessions() []models.Accession {
@@ -22,7 +23,7 @@ func FindAccessionsByResourceID(id uint) ([]models.Accession, error) {
 func FindAccession(id int) (models.Accession, error) {
 	accession := models.Accession{}
 
-	if err := db.Where("id = ?", id).First(&accession).Error; err != nil {
+	if err := db.Preload(clause.Associations).Where("id = ?", id).First(&accession).Error; err != nil {
 		return accession, err
 	}
 	return accession, nil

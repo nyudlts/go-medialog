@@ -43,18 +43,6 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
-	resource, err := database.FindResource(uint(accession.CollectionID))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	repository, err := database.FindRepository(uint(resource.RepositoryID))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
 	//pagination
 	var p = 0
 	page := c.Request.URL.Query()["page"]
@@ -75,13 +63,26 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
+	repository, err := database.FindRepository(uint(accession.Collection.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	summary, err := database.GetSummaryByAccession(accession.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	c.HTML(http.StatusOK, "accessions-show.html", gin.H{
 		"accession":       accession,
-		"resource":        resource,
 		"repository":      repository,
 		"entries":         entries,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"page":            p,
+		"summary":         summary,
+		"totals":          summary.GetTotals(),
 	})
 }

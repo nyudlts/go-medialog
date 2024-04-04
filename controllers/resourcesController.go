@@ -27,12 +27,13 @@ func GetResource(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-
-	repository, err := database.FindRepository(uint(resource.RepositoryID))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
+	/*
+		repository, err := database.FindRepository(uint(resource.RepositoryID))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+	*/
 
 	accessions, err := database.FindAccessionsByResourceID(resource.ID)
 	if err != nil {
@@ -62,7 +63,6 @@ func GetResource(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "resources-show.html", gin.H{
 		"resource":        resource,
-		"repository":      repository,
 		"accessions":      accessions,
 		"entries":         entries,
 		"isAdmin":         isAdmin,

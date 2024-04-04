@@ -1,0 +1,30 @@
+<div class="row mt-2">
+    <table class="table table-striped table-bordered table-sm">
+        <thead class="thead-dark">
+        <tr>
+            <th>MediaID</th>
+            <th>Type</th>
+            <th>Stock Size</th>
+            <th>Refreshed</th>
+            <th>Last Updated</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{ range $entry := .entries }}
+        <tr>
+            <td>{{ $entry.MediaID }}</td>
+            <td>{{ $entry.Mediatype }}</td>
+            <td>{{ $entry.StockSizeNum}} {{ $entry.StockUnit }}</td>
+            <td>{{ $entry.IsRefreshed }}</td>
+            <td>{{ formatAsDate $entry.UpdatedAt }}</td>
+            <td>
+                <a href="/entries/{{ $entry.ID }}/show" class="btn btn-primary">View</a>
+                <a href="/entries/{{ $entry.ID }}/edit" class="btn btn-secondary">Edit</a>
+                <a href="/entries/{{ $entry.ID }}/delete" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        {{ end }}
+        </tbody>
+    </table>
+</div>

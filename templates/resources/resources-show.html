@@ -3,7 +3,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/">Medialog</a></li>
-      <li class="breadcrumb-item"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Slug }}</a></li>
+      <li class="breadcrumb-item"><a href="/repositories/{{ .resource.Repository.ID }}/show">{{ .resource.Repository.Slug }}</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ .resource.CollectionCode }}: {{ .resource.Title }}</li>
     </ol>
 </nav>

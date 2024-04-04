@@ -15,15 +15,16 @@ type Repository struct {
 }
 
 type Collection struct {
-	ID             uint      `json:"id" gorm:"primaryKey"`
-	Title          string    `json:"title"`
-	CollectionCode string    `json:"collection_code"`
-	PartnerCode    string    `json:"partner_code"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	CreatedBy      int       `json:"created_by"`
-	UpdatedBy      int       `json:"modified_by"`
-	RepositoryID   int       `json:"repository_id"`
+	ID             uint       `json:"id" gorm:"primaryKey"`
+	Title          string     `json:"title"`
+	CollectionCode string     `json:"collection_code"`
+	PartnerCode    string     `json:"partner_code"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
+	CreatedBy      int        `json:"created_by"`
+	UpdatedBy      int        `json:"modified_by"`
+	RepositoryID   int        `json:"repository_id"`
+	Repository     Repository `json:"repository"`
 }
 
 type Accession struct {
@@ -37,7 +38,6 @@ type Accession struct {
 	UpdatedBy      int        `json:"updated_by"`
 	CollectionID   int        `json:"collection_id"`
 	Collection     Collection `json:"collection"`
-	RepositoryID   int        `json:"repsoitory_id"`
 }
 
 type Entry struct {

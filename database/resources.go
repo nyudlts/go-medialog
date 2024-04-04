@@ -1,8 +1,11 @@
 package database
 
 import (
+	"log"
+
 	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
+	"gorm.io/gorm/clause"
 )
 
 func FindResources() ([]models.Collection, error) {
@@ -15,9 +18,11 @@ func FindResources() ([]models.Collection, error) {
 
 func FindResource(id uint) (models.Collection, error) {
 	collection := models.Collection{}
-	if err := db.Where("id = ?", id).First(&collection).Error; err != nil {
+	if err := db.Preload(clause.Associations).Where("id = ?", id).First(&collection).Error; err != nil {
 		return collection, err
 	}
+
+	log.Println("%v\n", collection)
 	return collection, nil
 }
 

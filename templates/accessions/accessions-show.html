@@ -4,7 +4,7 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/">Medialog</a></li>
       <li class="breadcrumb-item"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Slug}}</a></li>
-      <li class="breadcrumb-item"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }}: {{ .resource.Title }}</a></li>
+      <li class="breadcrumb-item"><a href="/resources/{{ .accession.Collection.ID }}/show">{{ .accession.Collection.CollectionCode }}: {{ .accession.Collection.Title }}</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ .accession.AccessionNum }}</li>
     </ol>
 </nav>
@@ -13,10 +13,15 @@
         <h5 class="card-title">{{ .accession.AccessionNum }}</h5>
     </div>
     <div class="card-body">
-        accession state: {{ .accession.AccessionState }} <br>
-        accession note: {{ .accession.AccessionNote }} <br>
-        created by: {{ .accession.CreatedBy }} at: {{ .accession.CreatedAt }} <br>
-        updated by: {{ .accession.UpdatedBy }} at: {{ .accession.UpdatedAt }} 
+        <div class="row">
+            <div class="col">
+                accession state: {{ .accession.AccessionState }} <br>
+                accession note: {{ .accession.AccessionNote }} <br>
+                created by: {{ .accession.CreatedBy }} at: {{ .accession.CreatedAt }} <br>
+                updated by: {{ .accession.UpdatedBy }} at: {{ .accession.UpdatedAt }} 
+            </div>
+            <div class="col">{{ template "summary-table.html" . }}</div>
+        </div>
     </div>
 </div>
 <br>
@@ -33,7 +38,7 @@
                 <a href="/accessions/{{ .accession.ID}}/show?page={{ add .page 1 }}" class="btn btn-primary btn-sm">next 10</a>
             </div>
         </div>
-        {{ template "entry-table.html" . }}
+        {{ template "entry-table-accession.html" . }}
     </div>
 </div>
 {{ template "footer.html" .}}
