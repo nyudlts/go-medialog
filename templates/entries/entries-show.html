@@ -16,30 +16,74 @@
     </div>
 
     <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">id</dt>
-            <dd class="col-sm-9">{{ .entry.MediaID }}</dd>
-            <dt class="col-sm-3">Media Type</dt>
-            <dd class="col-sm-9">{{ .entry.Mediatype }}</dd>
-            <dt class="col-sm-3">Stock Size</dt>
-            <dd class="col-sm-9">{{ .entry.StockSizeNum }} {{ .entry.StockUnit }}</dd>
-            <dt class="col-sm-3">Box Number</dt>
-            <dd class="col-sm-9">{{ .entry.BoxNumber }}</dd>
-            <dt class="col-sm-3">Optical Content Type</dt>
-            <dd class="col-sm-9">{{ .entry.ContentType }}</dd>
-            <dt class="col-sm-3">Label Text</dt>
-            <dd class="col-sm-9">{{ .entry.LabelText }}</dd>
-            <dt class="col-sm-3">Is Refreshed?</dt>
-            <dd class="col-sm-9">{{ .entry.IsRefreshed }}</dd>
-            <dt class="col-sm-3">created by</dt>
-            <dd class="col-sm-9">{{ .entry.CreatedBy }}</dd>
-            <dt class="col-sm-3">created at</dt>
-            <dd class="col-sm-9">{{ .entry.CreatedAt }}</dd>
-            <dt class="col-sm-3">updated by</dt>
-            <dd class="col-sm-9">{{ .entry.UpdatedBy }}</dd>
-            <dt class="col-sm-3">updated at</dt>
-            <dd class="col-sm-9">{{ .entry.UpdatedAt }}</dd>
-        </dl>
+        <table class="table table-striped table-bordered table-sm">
+            <tbody class="tbody">
+                <tr>
+                    <td class="col-sm-2">id</td>
+                    <td class="col-sm-10">{{ .entry.MediaID }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Media Type</td>
+                    <td class="col-sm-10">{{ .entry.Mediatype }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Box Number</td>
+                    <td class="col-sm-10">{{ .entry.BoxNumber }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Stock Size</td>
+                    <td class="col-sm-10">{{ .entry.StockSizeNum }} {{ .entry.StockUnit }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Optical Content Type</td>
+                    <td class="col-sm-10">{{ .entry.ContentType}}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Label Text</td>
+                    <td class="col-sm-10">{{ .entry.LabelText }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Original ID</td>
+                    <td class="col-sm-10">{{ .entry.OriginalID }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Manufacturer</td>
+                    <td class="col-sm-10">{{ .entry.Manufacturer }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">ManufacturerSerial</td>
+                    <td class="col-sm-10">{{ .entry.ManufacturerSerial }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Media Note</td>
+                    <td class="col-sm-10">{{ .entry.MediaNote }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Disposition Note</td>
+                    <td class="col-sm-10">{{ .entry.DispositionNote }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">Is Refreshed?</td>
+                    <td class="col-sm-10">{{ .entry.IsRefreshed }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">created by</td>
+                    <td class="col-sm-10">{{ .entry.CreatedBy }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">created at</td>
+                    <td class="col-sm-10">{{ .entry.CreatedAt }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">updated by</td>
+                    <td class="col-sm-10">{{ .entry.UpdatedBy }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2">updated at</td>
+                    <td class="col-sm-10">{{ .entry.UpdatedAt }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 <br>
@@ -48,6 +92,50 @@
         <h5 class="card-title">Image Data</h5>
     </div>
     <div class="card-body">
+        <table class="table table-striped table-bordered table-sm">
+            <tbody>
+                <tr>
+                    <td class="col-sm-2"><strong>Image Filename</strong></td>
+                    <td class="col-sm-10">{{ .entry.ImageFilename }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2"><strong>Interface</strong></td>
+                    <td class="col-sm-10">{{ .entry.MediaInterface }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2"><strong>Imaging Software</strong></td>
+                    <td class="col-sm-10">{{ .entry.ImagingSoftware }}</td>
+                </tr>
+            </tbody>
+        </table>
+            <!--
+            
+            <t
+              <td><strong><%= t('helpers.label.mlog_entry.hdd_interface') %>:</strong></td>
+              <td><%= MLOG_VOCAB["hdd_interfaces"][@mlog_entry.hdd_interface] %></td>
+            </tr>
+          
+            <tr>
+              <td><strong><%= t('helpers.label.mlog_entry.imaging_success') %>:</strong></td>
+              <td><%= MLOG_VOCAB["image_success"][@mlog_entry.imaging_success] %></td>
+            </tr>
+          
+            <tr>
+              <td><strong><%= t('helpers.label.mlog_entry.interpretation_success') %>:</strong></td>
+              <td><%= MLOG_VOCAB["interpret_success"][@mlog_entry.interpretation_success] %></td>
+            </tr>
+          
+            <tr>
+              <td><strong><%= t('helpers.label.mlog_entry.imaged_by') %>:</strong></td>
+              <td><%= @mlog_entry.imaged_by %></td>
+            </tr>
+          
+            <tr>
+              <td><strong><%= t('helpers.label.mlog_entry.imaging_note') %>:</strong></td>
+              <td><%= @mlog_entry.imaging_note %></td>
+            </tr>
+        -->
+          
     </div>
 </div>
 

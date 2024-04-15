@@ -79,13 +79,33 @@ func (s Summaries) GetTotals() Totals {
 	return totals
 }
 
+func GetSummaryByResource(id uint) (Summaries, error) {
+	entries := []models.Entry{}
+	if err := db.Where("collection_id = ?", id).Find(&entries).Error; err != nil {
+		return Summaries{}, err
+	}
+	return getSummary(entries), nil
+}
+
 func GetSummaryByAccession(id uint) (Summaries, error) {
-	summaries := Summaries{}
 	entries := []models.Entry{}
 	if err := db.Where("accession_id = ?", id).Find(&entries).Error; err != nil {
-		return summaries, err
+		return Summaries{}, err
 	}
+	return getSummary(entries), nil
+}
 
+func summaryContains(summaries Summaries, mediatype string) bool {
+	for k, _ := range summaries {
+		if k == mediatype {
+			return true
+		}
+	}
+	return false
+}
+
+func getSummary(entries []models.Entry) Summaries {
+	summaries := Summaries{}
 	for _, entry := range entries {
 		if summaryContains(summaries, entry.Mediatype) {
 			s := summaries[entry.Mediatype]
@@ -105,15 +125,5 @@ func GetSummaryByAccession(id uint) (Summaries, error) {
 			summaries[entry.Mediatype] = s
 		}
 	}
-
-	return summaries, nil
-}
-
-func summaryContains(summaries Summaries, mediatype string) bool {
-	for k, _ := range summaries {
-		if k == mediatype {
-			return true
-		}
-	}
-	return false
+	return summaries
 }
