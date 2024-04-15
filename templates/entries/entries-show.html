@@ -100,43 +100,30 @@
                 </tr>
                 <tr>
                     <td class="col-sm-2"><strong>Interface</strong></td>
-                    <td class="col-sm-10">{{ .entry.MediaInterface }}</td>
+                    <td class="col-sm-10">{{ .entry.Interface }}</td>
                 </tr>
                 <tr>
-                    <td class="col-sm-2"><strong>Imaging Software</strong></td>
-                    <td class="col-sm-10">{{ .entry.ImagingSoftware }}</td>
+                    <td class="col-sm-2"><strong>Hard Drive Interface</strong></td>
+                    <td class="col-sm-10">{{ .entry.HDDInterface }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2"><strong>Imaging Success</strong></td>
+                    <td class="col-sm-10">{{ .entry.ImagingSuccess }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2"><strong>Interpretation Success</strong></td>
+                    <td class="col-sm-10">{{ .entry.InterpretationSuccess }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2"><strong>Imaged By</strong></td>
+                    <td class="col-sm-10">{{ .entry.ImagedBy }}</td>
+                </tr>
+                <tr>
+                    <td class="col-sm-2"><strong>Imaging Note</strong></td>
+                    <td class="col-sm-10">{{ .entry.ImagingNote }}</td>
                 </tr>
             </tbody>
         </table>
-            <!--
-            
-            <t
-              <td><strong><%= t('helpers.label.mlog_entry.hdd_interface') %>:</strong></td>
-              <td><%= MLOG_VOCAB["hdd_interfaces"][@mlog_entry.hdd_interface] %></td>
-            </tr>
-          
-            <tr>
-              <td><strong><%= t('helpers.label.mlog_entry.imaging_success') %>:</strong></td>
-              <td><%= MLOG_VOCAB["image_success"][@mlog_entry.imaging_success] %></td>
-            </tr>
-          
-            <tr>
-              <td><strong><%= t('helpers.label.mlog_entry.interpretation_success') %>:</strong></td>
-              <td><%= MLOG_VOCAB["interpret_success"][@mlog_entry.interpretation_success] %></td>
-            </tr>
-          
-            <tr>
-              <td><strong><%= t('helpers.label.mlog_entry.imaged_by') %>:</strong></td>
-              <td><%= @mlog_entry.imaged_by %></td>
-            </tr>
-          
-            <tr>
-              <td><strong><%= t('helpers.label.mlog_entry.imaging_note') %>:</strong></td>
-              <td><%= @mlog_entry.imaging_note %></td>
-            </tr>
-        -->
-          
     </div>
 </div>
-
 {{ template "footer.html" .}}
