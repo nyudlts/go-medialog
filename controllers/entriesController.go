@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,8 +23,6 @@ func GetEntry(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-
-	log.Println(id)
 
 	entry, err := database.FindEntry(id.String())
 	if err != nil {
@@ -58,6 +56,72 @@ func GetEntry(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 	})
+}
+
+func GetPreviousEntry(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry, err := database.FindEntry(id.String())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	mediaID, err := strconv.Atoi(entry.MediaID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(mediaID-1, entry.CollectionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("/entries/%s/show", prevEntryID))
+}
+
+func GetNextEntry(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry, err := database.FindEntry(id.String())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	mediaID, err := strconv.Atoi(entry.MediaID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(mediaID+1, entry.CollectionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("/entries/%s/show", prevEntryID))
 }
 
 func GetEntries(c *gin.Context) {

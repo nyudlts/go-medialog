@@ -36,6 +36,16 @@ var mediatypes = map[string]string{
 	"mediatype_orb":             "Orb Disk",
 }
 
+func GetMediaType(s string) string {
+
+	for k, y := range mediatypes {
+		if k == s {
+			return y
+		}
+	}
+	return "No Match"
+}
+
 var interfaces = map[string]string{
 	"interface_tableau_ultrabay": "Tableau Ultrabay",
 	"interface_kryoflux":         "KryoFlux",

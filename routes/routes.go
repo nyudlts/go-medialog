@@ -33,6 +33,8 @@ func LoadRoutes(router *gin.Engine) {
 	entryRoutes := router.Group("/entries")
 	entryRoutes.GET("", func(c *gin.Context) { controllers.GetEntries(c) })
 	entryRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetEntry(c) })
+	entryRoutes.GET("/:id/previous", func(c *gin.Context) { controllers.GetPreviousEntry(c) })
+	entryRoutes.GET("/:id/next", func(c *gin.Context) { controllers.GetNextEntry(c) })
 
 	//Users Group
 	userRoutes := router.Group("/users")

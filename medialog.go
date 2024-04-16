@@ -23,6 +23,7 @@ func main() {
 		"formatAsDate": utils.FormatAsDate,
 		"add":          utils.Add,
 		"subtract":     utils.Subtract,
+		"getMediatype": utils.GetMediaType,
 	})
 
 	//configure the router

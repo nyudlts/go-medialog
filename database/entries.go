@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/google/uuid"
 	"github.com/nyudlts/bytemath"
 	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
@@ -126,4 +127,12 @@ func getSummary(entries []models.Entry) Summaries {
 		}
 	}
 	return summaries
+}
+
+func FindEntryByMediaIDAndCollectionID(mediaID int, collectionID int) (uuid.UUID, error) {
+	entry := models.Entry{}
+	if err := db.Where("media_id = ? AND collection_id = ?", mediaID, collectionID).First(&entry).Error; err != nil {
+		return uuid.New(), err
+	}
+	return entry.ID, nil
 }

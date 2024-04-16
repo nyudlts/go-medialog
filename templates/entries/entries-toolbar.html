@@ -2,7 +2,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-sm-3">
-                <a class="btn btn-secondary">prev</a>
+                <a href="/entries/{{ .entry.ID }}/previous" class="btn btn-secondary">prev</a>
             </div>
             <div class="col-sm-2">
                 <a class="btn btn-primary">Edit</a> 
@@ -14,7 +14,7 @@
                 <a class="btn btn-danger">Delete</a>
             </div>
             <div class="col-sm-3">
-                <a class="btn btn-secondary justify-content-end">next</a>
+                <a href="/entries/{{ .entry.ID }}/next" class="btn btn-secondary">next</a>
             </div>
         </div>
     </div>
