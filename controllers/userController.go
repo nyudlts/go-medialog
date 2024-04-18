@@ -81,9 +81,10 @@ func CreateUser(c *gin.Context) {
 }
 
 func AuthenticateUser(c *gin.Context) {
+
 	var authUser = UserForm{}
 	if err := c.Bind(&authUser); err != nil {
-		log.Printf("\t[ERROR]\t[MEDIALOG]\t%s", err.Error())
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -102,7 +103,7 @@ func AuthenticateUser(c *gin.Context) {
 		return
 	}
 
-	if err := NewSession(c); err != nil {
+	if err := newSession(c); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -113,11 +114,6 @@ func AuthenticateUser(c *gin.Context) {
 		setCookie("is-admin", false, c)
 	}
 
-	c.Redirect(http.StatusMovedPermanently, "/")
-}
-
-func LogoutUser(c *gin.Context) {
-	removeSession(c)
 	c.Redirect(http.StatusMovedPermanently, "/")
 }
 
@@ -282,4 +278,20 @@ func GenerateStringRunes(n int) string {
 		b[i] = runes[rand.Intn(len(runes))]
 	}
 	return string(b)
+}
+
+func getUserEmailMap(ids []int) (map[int]string, error) {
+	users := map[int]string{}
+	for _, id := range ids {
+		if id == 0 {
+			users[id] = "unknown"
+		} else {
+			email, err := database.FindUserEmailByID(id)
+			if err != nil {
+				return users, err
+			}
+			users[id] = email
+		}
+	}
+	return users, nil
 }

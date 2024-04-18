@@ -75,6 +75,12 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
+	users, err := getUserEmailMap([]int{accession.CreatedBy, accession.UpdatedBy})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	c.HTML(http.StatusOK, "accessions-show.html", gin.H{
 		"accession":       accession,
 		"repository":      repository,
@@ -84,5 +90,6 @@ func GetAccession(c *gin.Context) {
 		"page":            p,
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
+		"users":           users,
 	})
 }

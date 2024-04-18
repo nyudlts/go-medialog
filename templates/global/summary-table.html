@@ -11,7 +11,7 @@
         <tbody class="tbody">
             {{ range $mediatype := .summary }}
                 <tr>
-                    <td>{{ $mediatype.Mediatype }}</td>
+                    <td>{{ getMediatype $mediatype.Mediatype }}</td>
                     <td>{{ $mediatype.Count }}</td>
                     <td>{{ $mediatype.HumanSize }}</td>
                 </tr>

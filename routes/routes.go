@@ -11,7 +11,7 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Main Index
 	router.GET("", func(c *gin.Context) { controllers.GetIndex(c) })
-
+	router.GET("/test", func(c *gin.Context) { Test(c) })
 	//Accessions Group
 	accessionRoutes := router.Group("/accessions")
 	accessionRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
@@ -42,7 +42,6 @@ func LoadRoutes(router *gin.Engine) {
 	userRoutes.GET("/new", func(c *gin.Context) { controllers.NewUser(c) })
 	userRoutes.POST("/create", func(c *gin.Context) { controllers.CreateUser(c) })
 	userRoutes.GET("/login", func(c *gin.Context) { controllers.LoginUser(c) })
-	userRoutes.GET("/logout", func(c *gin.Context) { controllers.LogoutUser(c) })
 	userRoutes.POST("/authenticate", func(c *gin.Context) { controllers.AuthenticateUser(c) })
 	userRoutes.GET("/:id/reset_password", func(c *gin.Context) { controllers.ResetUserPassword(c) })
 	userRoutes.POST("/:id/reset_password", func(c *gin.Context) { controllers.ResetPassword(c) })
@@ -58,4 +57,13 @@ func LoadRoutes(router *gin.Engine) {
 	//Search Group
 	searchRoutes := router.Group("/search")
 	searchRoutes.POST("", func(c *gin.Context) { c.JSON(http.StatusNotImplemented, "Not Implemented") })
+
+	//Session Group
+	sessionRoutes := router.Group("/sessions")
+	sessionRoutes.GET("/logout", func(c *gin.Context) { controllers.LogoutUser(c) })
+	sessionRoutes.GET("/dump", func(c *gin.Context) { controllers.DumpSession(c) })
+}
+
+func Test(c *gin.Context) {
+	c.JSON(200, "This is a Test")
 }

@@ -27,13 +27,12 @@ func GetResource(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	/*
-		repository, err := database.FindRepository(uint(resource.RepositoryID))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-	*/
+
+	summary, err := database.GetSummaryByResource(resource.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
 
 	accessions, err := database.FindAccessionsByResourceID(resource.ID)
 	if err != nil {
@@ -61,6 +60,12 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
+	users, err := getUserEmailMap([]int{resource.CreatedBy, resource.UpdatedBy})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	c.HTML(http.StatusOK, "resources-show.html", gin.H{
 		"resource":        resource,
 		"accessions":      accessions,
@@ -68,6 +73,9 @@ func GetResource(c *gin.Context) {
 		"isAdmin":         isAdmin,
 		"isAuthenticated": true,
 		"page":            p,
+		"summary":         summary,
+		"totals":          summary.GetTotals(),
+		"users":           users,
 	})
 }
 

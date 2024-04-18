@@ -10,6 +10,14 @@ func FindUserByID(id int) (models.User, error) {
 	return user, nil
 }
 
+func FindUserEmailByID(id int) (string, error) {
+	user := models.User{}
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return "", err
+	}
+	return user.Email, nil
+}
+
 func UpdateUser(user models.User) error {
 	if err := db.Save(&user).Error; err != nil {
 		return err
