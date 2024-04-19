@@ -52,7 +52,9 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Report Group
 	reportRoutes := router.Group("/reports")
-	reportRoutes.GET("", func(c *gin.Context) { c.JSON(http.StatusNotImplemented, "Not Implemented") })
+	reportRoutes.GET("", func(c *gin.Context) { controllers.ReportsIndex(c) })
+	reportRoutes.GET("/year", func(c *gin.Context) { controllers.ReportYear(c) })
+	reportRoutes.POST("/range", func(c *gin.Context) { controllers.ReportRange(c) })
 
 	//Search Group
 	searchRoutes := router.Group("/search")

@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/nyudlts/bytemath"
 	"github.com/nyudlts/go-medialog/models"
@@ -91,6 +93,39 @@ func GetSummaryByResource(id uint) (Summaries, error) {
 func GetSummaryByAccession(id uint) (Summaries, error) {
 	entries := []models.Entry{}
 	if err := db.Where("accession_id = ?", id).Find(&entries).Error; err != nil {
+		return Summaries{}, err
+	}
+	return getSummary(entries), nil
+}
+
+func GetSummaryByYear(year int) (Summaries, error) {
+	startDate := fmt.Sprintf("%d-01-01", year)
+	endDate := fmt.Sprintf("%d-01-01", year+1)
+	entries := []models.Entry{}
+	if err := db.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
+		return Summaries{}, err
+	}
+	return getSummary(entries), nil
+}
+
+type DateRange struct {
+	StartYear  int `form:"start-year"`
+	StartMonth int `form:"start-month"`
+	StartDay   int `form:"start-day"`
+	EndYear    int `form:"end-year"`
+	EndMonth   int `form:"end-month"`
+	EndDay     int `form:"end-day"`
+}
+
+func (dr DateRange) String() string {
+	return fmt.Sprintf("%d-%d-%d to %d-%d-%d", dr.StartYear, dr.StartMonth, dr.StartDay, dr.EndYear, dr.EndMonth, dr.EndDay)
+}
+
+func GetSummaryByDateRange(dr DateRange) (Summaries, error) {
+	startDate := fmt.Sprintf("%d-%d-%d", dr.StartYear, dr.StartMonth, dr.StartDay)
+	endDate := fmt.Sprintf("%d-%d-%d", dr.EndYear, dr.EndMonth, dr.EndDay)
+	entries := []models.Entry{}
+	if err := db.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
 		return Summaries{}, err
 	}
 	return getSummary(entries), nil

@@ -1,0 +1,18 @@
+{{ template "header.html" . }}
+<br>
+hi
+{{ template "reports-menu.html" . }}
+<br>
+<div class="container">
+    <div class="card card-default">
+        <div class="card-header">
+            <h5 class="card-title">Range</h5>
+            {{ .dateRange }}
+        </div>
+        <div class="card-body">
+            {{ template "summary-table.html" . }}
+        </div>
+    </div>
+</div>
+</br>
+{{ template "footer.html" . }}
