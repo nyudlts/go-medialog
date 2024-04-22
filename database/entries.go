@@ -9,6 +9,13 @@ import (
 	"github.com/nyudlts/go-medialog/utils"
 )
 
+func InsertEntry(entry models.Entry) error {
+	if err := db.Create(&entry).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func FindEntries() ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Find(&entries).Error; err != nil {

@@ -21,8 +21,8 @@
             <tbody>
             {{ range $accession := .accessions }}
             <tr>
-                <td>{{ $accession.RepositoryID }}</td>
-                <td>{{ $accession.CollectionID }}</td>
+                <td>{{ $accession.Collection.RepositoryID }}</td>
+                <td>{{ $accession.Collection.CollectionCode }}: {{ $accession.Collection.Title }}</td>
                 <td>{{ $accession.AccessionNum }}</td>
                 <td></td>
                 <td>

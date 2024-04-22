@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
 )
 
@@ -159,4 +161,64 @@ func GetEntries(c *gin.Context) {
 		"isAdmin":         isAdmin,
 		"page":            p,
 	})
+}
+
+func NewEntry(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+	isAdmin := getCookie("is-admin", c)
+
+	aID := c.Request.URL.Query().Get("accession_id")
+	accessionID, err := strconv.Atoi(aID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession, err := database.FindAccession(accessionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource, err := database.FindResource(accession.Collection.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	repository, err := database.FindRepository(resource.Repository.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.HTML(http.StatusOK, "entries-create.html", gin.H{
+		"isAdmin":    isAdmin,
+		"accession":  accession,
+		"resource":   resource,
+		"repository": repository,
+	})
+
+}
+
+func CreateEntry(c *gin.Context) {
+	var createEntry = models.Entry{}
+	if err := c.Bind(&createEntry); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	createEntry.ID, _ = uuid.NewUUID()
+	createEntry.CreatedAt = time.Now()
+	createEntry.UpdatedAt = time.Now()
+
+	if err := database.InsertEntry(createEntry); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
 }

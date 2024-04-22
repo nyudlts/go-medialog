@@ -45,6 +45,7 @@
             </div>
         </div>
         {{ template "entry-table-accession.html" . }}
+        <a href="/entries/new?accession_id={{ .accession.ID }}" class="btn btn-primary">add entry</a>
     </div>
 </div>
 {{ template "footer.html" .}}

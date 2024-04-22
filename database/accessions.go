@@ -6,10 +6,12 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func FindAccessions() []models.Accession {
+func FindAccessions() ([]models.Accession, error) {
 	accessions := []models.Accession{}
-	db.Find(&accessions)
-	return accessions
+	if err := db.Preload(clause.Associations).Find(&accessions).Error; err != nil {
+		return accessions, err
+	}
+	return accessions, nil
 }
 
 func FindAccessionsByResourceID(id uint) ([]models.Accession, error) {

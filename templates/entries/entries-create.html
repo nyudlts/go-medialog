@@ -1,0 +1,166 @@
+{{ template "header.html" .}}
+<br>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Medialog</a></li>
+      <li class="breadcrumb-item"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Slug}}</a></li>
+      <li class="breadcrumb-item"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }}: {{ .resource.Title }}</a></li>
+      <li class="breadcrumb-item"><a href="/accessions/{{ .accession.ID }}/show">{{ .accession.AccessionNum }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ .entry.ID }}</li>
+    </ol>
+</nav>
+
+<br>
+<form action="/entries" method="post">
+    <div class="card card-default">
+        <div class="card-header">
+            <h5 class="card-title">Physical Data</h5>
+        </div>
+        <div class="card-body">     
+            <table class="table table-striped table-bordered table-sm">
+                <tbody class="tbody">
+                    <tr>
+                        <td class="col-sm-2">Media Type</td>
+                        <td class="col-sm-10">
+                            <input type="text" id="mediatype" name="mediatype"/>
+                        </td>   
+                    </tr>
+                    
+                    <tr>
+                        <td class="col-sm-2">Box Number</td>
+                        <td class="col-sm-10">
+                            <input type="number" id="box_number" name="box_number"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">Stock Size</td>
+                        <td class="col-sm-10">
+                            <input type="number" name="stock_size_num" id="stock_size_num"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">Stock Unit</td>
+                        <td class="col-sm-10">
+                            <input type="text" name="stock_unit" id="stock_unit"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">Optical Content Type</td>
+                        <td class="col-sm-10">
+                        <input type="text" id="content_type" name="content_type"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">Label Text</td>
+                        <td class="col-sm-10">
+                            <input type="text" id="label_text" name="label_text"/>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="col-sm-2">Original ID</td>
+                        <td class="col-sm-10">
+                            <input type="text" id="original_id" name="original_id"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">Manufacturer</td>
+                        <td class="col-sm-10">
+                            <input type="text" id="manufacturer" name="manufacturer"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">ManufacturerSerial</td>
+                        <td class="col-sm-10">
+                            <input type="text" id="manufacturer_serial" name="manufacturer_serial"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">Media Note</td>
+                        <td class="col-sm-10">
+                            <input type="text" id="media_note" name="media_note"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">Disposition Note</td>
+                        <td class="col-sm-10">
+                            <input type="text" id="disposition_note" name="dispoition_note"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2">Is Refreshed?</td>
+                        <td class="col-sm-10">
+                            <input type="checkbox" id="is_refreshed" name="is_refreshed" />
+                        </td>
+                    </tr>
+                
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <br>
+    <div class="card card-default">
+        <div class="card-header">
+            <h5 class="card-title">Image Data</h5>
+        </div>
+        <div class="card-body">
+            
+            <table class="table table-striped table-bordered table-sm">
+                <tbody>
+                    
+                    <tr>
+                        <td class="col-sm-2"><strong>Image Filename</strong></td>
+                        <td class="col-sm-10">
+                            <input type="text" id="image_filename" name="image_filename"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2"><strong>Interface</strong></td>
+                        <td class="col-sm-10">
+                            <input type="text" id="interface" name="interface" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2"><strong>Hard Drive Interface</strong></td>
+                        <td class="col-sm-10">
+                            <input type="text" id="hdd_interface" name="hdd_interface"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2"><strong>Imaging Success</strong></td>
+                        <td class="col-sm-10">
+                            <input type="string" id="imaging_success" name="imaging_success"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2"><strong>Interpretation Success</strong></td>
+                        <td class="col-sm-10">
+                            <input type="text" id="interpretation_success" name="interpretation_success"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2"><strong>Imaged By</strong></td>
+                        <td class="col-sm-10">
+                            <input type="string" id="imaged_by" name="imaged_by" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-sm-2"><strong>Imaging Note</strong></td>
+                        <td class="col-sm-10">
+                            <input type="text" id="imaging_note" name="imaging_note" />
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+   </div>
+    <!-- hidden fields -->
+    <input type="hidden" id="accession_id" name="accession_id" value="{{ .accession.ID}}"/>
+    <input type="hidden" id="resource_id" name="resource_id" value="{{ .resource.ID }}"/>
+    <input type="hidden" id="collection_id" name="collection_id" value="{{ .repository.ID }}" />
+    <br>
+    <input type="submit"/ class="btn btn-primary">
+</form>
+{{ template "footer.html" .}}

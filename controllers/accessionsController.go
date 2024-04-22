@@ -16,7 +16,12 @@ func GetAccessions(c *gin.Context) {
 	}
 	isAdmin := getCookie("is-admin", c)
 
-	accessions := database.FindAccessions()
+	accessions, err := database.FindAccessions()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	c.HTML(200, "accessions-index.html", gin.H{
 		"accessions":      accessions,
 		"isAuthenticated": true,

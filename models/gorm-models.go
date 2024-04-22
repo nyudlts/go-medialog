@@ -47,33 +47,34 @@ type Entry struct {
 	CreatedBy             int        `json:"created_by"`
 	UpdatedBy             int        `json:"updated_by"`
 	MediaID               string     `json:"media_id"`
-	Mediatype             string     `json:"mediatype"`
-	Manufacturer          string     `json:"manufacturer"`
-	ManufacturerSerial    string     `json:"manufacturer_serial"`
-	LabelText             string     `json:"label_text"`
-	MediaNote             string     `json:"media_note"`
-	HDDInterface          string     `json:"hdd_interface"`
-	ImagingSuccess        string     `json:"imaging_success"`
-	ImageFilename         string     `json:"image_filename"`
-	Interface             string     `json:"interface"`
+	Mediatype             string     `json:"mediatype" form:"mediatype"`
+	Manufacturer          string     `json:"manufacturer" form:"manufacturer"`
+	ManufacturerSerial    string     `json:"manufacturer_serial" form:"manufacturer_serial"`
+	LabelText             string     `json:"label_text" form:"label_text"`
+	MediaNote             string     `json:"media_note" form:"media_note"`
+	HDDInterface          string     `json:"hdd_interface" form:"hdd_interface"`
+	ImagingSuccess        string     `json:"imaging_success" form:"imaging_success"`
+	ImageFilename         string     `json:"image_filename" form:"image_filename"`
+	Interface             string     `json:"interface" form:"interface"`
 	ImagingSoftware       string     `json:"imaging_software"`
-	InterpretationSuccess string     `json:"interpretation_success"`
-	ImagedBy              string     `json:"imaged_by"`
-	ImagingNote           string     `json:"imaging_note"`
+	InterpretationSuccess string     `json:"interpretation_success" form:"interpretation_success"`
+	ImagedBy              string     `json:"imaged_by" form:"imaged_by"`
+	ImagingNote           string     `json:"imaging_note" form:"imaging_note"`
 	ImageFormat           string     `json:"image_format"`
-	BoxNumber             int        `json:"box_number"`
-	OriginalID            string     `json:"original_id"`
-	DispositionNote       string     `json:"disposition_note"`
-	StockUnit             string     `json:"stock_unit"`
-	StockSizeNum          float32    `json:"stock_size_num"`
-	CollectionID          int        `json:"collection_id"`
+	BoxNumber             int        `json:"box_number" form:"box_number"`
+	OriginalID            string     `json:"original_id" form:"original_id"`
+	DispositionNote       string     `json:"disposition_note" form:"disposition_note"`
+	StockUnit             string     `json:"stock_unit" form:"stock_unit"`
+	StockSizeNum          float32    `json:"stock_size_num" form:"stock_size_num"`
+	CollectionID          int        `json:"collection_id" form:"collection_id"`
 	Collection            Collection `json:"collection"`
-	AccessionID           int        `json:"accession_id"`
+	AccessionID           int        `json:"accession_id" form:"accession_id"`
 	Accession             Accession  `json:"accession"`
-	RepositoryID          int        `json:"repository_id"`
-	IsRefreshed           bool       `json:"is_refreshed"`
+	RepositoryID          int        `json:"repository_id" form:"repository_id"`
+	Repository            Repository `json:"repository"`
+	IsRefreshed           bool       `json:"is_refreshed" form:"is_refreshed"`
 	IsTransferred         bool       `json:"is_transferred"`
-	ContentType           string     `json:"content_type"`
+	ContentType           string     `json:"content_type" form:"content_type"`
 	Structure             string     `json:"structure"`
 }
 
