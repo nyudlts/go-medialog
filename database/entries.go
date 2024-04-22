@@ -16,6 +16,13 @@ func InsertEntry(entry models.Entry) error {
 	return nil
 }
 
+func DeleteEntry(id uuid.UUID) error {
+	if err := db.Delete(models.Entry{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func FindEntries() ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Find(&entries).Error; err != nil {

@@ -222,3 +222,30 @@ func CreateEntry(c *gin.Context) {
 
 	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
 }
+
+func DeleteEntry(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry, err := database.FindEntry(id.String())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := database.DeleteEntry(id); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("/accessions/%d/show", entry.AccessionID))
+
+}
