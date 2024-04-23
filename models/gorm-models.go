@@ -41,7 +41,7 @@ type Accession struct {
 }
 
 type Entry struct {
-	ID                    uuid.UUID  `json:"id" gorm:"primaryKey"`
+	ID                    uuid.UUID  `json:"id" gorm:"primaryKey" form:"id"`
 	CreatedAt             time.Time  `json:"created_at"`
 	UpdatedAt             time.Time  `json:"updated_at"`
 	CreatedBy             int        `json:"created_by"`

@@ -34,6 +34,8 @@ func LoadRoutes(router *gin.Engine) {
 	entryRoutes.GET("", func(c *gin.Context) { controllers.GetEntries(c) })
 	entryRoutes.GET("/new", func(c *gin.Context) { controllers.NewEntry(c) })
 	entryRoutes.POST("", func(c *gin.Context) { controllers.CreateEntry(c) })
+	entryRoutes.GET("/:id/edit", func(c *gin.Context) { controllers.EditEntry(c) })
+	entryRoutes.POST("/:id/update", func(c *gin.Context) { controllers.UpdateEntry(c) })
 	entryRoutes.GET("/:id/delete", func(c *gin.Context) { controllers.DeleteEntry(c) })
 	entryRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetEntry(c) })
 	entryRoutes.GET("/:id/previous", func(c *gin.Context) { controllers.GetPreviousEntry(c) })

@@ -23,6 +23,13 @@ func DeleteEntry(id uuid.UUID) error {
 	return nil
 }
 
+func UpdateEntry(entry *models.Entry) error {
+	if err := db.Save(entry).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func FindEntries() ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Find(&entries).Error; err != nil {
@@ -47,7 +54,7 @@ func FindEntriesByAccessionID(id uint, pagination utils.Pagination) ([]models.En
 	return entries, nil
 }
 
-func FindEntry(id string) (models.Entry, error) {
+func FindEntry(id uuid.UUID) (models.Entry, error) {
 	entry := models.Entry{}
 	if err := db.Where("id = ?", id).First(&entry).Error; err != nil {
 		return entry, err

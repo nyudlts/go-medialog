@@ -26,7 +26,7 @@ func GetEntry(c *gin.Context) {
 		return
 	}
 
-	entry, err := database.FindEntry(id.String())
+	entry, err := database.FindEntry(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -72,7 +72,7 @@ func GetPreviousEntry(c *gin.Context) {
 		return
 	}
 
-	entry, err := database.FindEntry(id.String())
+	entry, err := database.FindEntry(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -105,7 +105,7 @@ func GetNextEntry(c *gin.Context) {
 		return
 	}
 
-	entry, err := database.FindEntry(id.String())
+	entry, err := database.FindEntry(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -235,7 +235,7 @@ func DeleteEntry(c *gin.Context) {
 		return
 	}
 
-	entry, err := database.FindEntry(id.String())
+	entry, err := database.FindEntry(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -248,4 +248,79 @@ func DeleteEntry(c *gin.Context) {
 
 	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("/accessions/%d/show", entry.AccessionID))
 
+}
+
+func EditEntry(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+	isAdmin := getCookie("is-admin", c)
+
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry, err := database.FindEntry(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession, err := database.FindAccession(entry.AccessionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource, err := database.FindResource(uint(accession.CollectionID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	repository, err := database.FindRepository(uint(resource.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.HTML(http.StatusOK, "entries-edit.html", gin.H{
+		"isAdmin":    isAdmin,
+		"entry":      entry,
+		"accession":  entry.Accession,
+		"resource":   resource,
+		"repository": repository,
+	})
+}
+
+func UpdateEntry(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var editedEntry = models.Entry{}
+	if err := c.Bind(&editedEntry); err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
+		return
+	}
+
+	entry, err := database.FindEntry(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "find entry", err.Error()))
+		return
+	}
+
+	entry.DispositionNote = editedEntry.DispositionNote
+
+	if err := database.UpdateEntry(&entry); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
 }
