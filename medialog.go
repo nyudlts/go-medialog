@@ -8,6 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	gormsessions "github.com/gin-contrib/sessions/gorm"
 	"github.com/gin-gonic/gin"
+	"github.com/nyudlts/go-medialog/controllers"
 	database "github.com/nyudlts/go-medialog/database"
 	routes "github.com/nyudlts/go-medialog/routes"
 	utils "github.com/nyudlts/go-medialog/utils"
@@ -23,7 +24,7 @@ func main() {
 		"formatAsDate": utils.FormatAsDate,
 		"add":          utils.Add,
 		"subtract":     utils.Subtract,
-		"getMediatype": utils.GetMediaType,
+		"getMediatype": controllers.GetMediaType,
 	})
 
 	//configure the router

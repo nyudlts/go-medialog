@@ -1,4 +1,4 @@
-package utils
+package controllers
 
 var PartnerCodes = map[string]string{
 	"fales":       "Fales Library & Special Collections",
@@ -13,7 +13,7 @@ var filename_partner_codes = map[string]string{
 	"us": "nyuarchives",
 }
 
-func GetMediaTypeMap() map[string]string { return mediatypes }
+func getMediatypes() map[string]string { return mediatypes }
 
 var mediatypes = map[string]string{
 	"mediatype_transfer":        "Network Transfer",
@@ -48,7 +48,7 @@ func GetMediaType(s string) string {
 	return "No Match"
 }
 
-func GetInterfaces() map[string]string { return interfaces }
+func getInterfaces() map[string]string { return interfaces }
 
 var interfaces = map[string]string{
 	"interface_tableau_ultrabay": "Tableau Ultrabay",
@@ -57,7 +57,7 @@ var interfaces = map[string]string{
 	"interface_optical_HP":       "HP CD/DVD Drive",
 }
 
-func GetInterface(s string) string {
+func getInterface(s string) string {
 	for k, y := range interfaces {
 		if k == s {
 			return y
@@ -66,7 +66,7 @@ func GetInterface(s string) string {
 	return ""
 }
 
-func GetImagingSoftware() map[string]string { return imaging_software }
+func getImagingSoftware() map[string]string { return imaging_software }
 
 var imaging_software = map[string]string{
 	"imaging_software_kryoflux_imager_v220": "KryoFlux Imager (DTC 2.20)",
@@ -77,7 +77,7 @@ var imaging_software = map[string]string{
 	"imaging_software_eac_v13":              "Exact Audio Copy (v1.3)",
 }
 
-func GetHDDInterfaces() map[string]string { return hdd_interfaces }
+func getHDDInterfaces() map[string]string { return hdd_interfaces }
 
 var hdd_interfaces = map[string]string{
 	"hdd_interface_usb":   "USB",
@@ -88,7 +88,7 @@ var hdd_interfaces = map[string]string{
 	"hdd_interface_ide":   "IDE",
 }
 
-func GetImageFormats() map[string]string { return image_formats }
+func getImageFormats() map[string]string { return image_formats }
 
 var image_formats = map[string]string{
 	"image_format_raw":     "Raw (dd)",
@@ -119,14 +119,14 @@ var filesystems = map[string]string{
 	"filesystem_uknown":      "Uknown",
 }
 
-func GetImageSuccess() map[string]string { return image_success }
+func getImageSuccess() map[string]string { return image_success }
 
 var image_success = map[string]string{
 	"image_sucess_yes": "Yes",
 	"image_success_no": "No",
 }
 
-func GetInterpretSuccess() map[string]string { return interpret_success }
+func getInterpretSuccess() map[string]string { return interpret_success }
 
 var interpret_success = map[string]string{
 	"interpret_success_yes":        "Yes",
@@ -134,7 +134,7 @@ var interpret_success = map[string]string{
 	"interpret_succes_no":          "No",
 }
 
-func GetStockUnits() map[string]string { return stock_unit }
+func getStockUnits() map[string]string { return stock_unit }
 
 var stock_unit = map[string]string{
 	"KB": "Kilobytes",
@@ -152,7 +152,7 @@ var accession_state = map[string]string{
 	"acceession_complete":          "Archivesspace Updated /  Complete",
 }
 
-func GetOpticalContentTypes() map[string]string { return content_type }
+func getOpticalContentTypes() map[string]string { return content_type }
 
 var content_type = map[string]string{
 	"content_video": "Video",

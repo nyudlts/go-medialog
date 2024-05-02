@@ -24,9 +24,13 @@
                     <tr>
                         <td class="col-sm-2">Media Type</td>
                         <td class="col-sm-10">
-                            <select id="mediatype" name="mediatype" value="{{ index .mediatypes .entry.Mediatype }}">
+                            <select id="mediatype" name="mediatype">
                                 {{ range $key, $val := .mediatypes }}
-                                    <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ if eq $key $.entry.Mediatype }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
                                 {{ end }}
                             </select>
                         </td>   
@@ -47,20 +51,28 @@
                     <tr>
                         <td class="col-sm-2">Stock Unit</td>
                         <td class="col-sm-10">
-                            <select id="stock_unit" name="stock_unit" value="{{ index .stock_units .entry.StockUnit }}">
+                            <select id="stock_unit" name="stock_unit">
                                 {{ range $key, $val := .stock_units }}
-                                    <option value="{{ $key }}">{{ $val }}</option>
-                                {{ end}}
+                                    {{ if eq $key $.entry.StockUnit }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
+                                {{ end }}
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-sm-2">Optical Content Type</td>
                         <td class="col-sm-10">
-                            <select type="text" id="content_type" name="content_type" value="{{ index .optical_content_types .entry.ContentType }}">
+                            <select type="text" id="content_type" name="content_type">
                                 {{ range $key, $val := .optical_content_types }}
-                                <option name="content_type" value="{{ $key }}">{{ $val }}</option>
-                                {{ end}}
+                                    {{ if eq $key $.entry.ContentType }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
+                                {{ end }}
                             </select>
                         </td>
                     </tr>
@@ -104,7 +116,15 @@
                     <tr>
                         <td class="col-sm-2">Is Refreshed?</td>
                         <td class="col-sm-10">
-                            <input type="checkbox" id="is_refreshed" name="is_refreshed" value="{{ .entry.IsRefreshed }}" />
+                            <select name="is_refreshed" id="is_refreshed">
+                                {{ range $key, $val := .refreshed }}
+                                    {{ if eq $key $.entry.IsRefreshed }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
+                                {{ end }}
+                            </select>
                         </td>
                     </tr>
                 </tbody>
@@ -131,9 +151,13 @@
                     <tr>
                         <td class="col-sm-2"><strong>Image Format</strong></td>
                         <td class="col-sm-10">
-                            <select id="image_format" name="image_format" value="{{ index .image_formats .entry.ImageFormat }}">
+                            <select id="image_format" name="image_format">
                                 {{ range $key, $val := .image_formats }}
-                                    <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ if eq $key $.entry.ImageFormat }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
                                 {{ end }}
                             </select>
                         </td>
@@ -141,9 +165,13 @@
                     <tr>
                         <td class="col-sm-2"><strong>Interface</strong></td>
                         <td class="col-sm-10">
-                            <select id="interface" name="interface" value="{{ index .interfaces .entry.Interface }}">
+                            <select id="interface" name="interface">
                                 {{ range $key, $val := .interfaces }}
-                                    <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ if eq $key $.entry.Interface}}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
                                 {{ end }}
                             </select>
                         </td>  
@@ -151,9 +179,13 @@
                     <tr>
                         <td class="col-sm-2"><strong>Hard Drive Interface</strong></td>
                         <td class="col-sm-10">
-                            <select id="hdd_interface" name="hdd_interface" value="{{ index .hdd_interfaces .entry.HDDInterface }}">
+                            <select id="hdd_interface" name="hdd_interface">
                                 {{ range $key, $val := .hdd_interfaces }}
-                                    <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ if eq $key $.entry.HDDInterface}}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
                                 {{ end }}
                             </select>
                         </td>
@@ -163,7 +195,11 @@
                         <td class="col-sm-10">
                             <select id="imaging_software" name="imaging_software" value="{{ index .imaging_software .entry.ImagingSoftware }}">
                                 {{ range $key, $val := .imaging_software }}
-                                    <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ if eq $key $.entry.ImagingSoftware }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
                                 {{ end }}
                             </select>
                         </td>
@@ -171,9 +207,13 @@
                     <tr>
                         <td class="col-sm-2"><strong>Imaging Success</strong></td>
                         <td class="col-sm-10">
-                            <select id="imaging_success" name="imaging_success" value="{{ index .imaging_success .entry.ImagingSuccess }}">
+                            <select id="imaging_success" name="imaging_success">
                                 {{ range $key, $val := .imaging_success }}
-                                    <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ if eq $key $.entry.ImagingSuccess }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
                                 {{ end }}
                             </select>
                         </td>
@@ -181,9 +221,13 @@
                     <tr> 
                         <td class="col-sm-2"><strong>Interpretation Success</strong></td>
                         <td class="col-sm-10">
-                            <select id="interpretation_success" name="interpretation_success" value="{{ index .interpretation_success .entry.InterpretationSuccess }}">
+                            <select id="interpretation_success" name="interpretation_success">
                                 {{ range $key, $val := .interpretation_success }}
-                                    <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ if eq $key $.entry.InterpretationSuccess }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
                                 {{ end }}
                             </select>
                         </td>
