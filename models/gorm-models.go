@@ -56,11 +56,11 @@ type Entry struct {
 	ImagingSuccess        string     `json:"imaging_success" form:"imaging_success"`
 	ImageFilename         string     `json:"image_filename" form:"image_filename"`
 	Interface             string     `json:"interface" form:"interface"`
-	ImagingSoftware       string     `json:"imaging_software"`
+	ImagingSoftware       string     `json:"imaging_software" form:"imaging_software"`
 	InterpretationSuccess string     `json:"interpretation_success" form:"interpretation_success"`
 	ImagedBy              string     `json:"imaged_by" form:"imaged_by"`
 	ImagingNote           string     `json:"imaging_note" form:"imaging_note"`
-	ImageFormat           string     `json:"image_format"`
+	ImageFormat           string     `json:"image_format" form:"image_format"`
 	BoxNumber             int        `json:"box_number" form:"box_number"`
 	OriginalID            string     `json:"original_id" form:"original_id"`
 	DispositionNote       string     `json:"disposition_note" form:"disposition_note"`
@@ -100,6 +100,8 @@ func (e *Entry) UpdateEntry(updatedEntry Entry) {
 	e.InterpretationSuccess = updatedEntry.InterpretationSuccess
 	e.ImagedBy = updatedEntry.ImagedBy
 	e.ImagingNote = updatedEntry.ImagingNote
+	e.ImagingSoftware = updatedEntry.ImagingSoftware
+	e.ImageFormat = updatedEntry.ImageFormat
 
 }
 

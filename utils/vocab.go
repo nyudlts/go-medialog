@@ -66,6 +66,8 @@ func GetInterface(s string) string {
 	return ""
 }
 
+func GetImagingSoftware() map[string]string { return imaging_software }
+
 var imaging_software = map[string]string{
 	"imaging_software_kryoflux_imager_v220": "KryoFlux Imager (DTC 2.20)",
 	"imaging_software_kryoflux_imager_v30":  "KryoFlux Imager (DTC 3.0)",
@@ -85,6 +87,8 @@ var hdd_interfaces = map[string]string{
 	"hdd_interface_scsi":  "SCSI",
 	"hdd_interface_ide":   "IDE",
 }
+
+func GetImageFormats() map[string]string { return image_formats }
 
 var image_formats = map[string]string{
 	"image_format_raw":     "Raw (dd)",
@@ -115,10 +119,14 @@ var filesystems = map[string]string{
 	"filesystem_uknown":      "Uknown",
 }
 
+func GetImageSuccess() map[string]string { return image_success }
+
 var image_success = map[string]string{
 	"image_sucess_yes": "Yes",
 	"image_success_no": "No",
 }
+
+func GetInterpretSuccess() map[string]string { return interpret_success }
 
 var interpret_success = map[string]string{
 	"interpret_success_yes":        "Yes",

@@ -98,7 +98,7 @@
                     <tr>
                         <td class="col-sm-2">Disposition Note</td>
                         <td class="col-sm-10">
-                            <input type="text" id="disposition_note" name="dispoition_note" value="{{ .entry.DispositionNote }}" />
+                            <input type="text" id="disposition_note" name="disposition_note" value="{{ .entry.DispositionNote }}" />
                         </td>
                     </tr>
                     <tr>
@@ -129,6 +129,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="col-sm-2"><strong>Image Format</strong></td>
+                        <td class="col-sm-10">
+                            <select id="image_format" name="image_format" value="{{ index .image_formats .entry.ImageFormat }}">
+                                {{ range $key, $val := .image_formats }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="col-sm-2"><strong>Interface</strong></td>
                         <td class="col-sm-10">
                             <select id="interface" name="interface" value="{{ index .interfaces .entry.Interface }}">
@@ -149,15 +159,33 @@
                         </td>
                     </tr>
                     <tr>
+                        <td class="col-sm-2"><strong>Imaging Software</strong></td>
+                        <td class="col-sm-10">
+                            <select id="imaging_software" name="imaging_software" value="{{ index .imaging_software .entry.ImagingSoftware }}">
+                                {{ range $key, $val := .imaging_software }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="col-sm-2"><strong>Imaging Success</strong></td>
                         <td class="col-sm-10">
-                            <input type="string" id="imaging_success" name="imaging_success" value="{{ .entry.ImagingSuccess }}" />
+                            <select id="imaging_success" name="imaging_success" value="{{ index .imaging_success .entry.ImagingSuccess }}">
+                                {{ range $key, $val := .imaging_success }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
                         </td>
                     </tr>
                     <tr> 
                         <td class="col-sm-2"><strong>Interpretation Success</strong></td>
                         <td class="col-sm-10">
-                            <input type="text" id="interpretation_success" name="interpretation_success" value="{{ .entry.InterpretationSuccess }}" />
+                            <select id="interpretation_success" name="interpretation_success" value="{{ index .interpretation_success .entry.InterpretationSuccess }}">
+                                {{ range $key, $val := .interpretation_success }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
                         </td>
                     </tr>
                     <tr>
@@ -178,6 +206,6 @@
         </div>
    </div>
     <br>
-    <input type="submit"/ class="btn btn-primary"> <a href="/entry/{{ .entry.ID }}/show" class="btn btn-danger">Cancel</a>
+    <input type="submit"/ class="btn btn-primary"> <a href="/entries/{{ .entry.ID }}/show" class="btn btn-danger">Cancel</a>
 </form>
 {{ template "footer.html" .}}

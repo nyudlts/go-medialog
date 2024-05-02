@@ -196,15 +196,19 @@ func NewEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-create.html", gin.H{
-		"isAdmin":               isAdmin,
-		"accession":             accession,
-		"resource":              resource,
-		"repository":            repository,
-		"mediatypes":            utils.GetMediaTypeMap(),
-		"interfaces":            utils.GetInterfaces(),
-		"stock_units":           utils.GetStockUnits(),
-		"optical_content_types": utils.GetOpticalContentTypes(),
-		"hdd_interfaces":        utils.GetHDDInterfaces(),
+		"isAdmin":                isAdmin,
+		"accession":              accession,
+		"resource":               resource,
+		"repository":             repository,
+		"mediatypes":             utils.GetMediaTypeMap(),
+		"interfaces":             utils.GetInterfaces(),
+		"stock_units":            utils.GetStockUnits(),
+		"optical_content_types":  utils.GetOpticalContentTypes(),
+		"hdd_interfaces":         utils.GetHDDInterfaces(),
+		"imaging_success":        utils.GetImageSuccess(),
+		"interpretation_success": utils.GetInterpretSuccess(),
+		"imaging_software":       utils.GetImagingSoftware(),
+		"image_formats":          utils.GetImageFormats(),
 	})
 
 }
@@ -293,16 +297,20 @@ func EditEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-edit.html", gin.H{
-		"isAdmin":               isAdmin,
-		"entry":                 entry,
-		"accession":             entry.Accession,
-		"resource":              resource,
-		"repository":            repository,
-		"mediatypes":            utils.GetMediaTypeMap(),
-		"interfaces":            utils.GetInterfaces(),
-		"stock_units":           utils.GetStockUnits(),
-		"optical_content_types": utils.GetOpticalContentTypes(),
-		"hdd_interfaces":        utils.GetHDDInterfaces(),
+		"isAdmin":                isAdmin,
+		"entry":                  entry,
+		"accession":              entry.Accession,
+		"resource":               resource,
+		"repository":             repository,
+		"mediatypes":             utils.GetMediaTypeMap(),
+		"interfaces":             utils.GetInterfaces(),
+		"stock_units":            utils.GetStockUnits(),
+		"optical_content_types":  utils.GetOpticalContentTypes(),
+		"hdd_interfaces":         utils.GetHDDInterfaces(),
+		"imaging_success":        utils.GetImageSuccess(),
+		"interpretation_success": utils.GetInterpretSuccess(),
+		"imaging_software":       utils.GetImagingSoftware(),
+		"image_formats":          utils.GetImageFormats(),
 	})
 }
 
