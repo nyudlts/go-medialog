@@ -13,6 +13,8 @@ var filename_partner_codes = map[string]string{
 	"us": "nyuarchives",
 }
 
+func GetMediaTypeMap() map[string]string { return mediatypes }
+
 var mediatypes = map[string]string{
 	"mediatype_transfer":        "Network Transfer",
 	"mediatype_floppy_3_5":      "3.5 in. Floppy Disk",
@@ -46,11 +48,22 @@ func GetMediaType(s string) string {
 	return "No Match"
 }
 
+func GetInterfaces() map[string]string { return interfaces }
+
 var interfaces = map[string]string{
 	"interface_tableau_ultrabay": "Tableau Ultrabay",
 	"interface_kryoflux":         "KryoFlux",
 	"interface_tableau_t8r2":     "Tableau T8-R2",
 	"interface_optical_HP":       "HP CD/DVD Drive",
+}
+
+func GetInterface(s string) string {
+	for k, y := range interfaces {
+		if k == s {
+			return y
+		}
+	}
+	return ""
 }
 
 var imaging_software = map[string]string{
@@ -61,6 +74,8 @@ var imaging_software = map[string]string{
 	"imaging_software_isobusterpro_v43":     "IsoBuster Pro (v4.3)",
 	"imaging_software_eac_v13":              "Exact Audio Copy (v1.3)",
 }
+
+func GetHDDInterfaces() map[string]string { return hdd_interfaces }
 
 var hdd_interfaces = map[string]string{
 	"hdd_interface_usb":   "USB",
@@ -111,6 +126,8 @@ var interpret_success = map[string]string{
 	"interpret_succes_no":          "No",
 }
 
+func GetStockUnits() map[string]string { return stock_unit }
+
 var stock_unit = map[string]string{
 	"KB": "Kilobytes",
 	"MB": "Megabytes",
@@ -126,6 +143,8 @@ var accession_state = map[string]string{
 	"accession_ready_for_transfer": "Transferred",
 	"acceession_complete":          "Archivesspace Updated /  Complete",
 }
+
+func GetOpticalContentTypes() map[string]string { return content_type }
 
 var content_type = map[string]string{
 	"content_video": "Video",

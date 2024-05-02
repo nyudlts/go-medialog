@@ -78,6 +78,31 @@ type Entry struct {
 	Structure             string     `json:"structure"`
 }
 
+func (e *Entry) UpdateEntry(updatedEntry Entry) {
+	e.Mediatype = updatedEntry.Mediatype
+	e.DispositionNote = updatedEntry.DispositionNote
+	e.BoxNumber = updatedEntry.BoxNumber
+	e.StockSizeNum = updatedEntry.StockSizeNum
+	e.StockUnit = updatedEntry.StockUnit
+	e.ContentType = updatedEntry.ContentType
+	e.LabelText = updatedEntry.LabelText
+	e.OriginalID = updatedEntry.OriginalID
+	e.Manufacturer = updatedEntry.Manufacturer
+	e.ManufacturerSerial = updatedEntry.ManufacturerSerial
+	e.MediaNote = updatedEntry.MediaNote
+	e.DispositionNote = updatedEntry.DispositionNote
+	e.IsRefreshed = updatedEntry.IsRefreshed
+	e.UpdatedAt = time.Now()
+	e.ImageFilename = updatedEntry.ImageFilename
+	e.Interface = updatedEntry.Interface
+	e.HDDInterface = updatedEntry.HDDInterface
+	e.ImagingSuccess = updatedEntry.ImagingSuccess
+	e.InterpretationSuccess = updatedEntry.InterpretationSuccess
+	e.ImagedBy = updatedEntry.ImagedBy
+	e.ImagingNote = updatedEntry.ImagingNote
+
+}
+
 type User struct {
 	ID                uint      `json:"id" gorm:"primaryKey"`
 	Email             string    `json:"email"`

@@ -196,10 +196,15 @@ func NewEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-create.html", gin.H{
-		"isAdmin":    isAdmin,
-		"accession":  accession,
-		"resource":   resource,
-		"repository": repository,
+		"isAdmin":               isAdmin,
+		"accession":             accession,
+		"resource":              resource,
+		"repository":            repository,
+		"mediatypes":            utils.GetMediaTypeMap(),
+		"interfaces":            utils.GetInterfaces(),
+		"stock_units":           utils.GetStockUnits(),
+		"optical_content_types": utils.GetOpticalContentTypes(),
+		"hdd_interfaces":        utils.GetHDDInterfaces(),
 	})
 
 }
@@ -220,7 +225,7 @@ func CreateEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
+	c.Redirect(301, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
 }
 
 func DeleteEntry(c *gin.Context) {
@@ -288,11 +293,16 @@ func EditEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-edit.html", gin.H{
-		"isAdmin":    isAdmin,
-		"entry":      entry,
-		"accession":  entry.Accession,
-		"resource":   resource,
-		"repository": repository,
+		"isAdmin":               isAdmin,
+		"entry":                 entry,
+		"accession":             entry.Accession,
+		"resource":              resource,
+		"repository":            repository,
+		"mediatypes":            utils.GetMediaTypeMap(),
+		"interfaces":            utils.GetInterfaces(),
+		"stock_units":           utils.GetStockUnits(),
+		"optical_content_types": utils.GetOpticalContentTypes(),
+		"hdd_interfaces":        utils.GetHDDInterfaces(),
 	})
 }
 
@@ -304,6 +314,7 @@ func UpdateEntry(c *gin.Context) {
 	}
 
 	var editedEntry = models.Entry{}
+
 	if err := c.Bind(&editedEntry); err != nil {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
 		return
@@ -315,12 +326,12 @@ func UpdateEntry(c *gin.Context) {
 		return
 	}
 
-	entry.DispositionNote = editedEntry.DispositionNote
+	entry.UpdateEntry(editedEntry)
 
 	if err := database.UpdateEntry(&entry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
+	c.Redirect(301, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
 }

@@ -1,3 +1,5 @@
+
+
 {{ template "header.html" .}}
 <br>
 <nav aria-label="breadcrumb">
@@ -22,7 +24,11 @@
                     <tr>
                         <td class="col-sm-2">Media Type</td>
                         <td class="col-sm-10">
-                            <input type="text" id="mediatype" name="mediatype" value="{{.entry.Mediatype}}" />
+                            <select id="mediatype" name="mediatype" value="{{ index .mediatypes .entry.Mediatype }}">
+                                {{ range $key, $val := .mediatypes }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
                         </td>   
                     </tr>
                     
@@ -41,13 +47,21 @@
                     <tr>
                         <td class="col-sm-2">Stock Unit</td>
                         <td class="col-sm-10">
-                            <input type="text" name="stock_unit" id="stock_unit" value="{{ .entry.StockUnit }}" />
+                            <select id="stock_unit" name="stock_unit" value="{{ index .stock_units .entry.StockUnit }}">
+                                {{ range $key, $val := .stock_units }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end}}
+                            </select>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-sm-2">Optical Content Type</td>
                         <td class="col-sm-10">
-                        <input type="text" id="content_type" name="content_type" value="{{ .entry.ContentType }}" />
+                            <select type="text" id="content_type" name="content_type" value="{{ index .optical_content_types .entry.ContentType }}">
+                                {{ range $key, $val := .optical_content_types }}
+                                <option name="content_type" value="{{ $key }}">{{ $val }}</option>
+                                {{ end}}
+                            </select>
                         </td>
                     </tr>
                     <tr>
@@ -117,13 +131,21 @@
                     <tr>
                         <td class="col-sm-2"><strong>Interface</strong></td>
                         <td class="col-sm-10">
-                            <input type="text" id="interface" name="interface" value="{{ .entry.Interface }}" />
-                        </td>
+                            <select id="interface" name="interface" value="{{ index .interfaces .entry.Interface }}">
+                                {{ range $key, $val := .interfaces }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
+                        </td>  
                     </tr>
                     <tr>
                         <td class="col-sm-2"><strong>Hard Drive Interface</strong></td>
                         <td class="col-sm-10">
-                            <input type="text" id="hdd_interface" name="hdd_interface" value="{{ .entry.HDDInterface }}" />
+                            <select id="hdd_interface" name="hdd_interface" value="{{ index .hdd_interfaces .entry.HDDInterface }}">
+                                {{ range $key, $val := .hdd_interfaces }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
                         </td>
                     </tr>
                     <tr>

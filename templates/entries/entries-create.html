@@ -22,7 +22,11 @@
                     <tr>
                         <td class="col-sm-2">Media Type</td>
                         <td class="col-sm-10">
-                            <input type="text" id="mediatype" name="mediatype"/>
+                            <select id="mediatype" name="mediatype">
+                                {{ range $key, $val := .mediatypes }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
                         </td>   
                     </tr>
                     
@@ -41,13 +45,21 @@
                     <tr>
                         <td class="col-sm-2">Stock Unit</td>
                         <td class="col-sm-10">
-                            <input type="text" name="stock_unit" id="stock_unit"/>
-                        </td>
+                            <select id="stock_unit" name="stock_unit">
+                            {{ range $key, $val := .stock_units }}
+                                <option value="{{ $key }}">{{ $val }}</option>
+                            {{ end}}
+                            </select>
+                            </td>
                     </tr>
                     <tr>
                         <td class="col-sm-2">Optical Content Type</td>
                         <td class="col-sm-10">
-                        <input type="text" id="content_type" name="content_type"/>
+                        <select type="text" id="content_type" name="content_type">
+                            {{ range $key, $val := .optical_content_types }}
+                            <option name="content_type" value="{{ $key }}">{{ $val }}</option>
+                            {{ end}}
+                        </select>
                         </td>
                     </tr>
                     <tr>
@@ -118,13 +130,21 @@
                     <tr>
                         <td class="col-sm-2"><strong>Interface</strong></td>
                         <td class="col-sm-10">
-                            <input type="text" id="interface" name="interface" />
+                            <select id="interface" name="interface">
+                                {{ range $key, $val := .interfaces }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-sm-2"><strong>Hard Drive Interface</strong></td>
                         <td class="col-sm-10">
-                            <input type="text" id="hdd_interface" name="hdd_interface"/>
+                            <select id="hdd_interface" name="hdd_interface">
+                                {{ range $key, $val := .hdd_interfaces }}
+                                    <option value="{{ $key }}">{{ $val }}</option>
+                                {{ end }}
+                            </select>
                         </td>
                     </tr>
                     <tr>
