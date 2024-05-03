@@ -78,13 +78,7 @@ func GetPreviousEntry(c *gin.Context) {
 		return
 	}
 
-	mediaID, err := strconv.Atoi(entry.MediaID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(mediaID-1, entry.CollectionID)
+	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(entry.MediaID-1, entry.CollectionID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -111,13 +105,7 @@ func GetNextEntry(c *gin.Context) {
 		return
 	}
 
-	mediaID, err := strconv.Atoi(entry.MediaID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(mediaID+1, entry.CollectionID)
+	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(entry.MediaID+1, entry.CollectionID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return

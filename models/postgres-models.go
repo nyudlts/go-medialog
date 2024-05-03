@@ -96,7 +96,7 @@ func (u *UserPG) ToGormModel() User {
 type Mlog_EntryPG struct {
 	ID                    uuid.UUID `json:"id"`
 	AccessionNum          string    `json:"accession_num"` //remove
-	MediaID               string    `json:"media_id"`
+	MediaID               int       `json:"media_id"`
 	Mediatype             string    `json:"mediatype"`
 	Manufacturer          string    `json:"manufacturer"`
 	ManufacturerSerial    string    `json:"manufacturer_serial"`

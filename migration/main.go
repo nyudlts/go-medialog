@@ -29,6 +29,10 @@ func main() {
 		panic(err)
 	}
 
+	if err := migrateEntriesToGorm(); err != nil {
+		panic(err)
+	}
+
 	/*
 		if err := migrateReposToGorm(); err != nil {
 			panic(err)
