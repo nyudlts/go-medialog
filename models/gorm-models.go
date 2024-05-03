@@ -46,7 +46,7 @@ type Entry struct {
 	UpdatedAt             time.Time  `json:"updated_at"`
 	CreatedBy             int        `json:"created_by"`
 	UpdatedBy             int        `json:"updated_by"`
-	MediaID               string     `json:"media_id"`
+	MediaID               string     `json:"media_id" form:"media_id"`
 	Mediatype             string     `json:"mediatype" form:"mediatype"`
 	Manufacturer          string     `json:"manufacturer" form:"manufacturer"`
 	ManufacturerSerial    string     `json:"manufacturer_serial" form:"manufacturer_serial"`

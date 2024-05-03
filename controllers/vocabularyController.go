@@ -1,5 +1,7 @@
 package controllers
 
+var is_refreshed = map[bool]string{true: "yes", false: "no"}
+
 var PartnerCodes = map[string]string{
 	"fales":       "Fales Library & Special Collections",
 	"nyuarchives": "NYU Archives",
@@ -16,6 +18,7 @@ var filename_partner_codes = map[string]string{
 func getMediatypes() map[string]string { return mediatypes }
 
 var mediatypes = map[string]string{
+	"":                          "",
 	"mediatype_transfer":        "Network Transfer",
 	"mediatype_floppy_3_5":      "3.5 in. Floppy Disk",
 	"mediatype_floppy_5_25":     "5.25 in. Floppy Disk",
@@ -51,6 +54,7 @@ func GetMediaType(s string) string {
 func getInterfaces() map[string]string { return interfaces }
 
 var interfaces = map[string]string{
+	"":                           "",
 	"interface_tableau_ultrabay": "Tableau Ultrabay",
 	"interface_kryoflux":         "KryoFlux",
 	"interface_tableau_t8r2":     "Tableau T8-R2",
@@ -69,6 +73,7 @@ func getInterface(s string) string {
 func getImagingSoftware() map[string]string { return imaging_software }
 
 var imaging_software = map[string]string{
+	"":                                      "",
 	"imaging_software_kryoflux_imager_v220": "KryoFlux Imager (DTC 2.20)",
 	"imaging_software_kryoflux_imager_v30":  "KryoFlux Imager (DTC 3.0)",
 	"imaging_software_ftk_imager_v3146":     "FTK Imager (v3.1.4.6)",
@@ -80,6 +85,7 @@ var imaging_software = map[string]string{
 func getHDDInterfaces() map[string]string { return hdd_interfaces }
 
 var hdd_interfaces = map[string]string{
+	"":                    "",
 	"hdd_interface_usb":   "USB",
 	"hdd_interface_sata":  "SATA",
 	"hdd_interface_fw400": "FW400",
@@ -91,6 +97,7 @@ var hdd_interfaces = map[string]string{
 func getImageFormats() map[string]string { return image_formats }
 
 var image_formats = map[string]string{
+	"":                     "",
 	"image_format_raw":     "Raw (dd)",
 	"image_format_e01":     "E01",
 	"image_format_ad1":     "AD1",
@@ -101,11 +108,13 @@ var image_formats = map[string]string{
 }
 
 var encoding_schemes = map[string]string{
+	"":                              "",
 	"encoding_scheme_mfm":           "MFM",
 	"encoding_scheme_apple_400_800": "Apple 400/800",
 }
 
 var filesystems = map[string]string{
+	"":                       "",
 	"filesystem_fat12":       "FAT12",
 	"filesystem_fat16":       "FAT16",
 	"filesystem_fat32":       "FAT32",
@@ -122,6 +131,7 @@ var filesystems = map[string]string{
 func getImageSuccess() map[string]string { return image_success }
 
 var image_success = map[string]string{
+	"":                 "",
 	"image_sucess_yes": "Yes",
 	"image_success_no": "No",
 }
@@ -129,6 +139,7 @@ var image_success = map[string]string{
 func getInterpretSuccess() map[string]string { return interpret_success }
 
 var interpret_success = map[string]string{
+	"":                             "",
 	"interpret_success_yes":        "Yes",
 	"interpret_success_yes_errors": "Yes W/Errors",
 	"interpret_succes_no":          "No",
@@ -137,6 +148,7 @@ var interpret_success = map[string]string{
 func getStockUnits() map[string]string { return stock_unit }
 
 var stock_unit = map[string]string{
+	"":   "",
 	"KB": "Kilobytes",
 	"MB": "Megabytes",
 	"GB": "Gigabytes",
@@ -144,6 +156,7 @@ var stock_unit = map[string]string{
 }
 
 var accession_state = map[string]string{
+	"":                             "",
 	"accession_not_started":        "Not Started",
 	"accession_queued":             "Queued",
 	"accession_in_progress":        "In Progress",
@@ -155,6 +168,7 @@ var accession_state = map[string]string{
 func getOpticalContentTypes() map[string]string { return content_type }
 
 var content_type = map[string]string{
+	"":              "",
 	"content_video": "Video",
 	"content_audio": "Audio",
 	"content_data":  "Data",
@@ -162,6 +176,7 @@ var content_type = map[string]string{
 }
 
 var structure = map[string]string{
+	"":                   "",
 	"structure_data":     "Data Disc",
 	"structure_dvdvideo": "DVD-Video",
 	"structure_cdda":     "Compact Disc Digital Audio",

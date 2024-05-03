@@ -195,6 +195,12 @@ func NewEntry(c *gin.Context) {
 		return
 	}
 
+	mediaID, err := database.FindNextMediaCollectionInResource(resource.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	c.HTML(http.StatusOK, "entries-create.html", gin.H{
 		"isAdmin":                isAdmin,
 		"accession":              accession,
@@ -209,6 +215,8 @@ func NewEntry(c *gin.Context) {
 		"interpretation_success": getInterpretSuccess(),
 		"imaging_software":       getImagingSoftware(),
 		"image_formats":          getImageFormats(),
+		"media_id":               mediaID,
+		"is_refreshed":           is_refreshed,
 	})
 
 }
@@ -296,8 +304,6 @@ func EditEntry(c *gin.Context) {
 		return
 	}
 
-	refreshed := map[bool]string{true: "yes", false: "no"}
-
 	c.HTML(http.StatusOK, "entries-edit.html", gin.H{
 		"isAdmin":                isAdmin,
 		"entry":                  entry,
@@ -313,7 +319,7 @@ func EditEntry(c *gin.Context) {
 		"interpretation_success": getInterpretSuccess(),
 		"imaging_software":       getImagingSoftware(),
 		"image_formats":          getImageFormats(),
-		"refreshed":              refreshed,
+		"is_refreshed":           is_refreshed,
 	})
 }
 
@@ -337,7 +343,6 @@ func UpdateEntry(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(editedEntry)
 	entry.UpdateEntry(editedEntry)
 
 	if err := database.UpdateEntry(&entry); err != nil {

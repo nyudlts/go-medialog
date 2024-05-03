@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/nyudlts/bytemath"
@@ -191,4 +192,17 @@ func FindEntryByMediaIDAndCollectionID(mediaID int, collectionID int) (uuid.UUID
 		return uuid.New(), err
 	}
 	return entry.ID, nil
+}
+
+func FindNextMediaCollectionInResource(resourceID uint) (int, error) {
+	var entry models.Entry
+	if err := db.Where("collection_id = ?", resourceID).Order("media_id desc").First(&entry).Error; err != nil {
+		return 0, err
+	}
+	i, err := strconv.Atoi(entry.MediaID)
+	if err != nil {
+		return 0, err
+	}
+	i = i + 1
+	return i, nil
 }
