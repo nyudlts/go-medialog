@@ -216,6 +216,17 @@ func CreateEntry(c *gin.Context) {
 		return
 	}
 
+	b, err := database.IsMediaIDUniqueInResource(createEntry.MediaID, createEntry.Collection.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if b != true {
+		c.JSON(http.StatusBadRequest, fmt.Errorf("%d is not a unique ID in resource %d", createEntry.MediaID, createEntry.CollectionID))
+		return
+	}
+
 	createEntry.ID, _ = uuid.NewUUID()
 	createEntry.CreatedAt = time.Now()
 	createEntry.UpdatedAt = time.Now()

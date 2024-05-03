@@ -33,7 +33,7 @@ func main() {
 	router.Static("/public", "./public")
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 
-	if err := database.ConnectDatabase(); err != nil {
+	if err := database.ConnectDatabase(false); err != nil {
 		os.Exit(1)
 	}
 

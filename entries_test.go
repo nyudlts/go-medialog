@@ -7,7 +7,7 @@ import (
 )
 
 func TestEntries(t *testing.T) {
-	if err := database.ConnectDatabase(); err != nil {
+	if err := database.ConnectDatabase(true); err != nil {
 		t.Error(err)
 	}
 
