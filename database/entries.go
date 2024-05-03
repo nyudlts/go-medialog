@@ -201,3 +201,18 @@ func FindNextMediaCollectionInResource(resourceID uint) (int, error) {
 
 	return entry.MediaID + 1, nil
 }
+
+func IsMediaIDUniqueInResource(mediaID int, resourceID uint) (bool, error) {
+	mediaIDs := []int{}
+	if err := db.Table("entries").Select("media_id").Where("collection_id = ?", resourceID).Find(&mediaIDs).Error; err != nil {
+		return false, err
+	}
+
+	for _, id := range mediaIDs {
+		if id == mediaID {
+			return false, nil
+		}
+	}
+
+	return true, nil
+}
