@@ -47,3 +47,40 @@ func InsertUser(user *models.User) error {
 	}
 	return nil
 }
+
+type EntryUser struct {
+	ID    int
+	Email string
+}
+
+type EntryUsers struct {
+	CreateUser EntryUser
+	UpdateUser EntryUser
+}
+
+func FindEntryUsers(createUserID int, modUserID int) (EntryUsers, error) {
+
+	var createUser EntryUser
+	if createUserID > 0 {
+		var cUser = models.User{}
+		if err := db.Where("id = ?", createUserID).First(&cUser).Error; err != nil {
+			return EntryUsers{}, err
+		}
+		createUser = EntryUser{createUserID, cUser.Email}
+	} else {
+		createUser = EntryUser{0, "admin"}
+	}
+
+	var modUser EntryUser
+	if modUserID > 0 {
+		var mUser = models.User{}
+		if err := db.Where("id = ?", modUserID).First(&mUser).Error; err != nil {
+			return EntryUsers{}, err
+		}
+		modUser = EntryUser{modUserID, mUser.Email}
+	} else {
+		modUser = EntryUser{0, "admin"}
+	}
+
+	return EntryUsers{createUser, modUser}, nil
+}

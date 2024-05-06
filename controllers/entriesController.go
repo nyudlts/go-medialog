@@ -50,6 +50,12 @@ func GetEntry(c *gin.Context) {
 		return
 	}
 
+	entryUsers, err := database.FindEntryUsers(entry.CreatedBy, entry.UpdatedBy)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	c.HTML(http.StatusOK, "entries-show.html", gin.H{
 		"entry":           entry,
 		"accession":       accession,
@@ -57,6 +63,7 @@ func GetEntry(c *gin.Context) {
 		"repository":      repository,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
+		"entryUsers":      entryUsers,
 	})
 }
 
