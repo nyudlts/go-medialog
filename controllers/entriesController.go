@@ -369,3 +369,43 @@ func UpdateEntry(c *gin.Context) {
 
 	c.Redirect(301, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
 }
+
+func CloneEntry(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry, err := database.FindEntry(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	nextID, err := database.FindNextMediaCollectionInResource(uint(entry.CollectionID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	//generate a new uuid
+	entry.ID, err = uuid.NewUUID()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry.MediaID = nextID
+	entry.CreatedAt = time.Now()
+	entry.UpdatedAt = time.Now()
+	entry.LabelText = ""
+
+	if err := database.InsertEntry(entry); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(301, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
+
+}

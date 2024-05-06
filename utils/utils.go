@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -15,7 +14,4 @@ func Add(a int, b int) int { return a + b }
 
 func Subtract(a int, b int) int { return a - b }
 
-func FormatAsDate(t time.Time) string {
-	year, month, day := t.Date()
-	return fmt.Sprintf("%d-%d-%d", year, month, day)
-}
+func FormatAsDate(t time.Time) string { return t.Format(time.UnixDate) }
