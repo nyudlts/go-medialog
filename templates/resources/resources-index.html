@@ -17,9 +17,9 @@
             <tbody class="tbody">
                 {{ range $resource := .resources }}
                 <tr>
-                    <td>{{ $resource.RepositoryID }}</td>
+                    <td>{{ index $.repositoryMap $resource.RepositoryID }}</td>
                     <td>{{ $resource.CollectionCode}}: {{ $resource.Title }}</td>
-                    <td></td>
+                    <td>tbc</td>
                     <td><a href="/resources/{{ $resource.ID }}/show" class="btn btn-primary">view</a></td>
                 </tr>
                 {{ end }}

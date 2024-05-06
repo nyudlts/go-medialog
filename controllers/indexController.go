@@ -17,6 +17,7 @@ func GetIndex(c *gin.Context) {
 		isAuthenticated = true
 	}
 
+	p := 0
 	pagination := utils.Pagination{Limit: 10, Offset: 0, Sort: "updated_at desc"}
 
 	entries, err := database.FindPaginatedEntries(pagination)
@@ -33,11 +34,19 @@ func GetIndex(c *gin.Context) {
 
 	isAdmin := getCookie("is-admin", c)
 
+	repositoryMap, err := database.GetRepositoryMap()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"entries":         entries,
 		"isAuthenticated": isAuthenticated,
 		"isAdmin":         isAdmin,
 		"flash":           session.Flashes("WARNING"),
+		"page":            p,
+		"repositoryMap":   repositoryMap,
 	})
 
 	session.Flashes()

@@ -24,3 +24,15 @@ func FindRepository(id uint) (models.Repository, error) {
 	}
 	return repository, nil
 }
+
+func GetRepositoryMap() (map[int]string, error) {
+	repositories, err := FindRepositories()
+	if err != nil {
+		return map[int]string{}, err
+	}
+	repositoryMap := map[int]string{}
+	for _, repo := range repositories {
+		repositoryMap[int(repo.ID)] = repo.Slug
+	}
+	return repositoryMap, nil
+}

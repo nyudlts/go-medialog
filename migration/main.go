@@ -1,10 +1,14 @@
 package main
 
 import (
+	"crypto/sha512"
+	"encoding/hex"
 	"flag"
 	"fmt"
 
 	"github.com/glebarez/sqlite"
+	"github.com/nyudlts/go-medialog/controllers"
+	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -76,13 +80,13 @@ func migrateDBTables() error {
 func migrateLegacyData() error {
 	fmt.Println("migrating database data")
 
-	fmt.Println("  * creating repositories")
-	if err := populateRepos(); err != nil {
+	fmt.Println("  * migrating users")
+	if err := migrateUsersToGorm(); err != nil {
 		return err
 	}
 
-	fmt.Println("  * migrating entries")
-	if err := migrateEntriesToGorm(); err != nil {
+	fmt.Println("  * creating repositories")
+	if err := populateRepos(); err != nil {
 		return err
 	}
 
@@ -96,8 +100,8 @@ func migrateLegacyData() error {
 		return err
 	}
 
-	fmt.Println("  * migrating users")
-	if err := migrateUsersToGorm(); err != nil {
+	fmt.Println("  * migrating entries")
+	if err := migrateEntriesToGorm(); err != nil {
 		return err
 	}
 
@@ -112,6 +116,8 @@ func migrateUsersToGorm() error {
 		sqdb.Create(&u)
 	}
 
+	createAdminUser()
+
 	return nil
 }
 
@@ -121,9 +127,16 @@ func migrateEntriesToGorm() error {
 	pgdb.Find(&mlog_EntryPGs)
 	for _, entryPG := range mlog_EntryPGs {
 		e := entryPG.ToGormModel()
-		sqdb.Create(&e)
-	}
+		c := models.Collection{}
+		if err := sqdb.Where("id = ?", e.CollectionID).First(&c).Error; err != nil {
+			return err
+		}
+		e.RepositoryID = c.RepositoryID
 
+		if err := sqdb.Create(&e).Error; err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -175,7 +188,7 @@ func populateRepos() error {
 	nyuarchives.Title = "NYU University Archives"
 
 	for _, repo := range []models.Repository{fales, tamwag, nyuarchives} {
-		if err := CreateRepository(repo); err != nil {
+		if err := sqdb.Create(&repo).Error; err != nil {
 			return err
 		}
 	}
@@ -183,9 +196,23 @@ func populateRepos() error {
 	return nil
 }
 
-func CreateRepository(repository models.Repository) error {
-	if err := sqdb.Create(&repository).Error; err != nil {
-		return err
+func createAdminUser() {
+	user := models.User{}
+	user.Email = "admin@nyu.edu"
+	user.IsActive = true
+	user.IsAdmin = true
+	password := "test"
+	user.Salt = controllers.GenerateStringRunes(16)
+	hash := sha512.Sum512([]byte(password + user.Salt))
+	user.EncryptedPassword = hex.EncodeToString(hash[:])
+
+	if err := database.ConnectDatabase(false); err != nil {
+		panic(err)
 	}
-	return nil
+
+	if err := database.InsertUser(&user); err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Admin User Created")
 }

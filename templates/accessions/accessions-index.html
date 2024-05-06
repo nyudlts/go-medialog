@@ -21,10 +21,10 @@
             <tbody>
             {{ range $accession := .accessions }}
             <tr>
-                <td>{{ $accession.Collection.RepositoryID }}</td>
-                <td>{{ $accession.Collection.CollectionCode }}: {{ $accession.Collection.Title }}</td>
+                <td>{{ index $.repositoryMap $accession.Collection.RepositoryID }}</td>
+                <td>{{ $accession.Collection.CollectionCode }}<br/>{{ $accession.Collection.Title }}</td>
                 <td>{{ $accession.AccessionNum }}</td>
-                <td></td>
+                <td>tbc</td>
                 <td>
                     <a href="/accessions/{{ $accession.ID }}/show" class="btn btn-primary">View</a>
                     <a href="/accessions/{{ $accession.ID }}/edit" class="btn btn-secondary">Edit</a>

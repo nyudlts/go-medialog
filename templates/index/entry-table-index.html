@@ -15,11 +15,11 @@
         <tbody>
         {{ range $entry := .entries }}
         <tr>
-            <td>{{ $entry.RepositoryID }}</td>
-            <td>{{ $entry.CollectionID }}</td>
-            <td>{{ $entry.AccessionID }}</td>
+            <td>{{ $entry.Repository.Slug }}</td>
+            <td>{{ $entry.Collection.CollectionCode }}<br>{{ $entry.Collection.Title}}</td>
+            <td>{{ $entry.Accession.AccessionNum }}</td>
             <td>{{ $entry.MediaID }}</td>
-            <td>{{ $entry.Mediatype }}</td>
+            <td>{{ getMediatype $entry.Mediatype }}</td>
             <td>{{ $entry.IsRefreshed }}</td>
             <td>{{ formatAsDate $entry.UpdatedAt }}</td>
             <td>

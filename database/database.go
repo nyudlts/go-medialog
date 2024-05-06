@@ -12,9 +12,9 @@ var TestDatabaseLoc = "medialog-test.db"
 func ConnectDatabase(test bool) error {
 	var dbLoc string
 	if test {
-		dbLoc = DatabaseLoc
-	} else {
 		dbLoc = TestDatabaseLoc
+	} else {
+		dbLoc = DatabaseLoc
 	}
 	var err error
 	db, err = gorm.Open(sqlite.Open(dbLoc), &gorm.Config{})

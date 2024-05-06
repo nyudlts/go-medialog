@@ -22,10 +22,22 @@ func GetAccessions(c *gin.Context) {
 		return
 	}
 
+	repositoryMap, err := database.GetRepositoryMap()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	repositoryMap2 := map[uint]string{}
+	for k, v := range repositoryMap {
+		repositoryMap2[uint(k)] = v
+	}
+
 	c.HTML(200, "accessions-index.html", gin.H{
 		"accessions":      accessions,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
+		"repositoryMap":   repositoryMap2,
 	})
 }
 

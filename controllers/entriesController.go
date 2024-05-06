@@ -135,9 +135,19 @@ func GetEntries(c *gin.Context) {
 
 	}
 
+	if p < 0 {
+		p = 0
+	}
+
 	pagination := utils.Pagination{Limit: 10, Offset: (p * 10), Sort: "updated_at desc"}
 
 	entries, err := database.FindPaginatedEntries(pagination)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -148,6 +158,7 @@ func GetEntries(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"page":            p,
+		"repositoryMap":   repositoryMap,
 	})
 }
 

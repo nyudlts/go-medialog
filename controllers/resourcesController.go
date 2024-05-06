@@ -92,9 +92,16 @@ func GetResources(c *gin.Context) {
 		return
 	}
 
+	repositoryMap, err := database.GetRepositoryMap()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	c.HTML(http.StatusOK, "resources-index.html", gin.H{
 		"resources":       resources,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
+		"repositoryMap":   repositoryMap,
 	})
 }

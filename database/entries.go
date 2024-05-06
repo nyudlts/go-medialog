@@ -7,6 +7,7 @@ import (
 	"github.com/nyudlts/bytemath"
 	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
+	"gorm.io/gorm/clause"
 )
 
 func InsertEntry(entry models.Entry) error {
@@ -72,7 +73,7 @@ func FindEntriesSorted(numRecords int) ([]models.Entry, error) {
 
 func FindPaginatedEntries(pagination utils.Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+	if err := db.Preload(clause.Associations).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil
