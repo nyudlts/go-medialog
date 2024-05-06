@@ -390,12 +390,13 @@ func CloneEntry(c *gin.Context) {
 	}
 
 	//generate a new uuid
-	entry.ID, err = uuid.NewUUID()
+	newUUID, err := uuid.NewUUID()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
+	entry.ID = newUUID
 	entry.MediaID = nextID
 	entry.CreatedAt = time.Now()
 	entry.UpdatedAt = time.Now()
@@ -406,6 +407,6 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(301, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
+	c.Redirect(301, fmt.Sprintf("/entries/%s/show", newUUID.String()))
 
 }

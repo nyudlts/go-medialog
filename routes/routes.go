@@ -13,9 +13,11 @@ func LoadRoutes(router *gin.Engine) {
 	router.GET("", func(c *gin.Context) { controllers.GetIndex(c) })
 	router.GET("/test", func(c *gin.Context) { Test(c) })
 	//Accessions Group
-	accessionRoutes := router.Group("/accessions")
-	accessionRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
-	accessionRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetAccession(c) })
+	accessionsRoutes := router.Group("/accessions")
+	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
+	accessionsRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetAccession(c) })
+	accessionsRoutes.GET("/:id/slew", func(c *gin.Context) { controllers.SlewAccession(c) })
+	accessionsRoutes.POST("slew", func(c *gin.Context) { controllers.CreateAccessionSlew(c) })
 
 	//Repository Group
 	repositoryRoutes := router.Group("/repositories")

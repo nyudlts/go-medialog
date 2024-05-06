@@ -39,13 +39,14 @@
     </div>
     <div class="card-body">
         <div class="row justify-content-end">
-            <a href="/accessions/{{ .accession.ID}}/show?page={{ subtract .page 1}}" class="btn btn-primary btn-sm">prev 10</a>
+            <a href="/accessions/{{ .accession.ID}}/show?page={{ subtract .page 1}}" class="btn-primary btn-sm">prev 10</a>
             <div class="pl-2">
-                <a href="/accessions/{{ .accession.ID}}/show?page={{ add .page 1 }}" class="btn btn-primary btn-sm">next 10</a>
+                <a href="/accessions/{{ .accession.ID}}/show?page={{ add .page 1 }}" class="btn-primary btn-sm">next 10</a>
             </div>
         </div>
         {{ template "entry-table-accession.html" . }}
         <a href="/entries/new?accession_id={{ .accession.ID }}" class="btn btn-primary">add entry</a>
+        <a href="/accessions/{{ .accession.ID }}/slew" class="btn btn-secondary">slew entries</a>
     </div>
 </div>
 {{ template "footer.html" .}}

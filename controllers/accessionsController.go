@@ -1,11 +1,15 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
 )
 
@@ -109,4 +113,112 @@ func GetAccession(c *gin.Context) {
 		"totals":          summary.GetTotals(),
 		"users":           users,
 	})
+}
+
+type Slew struct {
+	AccessionID    uint    `form:"accession_id"`
+	NumObjects     int     `form:"num_objects"`
+	Mediatype      string  `form:"mediatype"`
+	MediaStockSize float32 `form:"media_stock_size"`
+	MediaStockUnit string  `form:"media_stock_unit"`
+	BoxNum         int     `form:"box_num"`
+}
+
+func SlewAccession(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+	isAdmin := getCookie("is-admin", c)
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession, err := database.FindAccession(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	repository, err := database.FindRepository(uint(accession.Collection.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	pagination := utils.Pagination{Limit: 10, Offset: 0, Sort: "media_id"}
+
+	entries, err := database.FindEntriesByAccessionID(accession.ID, pagination)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.HTML(200, "accessions-slew.html", gin.H{
+		"is_admin":    isAdmin,
+		"accession":   accession,
+		"repository":  repository,
+		"mediatypes":  getMediatypes(),
+		"stock_units": getStockUnits(),
+		"pagination":  pagination,
+		"page":        0,
+		"entries":     entries,
+	})
+}
+
+func CreateAccessionSlew(c *gin.Context) {
+	if err := checkSession(c); err != nil {
+		c.Redirect(302, "/")
+		return
+	}
+
+	var slew = Slew{}
+
+	if err := c.Bind(&slew); err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
+		return
+	}
+
+	accession, err := database.FindAccession(int(slew.AccessionID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
+		return
+	}
+
+	if err := createSlewEntry(slew, accession); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(301, fmt.Sprintf("/accessions/%d/show", accession.ID))
+}
+
+func createSlewEntry(slew Slew, accession models.Accession) error {
+
+	for i := 0; i < slew.NumObjects; i++ {
+		entry := models.Entry{}
+		id, _ := uuid.NewUUID()
+		entry.ID = id
+		mediaID, err := database.FindNextMediaCollectionInResource(uint(accession.CollectionID))
+		if err != nil {
+			return err
+		}
+		entry.MediaID = mediaID
+		entry.AccessionID = int(accession.ID)
+		entry.RepositoryID = int(accession.Collection.RepositoryID)
+		entry.CollectionID = int(accession.Collection.ID)
+		entry.Mediatype = slew.Mediatype
+		entry.StockSizeNum = slew.MediaStockSize
+		entry.StockUnit = slew.MediaStockUnit
+		entry.CreatedAt = time.Now()
+		entry.UpdatedAt = time.Now()
+
+		if err := database.InsertEntry(entry); err != nil {
+			return err
+		}
+	}
+	return nil
 }
