@@ -14,10 +14,11 @@ import (
 )
 
 func GetEntry(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	id, err := uuid.Parse(c.Param("id"))
@@ -68,8 +69,8 @@ func GetEntry(c *gin.Context) {
 }
 
 func GetPreviousEntry(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
 
@@ -95,8 +96,8 @@ func GetPreviousEntry(c *gin.Context) {
 }
 
 func GetNextEntry(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
 
@@ -122,10 +123,11 @@ func GetNextEntry(c *gin.Context) {
 }
 
 func GetEntries(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	//pagination
@@ -170,10 +172,11 @@ func GetEntries(c *gin.Context) {
 }
 
 func NewEntry(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	aID := c.Request.URL.Query().Get("accession_id")
@@ -266,8 +269,8 @@ func CreateEntry(c *gin.Context) {
 }
 
 func DeleteEntry(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
 
@@ -293,10 +296,11 @@ func DeleteEntry(c *gin.Context) {
 }
 
 func EditEntry(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	id, err := uuid.Parse(c.Param("id"))

@@ -11,10 +11,11 @@ import (
 )
 
 func NewRepository(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	c.HTML(http.StatusOK, "repositories-new.html", gin.H{
@@ -38,10 +39,11 @@ func CreateRepository(c *gin.Context) {
 }
 
 func GetRepositories(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	repositories, err := database.FindRepositories()
@@ -59,10 +61,11 @@ func GetRepositories(c *gin.Context) {
 }
 
 func GetRepository(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	id, err := strconv.Atoi(c.Param("id"))

@@ -15,10 +15,11 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	users, err := database.FindUsers()
@@ -35,10 +36,11 @@ func GetUsers(c *gin.Context) {
 }
 
 func NewUser(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	c.HTML(http.StatusOK, "users-new.html", gin.H{
@@ -120,10 +122,11 @@ func AuthenticateUser(c *gin.Context) {
 }
 
 func ResetUserPassword(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	id, err := strconv.Atoi(c.Param("id"))

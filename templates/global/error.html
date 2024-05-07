@@ -1,3 +1,6 @@
+<!doctype html>
+<html>
+
 <head>
     <!--Use the title variable to set the title of the page-->
     <title>Medialog</title>
@@ -22,6 +25,9 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav">
             <li class="nav-item">
+                <a class="nav-link" href="/users/login">Login</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="/sessions/dump">Sessions</a>
             </li>
         </ul>
@@ -29,35 +35,28 @@
 </nav>
 <body class="container">
 <br>
-<card>
-    <div class="card card-default">
-        <div class="card-header">
-            <h2 class="card-title">Login</h2>
-        </div>
-        <div class="card-body">
-            <form action="/users/authenticate" method="post">
-                <div class="form-row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="email">email</label>
-                            <input type="text" name="email" id="email">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="password_1">password</label>
-                            <input type="password" name="password_1" id="password_1">
-                        </div>
-                    </div>
+
+<br>
+<div class="card card-default">
+    <div class="card-body">
+        <div class="d-flex justify-content-left">
+            <div class="row">
+                <div class="col">
+                    <img src="/public/hamburger2.png" width="388" height="518" /><br>
+                    <div>"4-Byte Burger" <small class="text-muted">Jack Hager (1985)</small></div>
+                    <div><small class="text-muted">Recreated by Stuart Brown (2023)</small></div>
                 </div>
-                <div class="form-row">
-                    <div class="col">
-                        <input type="submit" class="btn btn-primary">
-                    </div>
-                </div>
-            </form>
+            <div class="col">
+                <h5 class="card-title">Error</h5>
+                <code>
+                    {{range .flash }}
+                        {{.}}
+                    {{end}}
+                    
+                </code>
+            </div>
         </div>
     </div>
-</card>
+</div>
 
-{{ template "footer.html" . }}
+{{ template "footer.html" .}}

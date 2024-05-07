@@ -14,10 +14,12 @@ import (
 )
 
 func GetAccessions(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	accessions, err := database.FindAccessions()
@@ -46,10 +48,11 @@ func GetAccessions(c *gin.Context) {
 }
 
 func GetAccession(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -125,10 +128,11 @@ type Slew struct {
 }
 
 func SlewAccession(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -170,8 +174,8 @@ func SlewAccession(c *gin.Context) {
 }
 
 func CreateAccessionSlew(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
 

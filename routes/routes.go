@@ -3,11 +3,21 @@ package medialog
 import (
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/controllers"
 )
 
 func LoadRoutes(router *gin.Engine) {
+	// defaults
+	router.NoRoute(func(c *gin.Context) { c.JSON(404, "NOT FOUND") })
+	router.NoMethod(func(c *gin.Context) { c.JSON(405, "NO METHOD") })
+	router.GET("/401", func(c *gin.Context) {
+		session := sessions.Default(c)
+		session.AddFlash("Please authenticate to access this service", "WARNING")
+		c.HTML(401, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+		session.Save()
+	})
 
 	//Main Index
 	router.GET("", func(c *gin.Context) { controllers.GetIndex(c) })

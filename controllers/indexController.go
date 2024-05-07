@@ -3,18 +3,16 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/utils"
 )
 
 func GetIndex(c *gin.Context) {
-	var isAuthenticated bool
-	if err := checkSession(c); err != nil {
-		isAuthenticated = false
-	} else {
-		isAuthenticated = true
+
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
+		return
 	}
 
 	p := 0
@@ -26,12 +24,6 @@ func GetIndex(c *gin.Context) {
 		return
 	}
 
-	session := sessions.Default(c)
-	if !isAuthenticated {
-		session.AddFlash("Please authenticate to access this service", "WARNING")
-		session.Save()
-	}
-
 	isAdmin := getCookie("is-admin", c)
 
 	repositoryMap, err := database.GetRepositoryMap()
@@ -41,14 +33,9 @@ func GetIndex(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"entries":         entries,
-		"isAuthenticated": isAuthenticated,
-		"isAdmin":         isAdmin,
-		"flash":           session.Flashes("WARNING"),
-		"page":            p,
-		"repositoryMap":   repositoryMap,
+		"entries":       entries,
+		"isAdmin":       isAdmin,
+		"page":          p,
+		"repositoryMap": repositoryMap,
 	})
-
-	session.Flashes()
-	session.Save()
 }

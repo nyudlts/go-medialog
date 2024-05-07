@@ -10,10 +10,11 @@ import (
 )
 
 func GetResource(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -80,10 +81,11 @@ func GetResource(c *gin.Context) {
 }
 
 func GetResources(c *gin.Context) {
-	if err := checkSession(c); err != nil {
-		c.Redirect(302, "/")
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/401")
 		return
 	}
+
 	isAdmin := getCookie("is-admin", c)
 
 	resources, err := database.FindResources()

@@ -11,13 +11,13 @@ import (
 var userkey = "user"
 var isAdmin = "admin"
 
-func checkSession(c *gin.Context) error {
+func isLoggedIn(c *gin.Context) bool {
 	session := sessions.Default(c)
 	sessionKey := session.Get(userkey)
 	if sessionKey == nil {
-		return fmt.Errorf("no session key found")
+		return false
 	}
-	return nil
+	return true
 }
 
 func getUserkey(c *gin.Context) (int, error) {

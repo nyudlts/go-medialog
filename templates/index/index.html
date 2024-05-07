@@ -1,6 +1,5 @@
 {{ template "header.html" .}}
 <br>
-{{ if .isAuthenticated }}
 <div class="card card-default">
     <div class="card-header">
         <h5 class="card-title">Recent Entries</h5>
@@ -14,20 +13,4 @@
         {{ template "entry-table-index.html" . }}
     </div>
 </div>
-{{ else}}
-<div class="card card-default">
-    <div class="card-body">
-        <div class="d-flex justify-content-left">
-            <div class="row">
-                <div class="col">
-                    <img src="/public/hamburger2.png" width="388" height="518" /><br>
-                    <div>"4-Byte Burger" <small class="text-muted">Jack Hager (1985)</small></div>
-                    <div><small class="text-muted">Recreated by Stuart Brown (2023)</small></div>
-                </div>
-            <div class="col"><code>{{range .flash }}{{.}}{{end}}</code></div>
-        </div>
-        </div>
-        </div>
-        </div>
-{{ end }}
 {{ template "footer.html" .}}
