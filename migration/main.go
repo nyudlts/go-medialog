@@ -214,5 +214,5 @@ func createAdminUser() {
 		panic(err)
 	}
 
-	fmt.Println("Admin User Created")
+	fmt.Println("    * Admin User Created")
 }

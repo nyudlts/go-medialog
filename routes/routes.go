@@ -12,6 +12,7 @@ func LoadRoutes(router *gin.Engine) {
 	//Main Index
 	router.GET("", func(c *gin.Context) { controllers.GetIndex(c) })
 	router.GET("/test", func(c *gin.Context) { Test(c) })
+
 	//Accessions Group
 	accessionsRoutes := router.Group("/accessions")
 	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
@@ -47,16 +48,17 @@ func LoadRoutes(router *gin.Engine) {
 	//Users Group
 	userRoutes := router.Group("/users")
 	userRoutes.GET("", func(c *gin.Context) { controllers.GetUsers(c) })
-	userRoutes.GET("/new", func(c *gin.Context) { controllers.NewUser(c) })
-	userRoutes.POST("/create", func(c *gin.Context) { controllers.CreateUser(c) })
-	userRoutes.GET("/login", func(c *gin.Context) { controllers.LoginUser(c) })
-	userRoutes.POST("/authenticate", func(c *gin.Context) { controllers.AuthenticateUser(c) })
-	userRoutes.GET("/:id/reset_password", func(c *gin.Context) { controllers.ResetUserPassword(c) })
-	userRoutes.POST("/:id/reset_password", func(c *gin.Context) { controllers.ResetPassword(c) })
-	userRoutes.GET("/:id/deactivate", func(c *gin.Context) { controllers.DeactivateUser(c) })
-	userRoutes.GET("/:id/reactivate", func(c *gin.Context) { controllers.ReactivateUser(c) })
-	userRoutes.GET("/:id/make_admin", func(c *gin.Context) { controllers.MakeUserAdmin(c) })
-	userRoutes.GET("/:id/remove_admin", func(c *gin.Context) { controllers.RemoveUserAdmin(c) })
+	userRoutes.GET("new", func(c *gin.Context) { controllers.NewUser(c) })
+	userRoutes.POST("create", func(c *gin.Context) { controllers.CreateUser(c) })
+	userRoutes.GET("login", func(c *gin.Context) { controllers.LoginUser(c) })
+	userRoutes.GET("logout", func(c *gin.Context) { controllers.LogoutUser(c) })
+	userRoutes.POST("authenticate", func(c *gin.Context) { controllers.AuthenticateUser(c) })
+	userRoutes.GET(":id/reset_password", func(c *gin.Context) { controllers.ResetUserPassword(c) })
+	userRoutes.POST(":id/reset_password", func(c *gin.Context) { controllers.ResetPassword(c) })
+	userRoutes.GET(":id/deactivate", func(c *gin.Context) { controllers.DeactivateUser(c) })
+	userRoutes.GET(":id/reactivate", func(c *gin.Context) { controllers.ReactivateUser(c) })
+	userRoutes.GET(":id/make_admin", func(c *gin.Context) { controllers.MakeUserAdmin(c) })
+	userRoutes.GET(":id/remove_admin", func(c *gin.Context) { controllers.RemoveUserAdmin(c) })
 
 	//Report Group
 	reportRoutes := router.Group("/reports")
@@ -70,7 +72,6 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Session Group
 	sessionRoutes := router.Group("/sessions")
-	sessionRoutes.GET("/logout", func(c *gin.Context) { controllers.LogoutUser(c) })
 	sessionRoutes.GET("/dump", func(c *gin.Context) { controllers.DumpSession(c) })
 }
 

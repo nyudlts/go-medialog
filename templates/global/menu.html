@@ -31,20 +31,15 @@
             {{ end }}
             {{ if .isAuthenticated }}
             <li class="nav-item">
-                <a class="nav-link" href="/sessions/logout">Logout</a>
+                <a class="nav-link" href="/users/logout">Logout</a>
             </li>
             {{ else }}
             <li class="nav-item">
                 <a class="nav-link" href="/users/login">Login</a>
             </li>
             {{ end }}
-            <li class="nav-item mr-auto">
-                <div>
-                    <form method="post" action="/search">
-                        <input type="text" id="query" name="query">
-                        <input type="submit" class="btn btn-primary" value="search">
-                    </form>
-                </div>
+            <li class="nav-item">
+                <a class="nav-link" href="/sessions/dump">Sessions</a>
             </li>
         </ul>
     </div>

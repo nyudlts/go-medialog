@@ -2,21 +2,31 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
+var userkey = "user"
+var isAdmin = "admin"
+
 func checkSession(c *gin.Context) error {
 	session := sessions.Default(c)
-	sessionKey := session.Get("session-key")
+	sessionKey := session.Get(userkey)
 	if sessionKey == nil {
 		return fmt.Errorf("no session key found")
 	}
-
 	return nil
+}
+
+func getUserkey(c *gin.Context) (int, error) {
+	session := sessions.Default(c)
+	userKey := session.Get(userkey)
+	if userKey == nil {
+		return 0, fmt.Errorf("no user key found")
+	}
+	return userKey.(int), nil
 }
 
 func getCookie(key string, c *gin.Context) interface{} {
@@ -30,28 +40,24 @@ func setCookie(name string, value interface{}, c *gin.Context) {
 	session.Save()
 }
 
-func newSession(c *gin.Context) error {
+func login(userid int, c *gin.Context) error {
 	session := sessions.Default(c)
-	log.Println(session)
-	sessionKey := GenerateStringRunes(32)
-	session.Set("session-key", sessionKey)
-	//session.Options(sessions.Options{MaxAge: 3600 * 4})
-	session.Save()
+	session.Set(userkey, userid)
+	if err := session.Save(); err != nil {
+		return err
+	}
 	return nil
-}
-
-func LogoutUser(c *gin.Context) {
-	fmt.Println("Hello")
-	session := sessions.Default(c)
-	session.Delete("session-key")
-	session.Clear()
-	session.Options(sessions.Options{MaxAge: -1})
-	session.Save()
-	c.Redirect(http.StatusPermanentRedirect, "/sessions/dump")
 }
 
 func DumpSession(c *gin.Context) {
 	session := sessions.Default(c)
-	key := session.Get("session-key")
-	c.JSON(200, fmt.Sprintf("%v\n%v", session, key))
+	userCookie := session.Get(userkey)
+	if userCookie == nil {
+		c.JSON(http.StatusOK, gin.H{"info": fmt.Sprintf("UserID: nil")})
+	} else {
+		userID := userCookie.(int)
+		c.JSON(http.StatusOK, gin.H{"info": fmt.Sprintf("UserID: %d", userID)})
+
+	}
+
 }

@@ -245,16 +245,24 @@ func CreateEntry(c *gin.Context) {
 		return
 	}
 
+	userID, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	createEntry.ID, _ = uuid.NewUUID()
 	createEntry.CreatedAt = time.Now()
+	createEntry.CreatedBy = userID
 	createEntry.UpdatedAt = time.Now()
+	createEntry.UpdatedBy = userID
 
 	if err := database.InsertEntry(createEntry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.Redirect(301, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
+	c.Redirect(302, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
 }
 
 func DeleteEntry(c *gin.Context) {
@@ -360,6 +368,13 @@ func UpdateEntry(c *gin.Context) {
 		return
 	}
 
+	userID, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+
+	entry.UpdatedBy = userID
+	entry.UpdatedAt = time.Now()
 	entry.UpdateEntry(editedEntry)
 
 	if err := database.UpdateEntry(&entry); err != nil {
@@ -367,7 +382,7 @@ func UpdateEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(301, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
+	c.Redirect(302, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
 }
 
 func CloneEntry(c *gin.Context) {
