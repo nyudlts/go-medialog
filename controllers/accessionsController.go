@@ -193,7 +193,7 @@ func CreateAccessionSlew(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(301, fmt.Sprintf("/accessions/%d/show", accession.ID))
+	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accession.ID))
 }
 
 func createSlewEntry(slew Slew, accession models.Accession) error {

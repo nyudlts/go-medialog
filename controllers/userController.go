@@ -78,7 +78,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusMovedPermanently, "/users")
+	c.Redirect(302, "/users")
 }
 
 func AuthenticateUser(c *gin.Context) {
@@ -116,7 +116,7 @@ func AuthenticateUser(c *gin.Context) {
 		setCookie("is-admin", false, c)
 	}
 
-	c.Redirect(http.StatusMovedPermanently, "/")
+	c.Redirect(302, "/")
 }
 
 func ResetUserPassword(c *gin.Context) {

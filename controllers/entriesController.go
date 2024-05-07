@@ -422,6 +422,6 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(301, fmt.Sprintf("/entries/%s/show", newUUID.String()))
+	c.Redirect(302, fmt.Sprintf("/entries/%s/show", newUUID.String()))
 
 }
