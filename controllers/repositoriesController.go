@@ -12,7 +12,7 @@ import (
 
 func NewRepository(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -40,7 +40,7 @@ func CreateRepository(c *gin.Context) {
 
 func GetRepositories(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -62,7 +62,7 @@ func GetRepositories(c *gin.Context) {
 
 func GetRepository(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 

@@ -16,7 +16,7 @@ import (
 
 func GetUsers(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -37,7 +37,7 @@ func GetUsers(c *gin.Context) {
 
 func NewUser(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -123,7 +123,7 @@ func AuthenticateUser(c *gin.Context) {
 
 func ResetUserPassword(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 

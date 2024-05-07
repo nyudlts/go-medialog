@@ -16,7 +16,7 @@ import (
 func GetAccessions(c *gin.Context) {
 
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -49,7 +49,7 @@ func GetAccessions(c *gin.Context) {
 
 func GetAccession(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -129,7 +129,7 @@ type Slew struct {
 
 func SlewAccession(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -175,7 +175,7 @@ func SlewAccession(c *gin.Context) {
 
 func CreateAccessionSlew(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 

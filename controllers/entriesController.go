@@ -15,7 +15,7 @@ import (
 
 func GetEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -70,7 +70,7 @@ func GetEntry(c *gin.Context) {
 
 func GetPreviousEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -97,7 +97,7 @@ func GetPreviousEntry(c *gin.Context) {
 
 func GetNextEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -124,7 +124,7 @@ func GetNextEntry(c *gin.Context) {
 
 func GetEntries(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -173,7 +173,7 @@ func GetEntries(c *gin.Context) {
 
 func NewEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -270,7 +270,7 @@ func CreateEntry(c *gin.Context) {
 
 func DeleteEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -297,7 +297,7 @@ func DeleteEntry(c *gin.Context) {
 
 func EditEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 

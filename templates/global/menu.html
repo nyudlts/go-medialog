@@ -29,15 +29,9 @@
                 <a class="nav-link" href="/users">Users</a>
             </li>
             {{ end }}
-            {{ if .isAuthenticated }}
             <li class="nav-item">
                 <a class="nav-link" href="/users/logout">Logout</a>
             </li>
-            {{ else }}
-            <li class="nav-item">
-                <a class="nav-link" href="/users/login">Login</a>
-            </li>
-            {{ end }}
             <li class="nav-item">
                 <a class="nav-link" href="/sessions/dump">Sessions</a>
             </li>

@@ -12,7 +12,7 @@ func LoadRoutes(router *gin.Engine) {
 	// defaults
 	router.NoRoute(func(c *gin.Context) { c.JSON(404, "NOT FOUND") })
 	router.NoMethod(func(c *gin.Context) { c.JSON(405, "NO METHOD") })
-	router.GET("/401", func(c *gin.Context) {
+	router.GET("/error", func(c *gin.Context) {
 		session := sessions.Default(c)
 		session.AddFlash("Please authenticate to access this service", "WARNING")
 		c.HTML(401, "error.html", gin.H{"flash": session.Flashes("WARNING")})

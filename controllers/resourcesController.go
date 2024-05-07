@@ -11,7 +11,7 @@ import (
 
 func GetResource(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
@@ -82,7 +82,7 @@ func GetResource(c *gin.Context) {
 
 func GetResources(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/401")
+		c.Redirect(302, "/error")
 		return
 	}
 
