@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"flag"
 	"os"
 	"text/template"
 
@@ -14,9 +14,20 @@ import (
 	utils "github.com/nyudlts/go-medialog/utils"
 )
 
-var router *gin.Engine
+var (
+	router *gin.Engine
+	test   bool
+)
+
+func init() {
+	flag.BoolVar(&test, "test", false, "run application against test db")
+}
 
 func main() {
+	//parse cli flags
+	flag.Parse()
+
+	//initialize the router
 	router = gin.Default()
 
 	//add global funcs
@@ -33,21 +44,25 @@ func main() {
 	router.Static("/public", "./public")
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 
-	if err := database.ConnectDatabase(false); err != nil {
-		os.Exit(1)
+	//connect the database
+	if err := database.ConnectDatabase(test); err != nil {
+		os.Exit(2)
 	}
 
+	//configure session parametes
 	store := gormsessions.NewStore(database.GetDB(), true, []byte("secret"))
 	options := sessions.Options{}
 	options.HttpOnly = true
 	options.Domain = "127.0.0.1"
-	log.Println(options)
-
+	options.MaxAge = 3600
 	router.Use(sessions.Sessions("mysession", store))
+
+	//load applicatin routes
 	routes.LoadRoutes(router)
 
+	//start the application
 	if err := router.Run(); err != nil {
-		panic(err)
+		os.Exit(1)
 	}
 
 }

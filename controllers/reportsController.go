@@ -2,42 +2,22 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
 )
 
+var partnerCodes = map[int]string{0: "", 2: "tamwag", 3: "fales", 6: "nyu archives"}
+
 func ReportsIndex(c *gin.Context) {
+
 	c.HTML(http.StatusOK, "reports-index.html", gin.H{
-		"months": months,
-		"days":   days,
-		"years":  years,
-	})
-}
-
-func ReportYear(c *gin.Context) {
-	q := c.Request.URL.Query()
-	year, err := strconv.Atoi(q.Get("selected-year"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	summary, err := database.GetSummaryByYear(year)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	c.HTML(http.StatusOK, "reports-year.html", gin.H{
-		"summary": summary,
-		"totals":  summary.GetTotals(),
-		"year":    year,
-		"years":   years,
-		"months":  months,
-		"days":    days,
+		"months":        months,
+		"days":          days,
+		"years":         years,
+		"partner_codes": partnerCodes,
 	})
 }
 
@@ -48,6 +28,8 @@ func ReportRange(c *gin.Context) {
 		return
 	}
 
+	log.Println("REPO", dateRange.RepositoryID)
+
 	summary, err := database.GetSummaryByDateRange(dateRange)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -55,12 +37,14 @@ func ReportRange(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "reports-range.html", gin.H{
-		"summary":   summary,
-		"totals":    summary.GetTotals(),
-		"dateRange": fmt.Sprintf("%v", dateRange),
-		"years":     years,
-		"months":    months,
-		"days":      days,
+		"summary":       summary,
+		"totals":        summary.GetTotals(),
+		"dateRange":     fmt.Sprintf("%v", dateRange),
+		"years":         years,
+		"months":        months,
+		"days":          days,
+		"repository":    partnerCodes[dateRange.RepositoryID],
+		"partner_codes": partnerCodes,
 	})
 
 }

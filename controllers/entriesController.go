@@ -415,10 +415,18 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
+	userID, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	entry.ID = newUUID
 	entry.MediaID = nextID
 	entry.CreatedAt = time.Now()
+	entry.CreatedBy = userID
 	entry.UpdatedAt = time.Now()
+	entry.UpdatedBy = userID
 	entry.LabelText = ""
 
 	if err := database.InsertEntry(entry); err != nil {
@@ -427,5 +435,27 @@ func CloneEntry(c *gin.Context) {
 	}
 
 	c.Redirect(302, fmt.Sprintf("/entries/%s/show", newUUID.String()))
+
+}
+
+type FindEntryInResource struct {
+	MediaID    int `form:"media_id" json:"media_id"`
+	ResourceID int `form:"resource_id" json:"resource_id"`
+}
+
+func FindEntry(c *gin.Context) {
+	findEntry := FindEntryInResource{}
+	if err := c.Bind(&findEntry); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	id, err := database.FindEntryInResource(findEntry.ResourceID, findEntry.MediaID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(302, fmt.Sprintf("/entries/%s/show", id))
 
 }

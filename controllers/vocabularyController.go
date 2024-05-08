@@ -3,6 +3,7 @@ package controllers
 var is_refreshed = map[bool]string{true: "yes", false: "no"}
 
 var PartnerCodes = map[string]string{
+	"":            "",
 	"fales":       "Fales Library & Special Collections",
 	"nyuarchives": "NYU Archives",
 	"tamwag":      "Tamiment Library and Robert F. Wagner Labor Archives",
@@ -12,7 +13,7 @@ var PartnerCodes = map[string]string{
 var filename_partner_codes = map[string]string{
 	"fa": "fales",
 	"tw": "tamwag",
-	"us": "nyuarchives",
+	"ua": "nyuarchives",
 }
 
 func getMediatypes() map[string]string { return mediatypes }

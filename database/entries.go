@@ -131,12 +131,13 @@ func GetSummaryByYear(year int) (Summaries, error) {
 }
 
 type DateRange struct {
-	StartYear  int `form:"start-year"`
-	StartMonth int `form:"start-month"`
-	StartDay   int `form:"start-day"`
-	EndYear    int `form:"end-year"`
-	EndMonth   int `form:"end-month"`
-	EndDay     int `form:"end-day"`
+	StartYear    int `form:"start-year"`
+	StartMonth   int `form:"start-month"`
+	StartDay     int `form:"start-day"`
+	EndYear      int `form:"end-year"`
+	EndMonth     int `form:"end-month"`
+	EndDay       int `form:"end-day"`
+	RepositoryID int `form:"partner_code"`
 }
 
 func (dr DateRange) String() string {
@@ -147,10 +148,17 @@ func GetSummaryByDateRange(dr DateRange) (Summaries, error) {
 	startDate := fmt.Sprintf("%d-%d-%d", dr.StartYear, dr.StartMonth, dr.StartDay)
 	endDate := fmt.Sprintf("%d-%d-%d", dr.EndYear, dr.EndMonth, dr.EndDay)
 	entries := []models.Entry{}
-	if err := db.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
-		return Summaries{}, err
+	if dr.RepositoryID == 0 {
+		if err := db.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
+			return Summaries{}, err
+		}
+		return getSummary(entries), nil
+	} else {
+		if err := db.Where("repository_id = ?", dr.RepositoryID).Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
+			return Summaries{}, err
+		}
+		return getSummary(entries), nil
 	}
-	return getSummary(entries), nil
 }
 
 func summaryContains(summaries Summaries, mediatype string) bool {
@@ -216,4 +224,12 @@ func IsMediaIDUniqueInResource(mediaID int, resourceID uint) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func FindEntryInResource(resourceID int, mediaID int) (string, error) {
+	entry := models.Entry{}
+	if err := db.Where("collection_id = ? AND media_id = ?", resourceID, mediaID).First(&entry).Error; err != nil {
+		return "", err
+	}
+	return entry.ID.String(), nil
 }

@@ -17,5 +17,24 @@
                 <a href="/entries/{{ .entry.ID }}/next" class="btn btn-secondary">next</a>
             </div>
         </div>
+        <br />
+        <div class="row">
+            <div class="form-inline">
+                <form action="/entries/find" method="post">
+                    <div class="form-group">
+                        <div class="col-sm-4"> 
+                            <label for="mediaId">Lookup Media</label> 
+                        </div>
+                        <div class="col-sm-4"> 
+                            <input type="number" id="media_id" name="media_id"/>
+                        </div>
+                        <div class="col-sm-4"> 
+                            <input type="submit" class="btn btn-primary btn-sm">
+                        </div> 
+                        <input type="hidden" id="resource_id" name="resource_id" value= "{{ .resource.ID }}" >
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

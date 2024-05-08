@@ -14,18 +14,21 @@ import (
 	"gorm.io/gorm"
 )
 
-var pgdb *gorm.DB
-var sqdb *gorm.DB
-var test bool
-var dbLoc string
-var migrateTables bool
-var migrateData bool
+var (
+	pgdb          *gorm.DB
+	sqdb          *gorm.DB
+	test          bool
+	dbLoc         string
+	migrateTables bool
+	migrateData   bool
+	migrateTable  string
+)
 
 func init() {
 	flag.BoolVar(&test, "test", false, "load the test database")
 	flag.BoolVar(&migrateTables, "migrate-tables", false, "migrate tables")
 	flag.BoolVar(&migrateData, "migrate-data", false, "migrate data from legacy psql")
-
+	flag.StringVar(&migrateTable, "migrate-table", "", "migrate a table")
 }
 
 func main() {
@@ -33,8 +36,10 @@ func main() {
 	fmt.Println("go-medialog migration tool")
 
 	if test {
+		fmt.Println("Running migrations against testing database")
 		dbLoc = "medialog-test.db"
 	} else {
+		fmt.Println("Running migrations against prod database")
 		dbLoc = "medialog.db"
 	}
 
@@ -50,9 +55,59 @@ func main() {
 	}
 
 	var err error
+	database.ConnectDatabase(test)
 	sqdb, err = gorm.Open(sqlite.Open(dbLoc), &gorm.Config{})
 	if err != nil {
 		panic(err)
+	}
+
+	if migrateTable != "" {
+		switch migrateTable {
+		case "repositories":
+			{
+				fmt.Print("Migrating repositories table: ")
+				if err := sqdb.AutoMigrate(models.Repository{}); err != nil {
+					fmt.Printf("ERROR %s\n", err.Error())
+				} else {
+					fmt.Println("OK")
+				}
+			}
+
+		case "users":
+			{
+				fmt.Print("Migrating users table")
+				if err := sqdb.AutoMigrate(models.User{}); err != nil {
+					fmt.Printf("ERROR %s ", err.Error())
+				}
+			}
+
+		case "entries":
+			{
+				fmt.Println("Migrating entries table: ")
+				if err := sqdb.AutoMigrate(models.Entry{}); err != nil {
+					fmt.Printf("ERROR %s ", err.Error())
+				} else {
+					fmt.Println("OK")
+				}
+			}
+		case "collections":
+			{
+				fmt.Println("Migrating collections table")
+				if err := sqdb.AutoMigrate(models.Collection{}); err != nil {
+					fmt.Printf("ERROR %s ", err.Error())
+				}
+			}
+		case "accessions":
+			{
+				fmt.Println("Migrating accession table")
+				if err := sqdb.AutoMigrate(models.Accession{}); err != nil {
+					fmt.Printf("ERROR %s ", err.Error())
+				}
+			}
+		default:
+			fmt.Printf("ERROR %s is not a valid table to migrate", migrateTable)
+
+		}
 	}
 
 	if migrateTables {

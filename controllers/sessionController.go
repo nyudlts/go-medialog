@@ -9,7 +9,7 @@ import (
 )
 
 var userkey = "user"
-var isAdmin = "admin"
+var isAdmin = "is-admin"
 
 func isLoggedIn(c *gin.Context) bool {
 	session := sessions.Default(c)
@@ -49,15 +49,37 @@ func login(userid int, c *gin.Context) error {
 	return nil
 }
 
+func logout(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get(userkey)
+	if user == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
+		return
+	}
+	session.Delete(userkey)
+	session.Delete(isAdmin)
+	if err := session.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		return
+	}
+	c.Redirect(302, "/")
+}
+
+type SessionCookies struct {
+	UserID  int  `json:"user_id"`
+	IsAdmin bool `json:"is_admin"`
+}
+
 func DumpSession(c *gin.Context) {
 	session := sessions.Default(c)
-	userCookie := session.Get(userkey)
-	if userCookie == nil {
-		c.JSON(http.StatusOK, gin.H{"info": fmt.Sprintf("UserID: nil")})
-	} else {
-		userID := userCookie.(int)
-		c.JSON(http.StatusOK, gin.H{"info": fmt.Sprintf("UserID: %d", userID)})
-
+	sessionCookies := SessionCookies{}
+	userID := session.Get(userkey)
+	if userID != nil {
+		sessionCookies.UserID = userID.(int)
 	}
 
+	adminCookie := session.Get(isAdmin).(bool)
+	sessionCookies.IsAdmin = adminCookie
+	c.JSON(200, sessionCookies)
+	return
 }

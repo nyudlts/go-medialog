@@ -9,7 +9,9 @@ import (
 type Repository struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
 	CreatedAt time.Time `json:"created_at"`
+	CreatedBy int       `json:"created_by"`
 	UpdatedAt time.Time `json:"updated_at"`
+	UpdatedBy int       `json:"udpate_by"`
 	Slug      string    `json:"slug"`
 	Title     string    `json:"title"`
 }

@@ -25,14 +25,22 @@ func NewRepository(c *gin.Context) {
 }
 
 func CreateRepository(c *gin.Context) {
-	var input = models.Repository{}
-	if err := c.Bind(&input); err != nil {
+	var repo = models.Repository{}
+	if err := c.Bind(&repo); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
-	input.CreatedAt = time.Now()
-	input.UpdatedAt = time.Now()
 
-	if err := database.CreateRepository(input); err != nil {
+	userID, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	repo.CreatedAt = time.Now()
+	repo.CreatedBy = userID
+	repo.UpdatedAt = time.Now()
+	repo.UpdatedBy = userID
+
+	if err := database.CreateRepository(repo); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
 	c.Redirect(302, "/repositories")
