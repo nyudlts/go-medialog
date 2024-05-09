@@ -1,11 +1,16 @@
 package controllers
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
 )
 
@@ -106,4 +111,105 @@ func GetResources(c *gin.Context) {
 		"isAdmin":         isAdmin,
 		"repositoryMap":   repositoryMap,
 	})
+}
+
+func NewResource(c *gin.Context) {
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	isAdmin := getCookie("is-admin", c)
+
+	RepoID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	repository, err := database.FindRepository(uint(RepoID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.HTML(200, "resources-new.html", gin.H{
+		"isAdmin":    isAdmin,
+		"repository": repository,
+	})
+}
+
+func CreateResource(c *gin.Context) {
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	var resource = models.Collection{}
+	if err := c.Bind(&resource); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	userID, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource.CreatedAt = time.Now()
+	resource.CreatedBy = userID
+	resource.UpdatedAt = time.Now()
+	resource.UpdatedBy = userID
+
+	log.Println(resource.Title)
+	log.Println(resource.CollectionCode)
+
+	resourceID, err := database.InsertResource(&resource)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(302, fmt.Sprintf("/resources/%d/show", resourceID))
+}
+
+func EditResource(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
+}
+
+func UpdateResource(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
+}
+
+func DeleteResource(c *gin.Context) {
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource, err := database.FindResource(uint(id))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := database.DeleteResource(id); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(302, fmt.Sprintf("/repositories/%d/show", resource.RepositoryID))
 }

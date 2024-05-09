@@ -37,3 +37,17 @@ func FindPaginatedResources(pagination utils.Pagination) ([]models.Collection, e
 	}
 	return resources, nil
 }
+
+func InsertResource(resource *models.Collection) (uint, error) {
+	if err := db.Create(resource).Error; err != nil {
+		return 0, err
+	}
+	return resource.ID, nil
+}
+
+func DeleteResource(id int) error {
+	if err := db.Delete(models.Collection{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}

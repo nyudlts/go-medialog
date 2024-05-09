@@ -9,15 +9,6 @@ import (
 )
 
 func LoadRoutes(router *gin.Engine) {
-	// defaults
-	router.NoRoute(func(c *gin.Context) { c.JSON(404, "NOT FOUND") })
-	router.NoMethod(func(c *gin.Context) { c.JSON(405, "NO METHOD") })
-	router.GET("/error", func(c *gin.Context) {
-		session := sessions.Default(c)
-		session.AddFlash("Please authenticate to access this service", "WARNING")
-		c.HTML(401, "error.html", gin.H{"flash": session.Flashes("WARNING")})
-		session.Save()
-	})
 
 	//Main Index
 	router.GET("", func(c *gin.Context) { controllers.GetIndex(c) })
@@ -25,22 +16,35 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Accessions Group
 	accessionsRoutes := router.Group("/accessions")
+	accessionsRoutes.GET(":id/new", func(c *gin.Context) { controllers.NewAccession(c) })
+	accessionsRoutes.POST("", func(c *gin.Context) { controllers.CreateAccession(c) })
 	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
 	accessionsRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetAccession(c) })
+	accessionsRoutes.GET("edit", func(c *gin.Context) { controllers.EditAccession(c) })
+	accessionsRoutes.POST("update", func(c *gin.Context) { controllers.UpdateAccession(c) })
+	accessionsRoutes.GET("delete", func(c *gin.Context) { controllers.DeleteEntry(c) })
 	accessionsRoutes.GET("/:id/slew", func(c *gin.Context) { controllers.SlewAccession(c) })
 	accessionsRoutes.POST("slew", func(c *gin.Context) { controllers.CreateAccessionSlew(c) })
 
 	//Repository Group
 	repositoryRoutes := router.Group("/repositories")
 	repositoryRoutes.GET("", func(c *gin.Context) { controllers.GetRepositories(c) })
-	repositoryRoutes.GET("/new", func(c *gin.Context) { controllers.NewRepository(c) })
+	repositoryRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetRepository(c) })
+	repositoryRoutes.GET("new", func(c *gin.Context) { controllers.NewRepository(c) })
 	repositoryRoutes.POST("", func(c *gin.Context) { controllers.CreateRepository(c) })
-	repositoryRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetRepository(c) })
+	repositoryRoutes.GET("edit", func(c *gin.Context) { controllers.EditRepository(c) })
+	repositoryRoutes.POST("update", func(c *gin.Context) { controllers.UpdateRepository(c) })
+	repositoryRoutes.GET("delete", func(c *gin.Context) { controllers.DeleteRepository(c) })
 
 	//Resources Group
 	resourceRoutes := router.Group("/resources")
 	resourceRoutes.GET("", func(c *gin.Context) { controllers.GetResources(c) })
-	resourceRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetResource(c) })
+	resourceRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetResource(c) })
+	resourceRoutes.GET("new", func(c *gin.Context) { controllers.NewResource(c) })
+	resourceRoutes.POST("", func(c *gin.Context) { controllers.CreateResource(c) })
+	resourceRoutes.GET(":id/edit", func(c *gin.Context) { controllers.EditResource(c) })
+	resourceRoutes.POST("update", func(c *gin.Context) { controllers.UpdateResource(c) })
+	resourceRoutes.GET(":id/delete", func(c *gin.Context) { controllers.DeleteResource(c) })
 
 	//Entries Group
 	entryRoutes := router.Group("/entries")
@@ -83,6 +87,23 @@ func LoadRoutes(router *gin.Engine) {
 	//Session Group
 	sessionRoutes := router.Group("/sessions")
 	sessionRoutes.GET("/dump", func(c *gin.Context) { controllers.DumpSession(c) })
+
+	// general
+	router.NoRoute(func(c *gin.Context) {
+		session := sessions.Default(c)
+		session.AddFlash("This Page Does Not Exist", "WARNING")
+		c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": 404})
+		session.Save()
+	})
+
+	router.NoMethod(func(c *gin.Context) { c.JSON(405, "NO METHOD") })
+
+	router.GET("/error", func(c *gin.Context) {
+		session := sessions.Default(c)
+		session.AddFlash("Please authenticate to access this service", "WARNING")
+		c.HTML(401, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": 401})
+		session.Save()
+	})
 }
 
 func Test(c *gin.Context) {

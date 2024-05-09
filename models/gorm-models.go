@@ -18,14 +18,14 @@ type Repository struct {
 
 type Collection struct {
 	ID             uint       `json:"id" gorm:"primaryKey"`
-	Title          string     `json:"title"`
-	CollectionCode string     `json:"collection_code"`
-	PartnerCode    string     `json:"partner_code"`
+	Title          string     `json:"title" form:"title"`
+	CollectionCode string     `json:"collection_code" form:"collection_code"`
+	PartnerCode    string     `json:"partner_code" form:"partner_code"`
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`
 	CreatedBy      int        `json:"created_by"`
 	UpdatedBy      int        `json:"modified_by"`
-	RepositoryID   int        `json:"repository_id"`
+	RepositoryID   int        `json:"repository_id" form:"repository_id"`
 	Repository     Repository `json:"repository"`
 }
 

@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
@@ -44,6 +45,27 @@ func CreateRepository(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
 	c.Redirect(302, "/repositories")
+}
+
+func EditRepository(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
+}
+
+func UpdateRepository(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
+}
+
+func DeleteRepository(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
 }
 
 func GetRepositories(c *gin.Context) {

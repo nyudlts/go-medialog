@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/database"
@@ -116,6 +117,65 @@ func GetAccession(c *gin.Context) {
 		"totals":          summary.GetTotals(),
 		"users":           users,
 	})
+}
+
+func NewAccession(c *gin.Context) {
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	resourceID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource, err := database.FindResource(uint(resourceID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	repository, err := database.FindRepository(uint(resource.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.HTML(200, "accessions-new.html", gin.H{
+		"resource":   resource,
+		"repository": repository,
+	})
+
+}
+
+func CreateAccession(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
+}
+
+func EditAccession(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
+}
+
+func UpdateAccession(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
+}
+
+func DeleteAccession(c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash("Route Not Implemented", "WARNING")
+	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
+	session.Save()
 }
 
 type Slew struct {
