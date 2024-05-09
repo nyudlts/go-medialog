@@ -51,3 +51,10 @@ func DeleteResource(id int) error {
 	}
 	return nil
 }
+
+func UpdateResource(resource *models.Collection) error {
+	if err := db.Save(resource).Error; err != nil {
+		return err
+	}
+	return nil
+}

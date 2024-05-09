@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
@@ -66,9 +65,9 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
-	users, err := getUserEmailMap([]int{resource.CreatedBy, resource.UpdatedBy})
+	entryUsers, err := database.FindEntryUsers(resource.CreatedBy, resource.UpdatedBy)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -81,7 +80,7 @@ func GetResource(c *gin.Context) {
 		"page":            p,
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
-		"users":           users,
+		"entry_users":     entryUsers,
 	})
 }
 
@@ -175,17 +174,72 @@ func CreateResource(c *gin.Context) {
 }
 
 func EditResource(c *gin.Context) {
-	session := sessions.Default(c)
-	session.AddFlash("Route Not Implemented", "WARNING")
-	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
-	session.Save()
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	isAdmin := getCookie("is-admin", c)
+
+	resourceID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource, err := database.FindResource(uint(resourceID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.HTML(200, "resources-edit.html", gin.H{
+		"isAdmin":  isAdmin,
+		"resource": resource,
+	})
 }
 
 func UpdateResource(c *gin.Context) {
-	session := sessions.Default(c)
-	session.AddFlash("Route Not Implemented", "WARNING")
-	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
-	session.Save()
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	var updateResource = models.Collection{}
+	if err := c.Bind(&updateResource); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	userID, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource, err := database.FindResource(uint(id))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource.UpdatedBy = userID
+	resource.UpdatedAt = time.Now()
+	resource.Title = updateResource.Title
+	resource.CollectionCode = updateResource.CollectionCode
+
+	if err := database.UpdateResource(&resource); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(302, fmt.Sprintf("/resources/%d/show", resource.ID))
 }
 
 func DeleteResource(c *gin.Context) {

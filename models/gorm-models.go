@@ -17,7 +17,7 @@ type Repository struct {
 }
 
 type Collection struct {
-	ID             uint       `json:"id" gorm:"primaryKey"`
+	ID             uint       `json:"id" gorm:"primaryKey" form:"id"`
 	Title          string     `json:"title" form:"title"`
 	CollectionCode string     `json:"collection_code" form:"collection_code"`
 	PartnerCode    string     `json:"partner_code" form:"partner_code"`

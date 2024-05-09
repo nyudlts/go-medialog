@@ -43,7 +43,7 @@ func LoadRoutes(router *gin.Engine) {
 	resourceRoutes.GET("new", func(c *gin.Context) { controllers.NewResource(c) })
 	resourceRoutes.POST("", func(c *gin.Context) { controllers.CreateResource(c) })
 	resourceRoutes.GET(":id/edit", func(c *gin.Context) { controllers.EditResource(c) })
-	resourceRoutes.POST("update", func(c *gin.Context) { controllers.UpdateResource(c) })
+	resourceRoutes.POST(":id/update", func(c *gin.Context) { controllers.UpdateResource(c) })
 	resourceRoutes.GET(":id/delete", func(c *gin.Context) { controllers.DeleteResource(c) })
 
 	//Entries Group

@@ -11,15 +11,17 @@
 <div class="card card-default">
     <div class="card-header">
         <h5 class="card-title">{{ .resource.CollectionCode }}: {{ .resource.Title }}</h5>
-    </div>
+        <button class="btn btn-secondary"><a href="/resources/{{ .resource.ID}}/edit">Edit</a></button>
+        <button class="btn btn-danger"><a href="/resources/{{ .resource.ID }}/delete">Delete</a></button>
+    </div> 
     <div class="card-body">
-        <div class="row">
+        <div class="row"> 
             <div class="col">
                 <dl class="row">
                     <dt class="col-sm-4">created by</dt>
-                    <dd class="col-sm-8">{{ index .users .resource.CreatedBy }} at {{ formatAsDate .resource.CreatedAt }}</dd>
+                    <dd class="col-sm-8">{{ .entry_users.CreateUser.Email}} at {{ formatAsDate .resource.CreatedAt }}</dd>
                     <dt class="col-sm-4">updated by</dt>
-                    <dd class="col-sm-8">{{ index .users .resource.UpdatedBy }} at {{ formatAsDate .resource.UpdatedAt }}</dd> 
+                    <dd class="col-sm-8">{{ .entry_users.UpdateUser.Email }} at {{ formatAsDate .resource.UpdatedAt }}</dd> 
                 </dl>
             </div>
             <div class="col">{{ template "summary-table.html" . }}</div>
