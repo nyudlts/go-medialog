@@ -7,11 +7,21 @@
     </div>
     <div class="card-body">
         <table class="table table-striped table-bordered">
+            <thead class="thead">
+                <tr>
+                    <th>title</th>
+                    <th>slug</th>
+                    <th>actions</th>
+                </tr>
+            </thead>
             <tbody>
             {{ range $repository := .repositories }}
             <tr>
                 <td>
-                    {{ $repository.Title }} ({{ $repository.Slug}})
+                    {{ $repository.Title }}
+                </td>
+                <td>
+                    {{ $repository.Slug }}
                 </td>
                 <td>
                     <a class="btn btn-primary" href="/repositories/{{ $repository.ID }}/show">View</a>

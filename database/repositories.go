@@ -36,3 +36,17 @@ func GetRepositoryMap() (map[int]string, error) {
 	}
 	return repositoryMap, nil
 }
+
+func UpdateRepository(repository *models.Repository) error {
+	if err := db.Save(repository).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteRepository(id int) error {
+	if err := db.Delete(models.Repository{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}

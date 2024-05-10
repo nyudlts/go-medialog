@@ -19,11 +19,11 @@ func LoadRoutes(router *gin.Engine) {
 	accessionsRoutes.GET(":id/new", func(c *gin.Context) { controllers.NewAccession(c) })
 	accessionsRoutes.POST("", func(c *gin.Context) { controllers.CreateAccession(c) })
 	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
-	accessionsRoutes.GET("/:id/show", func(c *gin.Context) { controllers.GetAccession(c) })
+	accessionsRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetAccession(c) })
 	accessionsRoutes.GET("edit", func(c *gin.Context) { controllers.EditAccession(c) })
-	accessionsRoutes.POST("update", func(c *gin.Context) { controllers.UpdateAccession(c) })
+	accessionsRoutes.POST(":id/update", func(c *gin.Context) { controllers.UpdateAccession(c) })
 	accessionsRoutes.GET("delete", func(c *gin.Context) { controllers.DeleteEntry(c) })
-	accessionsRoutes.GET("/:id/slew", func(c *gin.Context) { controllers.SlewAccession(c) })
+	accessionsRoutes.GET(":id/slew", func(c *gin.Context) { controllers.SlewAccession(c) })
 	accessionsRoutes.POST("slew", func(c *gin.Context) { controllers.CreateAccessionSlew(c) })
 
 	//Repository Group
@@ -32,9 +32,9 @@ func LoadRoutes(router *gin.Engine) {
 	repositoryRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetRepository(c) })
 	repositoryRoutes.GET("new", func(c *gin.Context) { controllers.NewRepository(c) })
 	repositoryRoutes.POST("", func(c *gin.Context) { controllers.CreateRepository(c) })
-	repositoryRoutes.GET("edit", func(c *gin.Context) { controllers.EditRepository(c) })
-	repositoryRoutes.POST("update", func(c *gin.Context) { controllers.UpdateRepository(c) })
-	repositoryRoutes.GET("delete", func(c *gin.Context) { controllers.DeleteRepository(c) })
+	repositoryRoutes.GET(":id/edit", func(c *gin.Context) { controllers.EditRepository(c) })
+	repositoryRoutes.POST(":id/update", func(c *gin.Context) { controllers.UpdateRepository(c) })
+	repositoryRoutes.GET(":id/delete", func(c *gin.Context) { controllers.DeleteRepository(c) })
 
 	//Resources Group
 	resourceRoutes := router.Group("/resources")

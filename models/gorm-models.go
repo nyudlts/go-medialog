@@ -7,13 +7,13 @@ import (
 )
 
 type Repository struct {
-	ID        uint      `json:"id" gorm:"primaryKey"`
+	ID        uint      `json:"id" gorm:"primaryKey" form:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	CreatedBy int       `json:"created_by"`
 	UpdatedAt time.Time `json:"updated_at"`
 	UpdatedBy int       `json:"udpate_by"`
-	Slug      string    `json:"slug"`
-	Title     string    `json:"title"`
+	Slug      string    `json:"slug" form:"slug"`
+	Title     string    `json:"title" form:"title"`
 }
 
 type Collection struct {
