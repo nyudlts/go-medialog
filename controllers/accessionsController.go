@@ -172,10 +172,29 @@ func UpdateAccession(c *gin.Context) {
 }
 
 func DeleteAccession(c *gin.Context) {
-	session := sessions.Default(c)
-	session.AddFlash("Route Not Implemented", "WARNING")
-	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
-	session.Save()
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession, err := database.FindAccession(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := database.DeleteAccession(id); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(302, fmt.Sprintf("/resources/accession.ResourceID/show", accession.CollectionID))
 }
 
 type Slew struct {

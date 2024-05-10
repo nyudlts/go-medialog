@@ -20,9 +20,9 @@ func LoadRoutes(router *gin.Engine) {
 	accessionsRoutes.POST("", func(c *gin.Context) { controllers.CreateAccession(c) })
 	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
 	accessionsRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetAccession(c) })
-	accessionsRoutes.GET("edit", func(c *gin.Context) { controllers.EditAccession(c) })
+	accessionsRoutes.GET(":id/edit", func(c *gin.Context) { controllers.EditAccession(c) })
 	accessionsRoutes.POST(":id/update", func(c *gin.Context) { controllers.UpdateAccession(c) })
-	accessionsRoutes.GET("delete", func(c *gin.Context) { controllers.DeleteEntry(c) })
+	accessionsRoutes.GET(":id/delete", func(c *gin.Context) { controllers.DeleteAccession(c) })
 	accessionsRoutes.GET(":id/slew", func(c *gin.Context) { controllers.SlewAccession(c) })
 	accessionsRoutes.POST("slew", func(c *gin.Context) { controllers.CreateAccessionSlew(c) })
 

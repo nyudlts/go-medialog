@@ -16,10 +16,6 @@
         <div class="row">
             <div class="col">
                 <dl class="row">
-                    <dt class="col-sm-4">accession state</dt> 
-                    <dd class="col-sm-8">{{ .accession.AccessionState }}<dd>
-                    <dt class="col-sm-4">accession note </dt>
-                    <dd class="col-sm-8">{{ .accession.AccessionNote }}</dd>
                     <dt class="col-sm-4">created by</dt>
                     <dd class="col-sm-8">{{ index .users .accession.CreatedBy }} at {{ formatAsDate .accession.CreatedAt }}</dd>
                     <dt class="col-sm-4">updated by</dt>
@@ -27,6 +23,10 @@
                 </dl>
             </div>
             <div class="col">{{ template "summary-table.html" . }}</div>
+        </div>
+        <div class="row">
+            <a href="/accessions/{{ .accession.ID }}/edit" class="btn btn-secondary">edit</a>
+            <a href="/accessions/{{ .accession.ID }}/delete" class="btn btn-danger">delete</a>
         </div>
     </div>
 </div>

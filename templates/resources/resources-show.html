@@ -11,8 +11,8 @@
 <div class="card card-default">
     <div class="card-header">
         <h5 class="card-title">{{ .resource.CollectionCode }}: {{ .resource.Title }}</h5>
-        <button class="btn btn-secondary"><a href="/resources/{{ .resource.ID}}/edit">Edit</a></button>
-        <button class="btn btn-danger"><a href="/resources/{{ .resource.ID }}/delete">Delete</a></button>
+        <a href="/resources/{{ .resource.ID}}/edit" class="btn btn-secondary">Edit</a>
+        <a href="/resources/{{ .resource.ID }}/delete" class="btn btn-danger">Delete</a>
     </div> 
     <div class="card-body">
         <div class="row"> 

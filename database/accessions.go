@@ -38,3 +38,17 @@ func FindPaginatedAccessions(pagination utils.Pagination) ([]models.Accession, e
 	}
 	return accessions, nil
 }
+
+func UpdateAccession(accession *models.Accession) error {
+	if err := db.Save(accession).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteAccession(id int) error {
+	if err := db.Delete(models.Accession{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
