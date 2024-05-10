@@ -4,22 +4,20 @@
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/">Medialog</a></li>
     <li class="breadcrumb-item"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Slug }}</a></li>
-    <li class="breadcrumb-item"><a href="/resources/{{ .resource.ID }}/show">{{ .resource.CollectionCode }} {{ .resource.Title }}</a></li>
+    <li class="breadcrumb-item"><a href="/resources/{{ .accession.CollectionID }}/show">{{ .accession.Collection.CollectionCode }} {{ .accession.Collection.Title }}</a></li>
   </ol>
 </nav>
 <div class="card card-default">
   <div class="card-header">
-    <h5 class="card-title">Create an Accession</h5>
+    <h5 class="card-title">Edit Accession</h5>
   </div>
   <div class="card-body">
     <div class="form-inline">
-      <form action="/accessions" method="POST">
+      <form action="/accessions/{{ .accession.ID }}/update" method="POST">
         <div class="form-group">
           <label for="accession_num">Accession Call Number</label>
-          <input type="text" name="accession_num" id="accession_num" />
+          <input type="text" name="accession_num" id="accession_num" value="{{ .accession.AccessionNum }}"/>
         </div>
-        <input type="hidden" name="repository_id" id="repository_id" value="{{ .repository.ID }}">
-        <input type="hidden" name="collection_id" id="collection_id" value="{{ .resource.ID }}">
         <input class="btn btn-primary" type="submit">
       </form>
     </div>

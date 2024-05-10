@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/database"
@@ -147,28 +147,116 @@ func NewAccession(c *gin.Context) {
 		"resource":   resource,
 		"repository": repository,
 	})
-
 }
 
 func CreateAccession(c *gin.Context) {
-	session := sessions.Default(c)
-	session.AddFlash("Route Not Implemented", "WARNING")
-	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
-	session.Save()
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	accession := models.Accession{}
+	if err := c.Bind(&accession); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	log.Println("Controller", accession.CollectionID)
+
+	userId, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession.CreatedAt = time.Now()
+	accession.CreatedBy = userId
+	accession.UpdatedAt = time.Now()
+	accession.UpdatedBy = userId
+
+	if err := database.InsertAccession(&accession); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accession.ID))
+
 }
 
 func EditAccession(c *gin.Context) {
-	session := sessions.Default(c)
-	session.AddFlash("Route Not Implemented", "WARNING")
-	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
-	session.Save()
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	isAdmin := getCookie("is-admin", c)
+
+	accessionID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession, err := database.FindAccession(accessionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	repository, err := database.FindRepository(uint(accession.Collection.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.HTML(200, "accessions-edit.html", gin.H{
+		"isAdmin":    isAdmin,
+		"accession":  accession,
+		"repository": repository,
+	})
+
 }
 
 func UpdateAccession(c *gin.Context) {
-	session := sessions.Default(c)
-	session.AddFlash("Route Not Implemented", "WARNING")
-	c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING")})
-	session.Save()
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
+	accessionID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession, err := database.FindAccession(accessionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	updatedAccession := models.Accession{}
+	if err := c.Bind(&updatedAccession); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	userId, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession.UpdatedBy = userId
+	accession.UpdatedAt = time.Now()
+	accession.AccessionNum = updatedAccession.AccessionNum
+
+	if err := database.UpdateAccession(&accession); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accession.ID))
 }
 
 func DeleteAccession(c *gin.Context) {

@@ -30,15 +30,15 @@ type Collection struct {
 }
 
 type Accession struct {
-	ID             uint       `json:"id" gorm:"primaryKey"`
-	AccessionNum   string     `json:"accession_num"`
-	AccessionNote  string     `json:"accession_note"`
-	AccessionState string     `json:"accession_state"`
+	ID             uint       `json:"id" gorm:"primaryKey" form:"id"`
+	AccessionNum   string     `json:"accession_num" form:"accession_num"`
+	AccessionNote  string     `json:"accession_note"`  //deprecated
+	AccessionState string     `json:"accession_state"` //deprecated
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`
 	CreatedBy      int        `json:"created_by"`
 	UpdatedBy      int        `json:"updated_by"`
-	CollectionID   int        `json:"collection_id"`
+	CollectionID   int        `json:"collection_id" form:"collection_id"`
 	Collection     Collection `json:"collection"`
 }
 
