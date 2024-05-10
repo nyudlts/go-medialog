@@ -9,6 +9,7 @@
         <table class="table">
             <thead>
                 <tr>
+                    <th>id</th>
                     <th>email</th>
                     <th>is active</th>
                     <th>is admin</th>
@@ -19,6 +20,7 @@
             {{ range $user := .users }}
             <tbody>
                 <tr>
+                    <td>{{ $user.ID }}</td>
                     <td>{{ $user.Email }}</td>
                     <td>{{ $user.IsActive }}</td>
                     <td>{{ $user.IsAdmin }}</td>
