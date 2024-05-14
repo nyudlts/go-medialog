@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/glebarez/sqlite"
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
@@ -18,7 +17,6 @@ var (
 	pgdb          *gorm.DB
 	sqdb          *gorm.DB
 	test          bool
-	dbLoc         string
 	migrateTables bool
 	migrateData   bool
 	migrateTable  string
@@ -32,16 +30,9 @@ func init() {
 }
 
 func main() {
-	flag.Parse()
 	fmt.Println("go-medialog migration tool")
-
-	if test {
-		fmt.Println("Running migrations against testing database")
-		dbLoc = "medialog-test.db"
-	} else {
-		fmt.Println("Running migrations against prod database")
-		dbLoc = "medialog.db"
-	}
+	fmt.Println("parsing flags")
+	flag.Parse()
 
 	if migrateData {
 		var err error
@@ -52,14 +43,26 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+	} else {
+		fmt.Println("Skipping connecting to postgres db")
 	}
 
-	var err error
-	database.ConnectDatabase(test)
-	sqdb, err = gorm.Open(sqlite.Open(dbLoc), &gorm.Config{})
-	if err != nil {
-		panic(err)
+	var dbLocat string
+	if test {
+		dbLocat = "database/medialog-test.db"
+	} else {
+		dbLocat = "database/medialog.db"
 	}
+
+	fmt.Println("Migrating", dbLocat)
+
+	if err := database.ConnectDatabase(dbLocat); err != nil {
+		panic(err)
+	} else {
+		fmt.Println("Connected to database")
+	}
+
+	sqdb = database.GetDB()
 
 	if migrateTable != "" {
 		switch migrateTable {
@@ -260,10 +263,6 @@ func createAdminUser() {
 	user.Salt = controllers.GenerateStringRunes(16)
 	hash := sha512.Sum512([]byte(password + user.Salt))
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
-
-	if err := database.ConnectDatabase(false); err != nil {
-		panic(err)
-	}
 
 	if err := database.InsertUser(&user); err != nil {
 		panic(err)

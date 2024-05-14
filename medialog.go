@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"path/filepath"
 	"text/template"
 
 	"github.com/gin-contrib/sessions"
@@ -45,7 +46,7 @@ func main() {
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 
 	//connect the database
-	if err := database.ConnectDatabase(test); err != nil {
+	if err := database.ConnectDatabase(filepath.Join("database", "medialog.db")); err != nil {
 		os.Exit(2)
 	}
 
