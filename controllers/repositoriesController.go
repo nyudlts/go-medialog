@@ -41,11 +41,12 @@ func CreateRepository(c *gin.Context) {
 	repo.UpdatedAt = time.Now()
 	repo.UpdatedBy = userID
 
-	if err := database.CreateRepository(repo); err != nil {
+	repository_id, err := database.CreateRepository(&repo)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	c.Redirect(302, "/repositories")
+	c.Redirect(302, fmt.Sprintf("/repositories/%d/show", repository_id))
 }
 
 func EditRepository(c *gin.Context) {
@@ -130,7 +131,7 @@ func DeleteRepository(c *gin.Context) {
 		return
 	}
 
-	if err := database.DeleteRepository(id); err != nil {
+	if err := database.DeleteRepository(uint(id)); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}

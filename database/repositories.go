@@ -2,11 +2,11 @@ package database
 
 import "github.com/nyudlts/go-medialog/models"
 
-func CreateRepository(repository models.Repository) error {
+func CreateRepository(repository *models.Repository) (uint, error) {
 	if err := db.Create(&repository).Error; err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return repository.ID, nil
 }
 
 func FindRepositories() ([]models.Repository, error) {
@@ -44,7 +44,7 @@ func UpdateRepository(repository *models.Repository) error {
 	return nil
 }
 
-func DeleteRepository(id int) error {
+func DeleteRepository(id uint) error {
 	if err := db.Delete(models.Repository{}, id).Error; err != nil {
 		return err
 	}

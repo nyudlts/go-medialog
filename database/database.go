@@ -7,15 +7,9 @@ import (
 
 var db *gorm.DB
 var DatabaseLoc = "medialog.db"
-var TestDatabaseLoc = "medialog-test.db"
+var TestDatabaseLoc = "../database/medialog-test.db"
 
-func ConnectDatabase(test bool) error {
-	var dbLoc string
-	if test {
-		dbLoc = TestDatabaseLoc
-	} else {
-		dbLoc = DatabaseLoc
-	}
+func ConnectDatabase(dbLoc string) error {
 	var err error
 	db, err = gorm.Open(sqlite.Open(dbLoc), &gorm.Config{})
 	if err != nil {

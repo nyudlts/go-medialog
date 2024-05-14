@@ -45,7 +45,7 @@ func InsertResource(resource *models.Collection) (uint, error) {
 	return resource.ID, nil
 }
 
-func DeleteResource(id int) error {
+func DeleteResource(id uint) error {
 	if err := db.Delete(models.Collection{}, id).Error; err != nil {
 		return err
 	}

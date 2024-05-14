@@ -260,7 +260,7 @@ func DeleteResource(c *gin.Context) {
 		return
 	}
 
-	if err := database.DeleteResource(id); err != nil {
+	if err := database.DeleteResource(uint(id)); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}

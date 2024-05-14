@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -161,8 +160,6 @@ func CreateAccession(c *gin.Context) {
 		return
 	}
 
-	log.Println("Controller", accession.CollectionID)
-
 	userId, err := getUserkey(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -174,12 +171,31 @@ func CreateAccession(c *gin.Context) {
 	accession.UpdatedAt = time.Now()
 	accession.UpdatedBy = userId
 
-	if err := database.InsertAccession(&accession); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
+	c.JSON(200, accession)
 
-	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accession.ID))
+	/*
+
+		log.Println("Controller collection ID", accession.CollectionID)
+
+		userId, err := getUserkey(c)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		accession.CreatedAt = time.Now()
+		accession.CreatedBy = userId
+		accession.UpdatedAt = time.Now()
+		accession.UpdatedBy = userId
+
+		accessionID, err := database.InsertAccession(&accession)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accessionID))
+	*/
 
 }
 
