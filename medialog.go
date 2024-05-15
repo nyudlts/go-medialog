@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -16,8 +17,9 @@ import (
 )
 
 var (
-	router *gin.Engine
-	test   bool
+	router  *gin.Engine
+	test    bool
+	version = "v0.1.0-alpha"
 )
 
 func init() {
@@ -61,6 +63,7 @@ func main() {
 	//load applicatin routes
 	routes.LoadRoutes(router)
 
+	log.Printf("go-medialog %s", version)
 	//start the application
 	if err := router.Run(); err != nil {
 		os.Exit(1)
