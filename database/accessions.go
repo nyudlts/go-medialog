@@ -22,7 +22,7 @@ func FindAccessionsByResourceID(id uint) ([]models.Accession, error) {
 	return accessions, nil
 }
 
-func FindAccession(id int) (models.Accession, error) {
+func FindAccession(id uint) (models.Accession, error) {
 	accession := models.Accession{}
 
 	if err := db.Preload(clause.Associations).Where("id = ?", id).First(&accession).Error; err != nil {
@@ -53,7 +53,7 @@ func UpdateAccession(accession *models.Accession) error {
 	return nil
 }
 
-func DeleteAccession(id int) error {
+func DeleteAccession(id uint) error {
 	if err := db.Delete(models.Accession{}, id).Error; err != nil {
 		return err
 	}

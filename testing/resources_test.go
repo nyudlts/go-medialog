@@ -19,6 +19,7 @@ func TestResources(t *testing.T) {
 		resource.Title = "Test Resource"
 		resource.CreatedBy = 56
 		resource.CreatedAt = time.Now()
+		resource.RepositoryID = 3
 
 		var err error
 		resourceID, err = database.InsertResource(&resource)
@@ -43,13 +44,13 @@ func TestResources(t *testing.T) {
 		t.Log("returned resource: " + string(b))
 	})
 
-	t.Run("Test Edit A Resource", func(t *testing.T) {
+	t.Run("Test update a resource", func(t *testing.T) {
 		resource.Title = "updated title"
 		if err := database.UpdateResource(&resource); err != nil {
 			t.Error(err)
 		}
 
-		t.Logf("Updadated resource %d", resource.ID)
+		t.Logf("Updated resource %d", resource.ID)
 
 		resource2, err := database.FindResource(resource.ID)
 		if err != nil {

@@ -10,11 +10,12 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func InsertEntry(entry models.Entry) error {
+func InsertEntry(entry *models.Entry) (uuid.UUID, error) {
 	if err := db.Create(&entry).Error; err != nil {
-		return err
+		fakeUUID, _ := uuid.NewUUID()
+		return fakeUUID, err
 	}
-	return nil
+	return entry.ID, nil
 }
 
 func DeleteEntry(id uuid.UUID) error {
@@ -212,13 +213,17 @@ func FindNextMediaCollectionInResource(resourceID uint) (int, error) {
 }
 
 func IsMediaIDUniqueInResource(mediaID int, resourceID uint) (bool, error) {
-	mediaIDs := []int{}
-	if err := db.Table("entries").Select("media_id").Where("collection_id = ?", resourceID).Find(&mediaIDs).Error; err != nil {
+	fmt.Println("TEST", mediaID, resourceID)
+	entries := []models.Entry{}
+
+	if err := db.Where("collection_id = ?", int(resourceID)).Find(&entries).Error; err != nil {
 		return false, err
 	}
 
-	for _, id := range mediaIDs {
-		if id == mediaID {
+	fmt.Println("TEST", entries)
+
+	for _, entry := range entries {
+		if entry.MediaID == mediaID {
 			return false, nil
 		}
 	}

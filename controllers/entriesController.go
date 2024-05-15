@@ -33,7 +33,7 @@ func GetEntry(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(entry.AccessionID)
+	accession, err := database.FindAccession(uint(entry.AccessionID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -186,7 +186,7 @@ func NewEntry(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(accessionID)
+	accession, err := database.FindAccession(uint(accessionID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -260,7 +260,7 @@ func CreateEntry(c *gin.Context) {
 	createEntry.UpdatedAt = time.Now()
 	createEntry.UpdatedBy = userID
 
-	if err := database.InsertEntry(createEntry); err != nil {
+	if _, err := database.InsertEntry(&createEntry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -315,7 +315,7 @@ func EditEntry(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(entry.AccessionID)
+	accession, err := database.FindAccession(uint(entry.AccessionID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -429,7 +429,7 @@ func CloneEntry(c *gin.Context) {
 	entry.UpdatedBy = userID
 	entry.LabelText = ""
 
-	if err := database.InsertEntry(entry); err != nil {
+	if _, err := database.InsertEntry(&entry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}

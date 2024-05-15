@@ -61,7 +61,7 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(id)
+	accession, err := database.FindAccession(uint(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -213,7 +213,7 @@ func EditAccession(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(accessionID)
+	accession, err := database.FindAccession(uint(accessionID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -245,7 +245,7 @@ func UpdateAccession(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(accessionID)
+	accession, err := database.FindAccession(uint(accessionID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -287,13 +287,13 @@ func DeleteAccession(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(id)
+	accession, err := database.FindAccession(uint(id))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := database.DeleteAccession(id); err != nil {
+	if err := database.DeleteAccession(uint(id)); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -324,7 +324,7 @@ func SlewAccession(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(id)
+	accession, err := database.FindAccession(uint(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -369,7 +369,7 @@ func CreateAccessionSlew(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(int(slew.AccessionID))
+	accession, err := database.FindAccession(uint(slew.AccessionID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
 		return
@@ -403,7 +403,7 @@ func createSlewEntry(slew Slew, accession models.Accession) error {
 		entry.CreatedAt = time.Now()
 		entry.UpdatedAt = time.Now()
 
-		if err := database.InsertEntry(entry); err != nil {
+		if _, err := database.InsertEntry(&entry); err != nil {
 			return err
 		}
 	}
