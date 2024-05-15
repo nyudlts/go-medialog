@@ -74,7 +74,7 @@ func CreateUser(c *gin.Context) {
 	hash := sha512.Sum512([]byte(createUser.Password1 + user.Salt))
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
 
-	if err := database.InsertUser(&user); err != nil {
+	if _, err := database.InsertUser(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -170,7 +170,7 @@ func ResetPassword(c *gin.Context) {
 	hash := sha512.Sum512([]byte(resetUser.Password1 + user.Salt))
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
 
-	if err := database.UpdateUser(user); err != nil {
+	if err := database.UpdateUser(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -193,7 +193,7 @@ func DeactivateUser(c *gin.Context) {
 
 	user.IsActive = false
 
-	if err := database.UpdateUser(user); err != nil {
+	if err := database.UpdateUser(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -217,7 +217,7 @@ func ReactivateUser(c *gin.Context) {
 
 	user.IsActive = true
 
-	if err := database.UpdateUser(user); err != nil {
+	if err := database.UpdateUser(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -241,7 +241,7 @@ func MakeUserAdmin(c *gin.Context) {
 
 	user.IsAdmin = true
 
-	if err := database.UpdateUser(user); err != nil {
+	if err := database.UpdateUser(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -264,7 +264,7 @@ func RemoveUserAdmin(c *gin.Context) {
 
 	user.IsAdmin = false
 
-	if err := database.UpdateUser(user); err != nil {
+	if err := database.UpdateUser(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -300,4 +300,11 @@ func getUserEmailMap(ids []int) (map[int]string, error) {
 		}
 	}
 	return users, nil
+}
+
+func DeleteUser(id uint) error {
+	if err := database.DeleteUser(id); err != nil {
+		return err
+	}
+	return nil
 }

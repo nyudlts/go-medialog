@@ -18,7 +18,7 @@ func FindUserEmailByID(id int) (string, error) {
 	return user.Email, nil
 }
 
-func UpdateUser(user models.User) error {
+func UpdateUser(user *models.User) error {
 	if err := db.Save(&user).Error; err != nil {
 		return err
 	}
@@ -33,6 +33,14 @@ func FindUsers() ([]models.User, error) {
 	return users, nil
 }
 
+func FindUser(id uint) (models.User, error) {
+	user := models.User{}
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return models.User{}, err
+	}
+	return user, nil
+}
+
 func FindUserByEmail(email string) (models.User, error) {
 	user := models.User{}
 	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
@@ -41,11 +49,11 @@ func FindUserByEmail(email string) (models.User, error) {
 	return user, nil
 }
 
-func InsertUser(user *models.User) error {
+func InsertUser(user *models.User) (uint, error) {
 	if err := db.Create(&user).Error; err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return user.ID, nil
 }
 
 type EntryUser struct {
@@ -83,4 +91,11 @@ func FindEntryUsers(createUserID int, modUserID int) (EntryUsers, error) {
 	}
 
 	return EntryUsers{createUser, modUser}, nil
+}
+
+func DeleteUser(id uint) error {
+	if err := db.Delete(models.User{}, id).Error; err != nil {
+		return err
+	}
+	return nil
 }
