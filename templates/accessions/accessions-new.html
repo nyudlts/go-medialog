@@ -18,10 +18,7 @@
           <label for="accession_num">Accession Call Number</label>
           <input type="text" name="accession_num" id="accession_num" />
         </div>
-        <div class="form-group">
-          <label for="accession_num">Accession Call Number</label>
-          <input type="number" name="collection_id" id="collectionID" value="{{.resource.ID}}" />
-        </div>
+        <input type="hidden" name="collection_id" id="collection_id" value="{{ .resource.ID }}" />
         <input type="hidden" name="repository_id" id="repository_id" value="{{ .repository.ID }}">
         <input class="btn btn-primary" type="submit">
       </form>

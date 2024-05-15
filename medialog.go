@@ -46,7 +46,7 @@ func main() {
 	router.SetTrustedProxies([]string{"127.0.0.1"})
 
 	//connect the database
-	if err := database.ConnectDatabase(filepath.Join("database", "medialog.db")); err != nil {
+	if err := database.ConnectDatabase(filepath.Join("database", "medialog-test.db")); err != nil {
 		os.Exit(2)
 	}
 

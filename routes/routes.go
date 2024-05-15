@@ -16,7 +16,7 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Accessions Group
 	accessionsRoutes := router.Group("/accessions")
-	accessionsRoutes.GET(":id/new", func(c *gin.Context) { controllers.NewAccession(c) })
+	accessionsRoutes.GET("new", func(c *gin.Context) { controllers.NewAccession(c) })
 	accessionsRoutes.POST("", func(c *gin.Context) { controllers.CreateAccession(c) })
 	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
 	accessionsRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetAccession(c) })

@@ -1,6 +1,8 @@
 package database
 
 import (
+	"log"
+
 	"github.com/nyudlts/go-medialog/models"
 	"github.com/nyudlts/go-medialog/utils"
 	"gorm.io/gorm/clause"
@@ -40,9 +42,11 @@ func FindPaginatedAccessions(pagination utils.Pagination) ([]models.Accession, e
 }
 
 func InsertAccession(accession *models.Accession) (uint, error) {
+	log.Println("DATABASE BEFORE:", accession.CollectionID)
 	if err := db.Create(accession).Error; err != nil {
 		return 0, err
 	}
+	log.Println("DATABASE AFTER", accession.CollectionID)
 	return accession.ID, nil
 }
 

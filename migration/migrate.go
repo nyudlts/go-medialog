@@ -264,7 +264,7 @@ func createAdminUser() {
 	hash := sha512.Sum512([]byte(password + user.Salt))
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
 
-	if err := database.InsertUser(&user); err != nil {
+	if _, err := database.InsertUser(&user); err != nil {
 		panic(err)
 	}
 

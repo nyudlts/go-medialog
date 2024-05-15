@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -124,7 +125,7 @@ func NewAccession(c *gin.Context) {
 		return
 	}
 
-	resourceID, err := strconv.Atoi(c.Param("id"))
+	resourceID, err := strconv.Atoi(c.Query("resource_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -160,42 +161,26 @@ func CreateAccession(c *gin.Context) {
 		return
 	}
 
-	userId, err := getUserkey(c)
+	userID, err := getUserkey(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	accession.CreatedAt = time.Now()
-	accession.CreatedBy = userId
+	accession.CreatedBy = userID
 	accession.UpdatedAt = time.Now()
-	accession.UpdatedBy = userId
+	accession.UpdatedBy = userID
 
-	c.JSON(200, accession)
+	log.Println("CONTROLLER BEFORE:", accession.CollectionID)
+	accessionID, err := database.InsertAccession(&accession)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	log.Println("CONTROLLER AFTER:", accession.CollectionID)
 
-	/*
-
-		log.Println("Controller collection ID", accession.CollectionID)
-
-		userId, err := getUserkey(c)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-
-		accession.CreatedAt = time.Now()
-		accession.CreatedBy = userId
-		accession.UpdatedAt = time.Now()
-		accession.UpdatedBy = userId
-
-		accessionID, err := database.InsertAccession(&accession)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-
-		c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accessionID))
-	*/
+	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accessionID))
 
 }
 
