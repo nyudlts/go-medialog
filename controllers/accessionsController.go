@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -150,36 +149,48 @@ func NewAccession(c *gin.Context) {
 }
 
 func CreateAccession(c *gin.Context) {
+	//check the user is logged in
 	if !isLoggedIn(c) {
 		c.Redirect(302, "/error")
 		return
 	}
 
+	//bind the form to an accession
 	accession := models.Accession{}
 	if err := c.Bind(&accession); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
+	//get the parent resource from the database
+	resource, err := database.FindResource(uint(accession.CollectionID))
+	if err := c.Bind(&accession); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	accession.Collection = resource
+
+	//get the current user's id
 	userID, err := getUserkey(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
+	//update timestamps and users
 	accession.CreatedAt = time.Now()
 	accession.CreatedBy = userID
 	accession.UpdatedAt = time.Now()
 	accession.UpdatedBy = userID
 
-	log.Println("CONTROLLER BEFORE:", accession.CollectionID)
+	//insert the accession Record
 	accessionID, err := database.InsertAccession(&accession)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Println("CONTROLLER AFTER:", accession.CollectionID)
 
+	//redirect to show
 	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accessionID))
 
 }

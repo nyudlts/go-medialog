@@ -206,7 +206,11 @@ func FindEntryByMediaIDAndCollectionID(mediaID int, collectionID int) (uuid.UUID
 func FindNextMediaCollectionInResource(resourceID uint) (int, error) {
 	var entry models.Entry
 	if err := db.Where("collection_id = ?", resourceID).Order("media_id desc").First(&entry).Error; err != nil {
-		return 0, err
+		if (entry == models.Entry{}) {
+			return 1, nil
+		} else {
+			return 0, err
+		}
 	}
 
 	return entry.MediaID + 1, nil

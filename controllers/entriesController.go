@@ -179,7 +179,7 @@ func NewEntry(c *gin.Context) {
 
 	isAdmin := getCookie("is-admin", c)
 
-	aID := c.Request.URL.Query().Get("accession_id")
+	aID := c.Query("accession_id")
 	accessionID, err := strconv.Atoi(aID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -188,24 +188,28 @@ func NewEntry(c *gin.Context) {
 
 	accession, err := database.FindAccession(uint(accessionID))
 	if err != nil {
+		fmt.Println("ACCESSION")
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	resource, err := database.FindResource(accession.Collection.ID)
 	if err != nil {
+		fmt.Println("RESOURCE")
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	repository, err := database.FindRepository(resource.Repository.ID)
 	if err != nil {
+		fmt.Println("REPOSITORY")
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	mediaID, err := database.FindNextMediaCollectionInResource(resource.ID)
 	if err != nil {
+		fmt.Println("MEDIA")
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -231,12 +235,16 @@ func NewEntry(c *gin.Context) {
 }
 
 func CreateEntry(c *gin.Context) {
+	//check user is logged in
+
+	//bind form to entry
 	var createEntry = models.Entry{}
 	if err := c.Bind(&createEntry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
+	//check if media id is unique
 	b, err := database.IsMediaIDUniqueInResource(createEntry.MediaID, createEntry.Collection.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -248,6 +256,7 @@ func CreateEntry(c *gin.Context) {
 		return
 	}
 
+	//get the user's id
 	userID, err := getUserkey(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -260,11 +269,33 @@ func CreateEntry(c *gin.Context) {
 	createEntry.UpdatedAt = time.Now()
 	createEntry.UpdatedBy = userID
 
+	//get the accession
+	accession, err := database.FindAccession(uint(createEntry.AccessionID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	createEntry.Accession = accession
+
+	//get the resource
+
+	//get the repository
+	repository, err := database.FindRepository(uint(accession.Collection.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	createEntry.Repository = repository
+
+	//insert the entry
 	if _, err := database.InsertEntry(&createEntry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
+	//redirect
 	c.Redirect(302, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
 }
 
