@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -120,13 +119,13 @@ func NewResource(c *gin.Context) {
 
 	isAdmin := getCookie("is-admin", c)
 
-	RepoID, err := strconv.Atoi(c.Param("id"))
+	repoID, err := strconv.Atoi(c.Query("repository_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	repository, err := database.FindRepository(uint(RepoID))
+	repository, err := database.FindRepository(uint(repoID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -139,37 +138,50 @@ func NewResource(c *gin.Context) {
 }
 
 func CreateResource(c *gin.Context) {
+	//ensure user is logged in
 	if !isLoggedIn(c) {
 		c.Redirect(302, "/error")
 		return
 	}
 
+	//bind the form to a resource
 	var resource = models.Collection{}
 	if err := c.Bind(&resource); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
+	//get the repository
+	repository, err := database.FindRepository(uint(resource.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	//set the repository
+	resource.Repository = repository
+
+	//get the current user id
 	userID, err := getUserkey(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
+	//update the timestamps
 	resource.CreatedAt = time.Now()
 	resource.CreatedBy = userID
 	resource.UpdatedAt = time.Now()
 	resource.UpdatedBy = userID
 
-	log.Println(resource.Title)
-	log.Println(resource.CollectionCode)
-
+	//insert the new resource
 	resourceID, err := database.InsertResource(&resource)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
+	//redirect to the new resource
 	c.Redirect(302, fmt.Sprintf("/resources/%d/show", resourceID))
 }
 

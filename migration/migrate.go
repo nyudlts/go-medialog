@@ -5,10 +5,12 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
+	"gopkg.in/yaml.v2"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -20,13 +22,41 @@ var (
 	migrateTables bool
 	migrateData   bool
 	migrateTable  string
+	createAdmin   bool
+	environment   string
+	config        string
+	env           Environment
 )
 
+type Environment struct {
+	LogLocation     string `yaml:"log"`
+	DatbaseLocation string `yaml:"database"`
+}
+
 func init() {
-	flag.BoolVar(&test, "test", false, "load the test database")
+	flag.StringVar(&environment, "environment", "", "")
+	flag.StringVar(&config, "config", "", "")
 	flag.BoolVar(&migrateTables, "migrate-tables", false, "migrate tables")
 	flag.BoolVar(&migrateData, "migrate-data", false, "migrate data from legacy psql")
 	flag.StringVar(&migrateTable, "migrate-table", "", "migrate a table")
+	flag.BoolVar(&createAdmin, "create-admin", false, "")
+}
+
+func getEnvironment(environment string, configBytes []byte) (Environment, error) {
+	envMap := map[string]Environment{}
+
+	err := yaml.Unmarshal(configBytes, &envMap)
+	if err != nil {
+		return Environment{}, err
+	}
+
+	for k, v := range envMap {
+		if environment == k {
+			return v, nil
+		}
+	}
+
+	return Environment{}, fmt.Errorf("Error")
 }
 
 func main() {
@@ -47,16 +77,19 @@ func main() {
 		fmt.Println("Skipping connecting to postgres db")
 	}
 
-	var dbLocat string
-	if test {
-		dbLocat = "database/medialog-test.db"
-	} else {
-		dbLocat = "database/medialog.db"
+	bytes, err := os.ReadFile(config)
+	if err != nil {
+		panic(err)
 	}
 
-	fmt.Println("Migrating", dbLocat)
+	env, err := getEnvironment(environment, bytes)
+	if err != nil {
+		panic(err)
+	}
 
-	if err := database.ConnectDatabase(dbLocat); err != nil {
+	fmt.Println("Migrating", env.DatbaseLocation)
+
+	if err := database.ConnectDatabase(env.DatbaseLocation); err != nil {
 		panic(err)
 	} else {
 		fmt.Println("Connected to database")
@@ -110,6 +143,12 @@ func main() {
 		default:
 			fmt.Printf("ERROR %s is not a valid table to migrate", migrateTable)
 
+		}
+	}
+
+	if createAdmin {
+		if err := createAdminUser(); err != nil {
+			panic(err)
 		}
 	}
 
@@ -173,8 +212,6 @@ func migrateUsersToGorm() error {
 		u := userPG.ToGormModel()
 		sqdb.Create(&u)
 	}
-
-	createAdminUser()
 
 	return nil
 }
@@ -254,7 +291,7 @@ func populateRepos() error {
 	return nil
 }
 
-func createAdminUser() {
+func createAdminUser() error {
 	user := models.User{}
 	user.Email = "admin@nyu.edu"
 	user.IsActive = true
@@ -265,8 +302,9 @@ func createAdminUser() {
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
 
 	if _, err := database.InsertUser(&user); err != nil {
-		panic(err)
+		return err
 	}
 
 	fmt.Println("    * Admin User Created")
+	return nil
 }

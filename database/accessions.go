@@ -43,7 +43,7 @@ func FindPaginatedAccessions(pagination utils.Pagination) ([]models.Accession, e
 
 func InsertAccession(accession *models.Accession) (uint, error) {
 	log.Println("DATABASE BEFORE:", accession.CollectionID)
-	if err := db.Create(accession).Error; err != nil {
+	if err := db.Create(accession).Debug().Error; err != nil {
 		return 0, err
 	}
 	log.Println("DATABASE AFTER", accession.CollectionID)

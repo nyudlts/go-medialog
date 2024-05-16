@@ -29,7 +29,7 @@
                     {{ end }}
                 </table>
             </div>
-            <div class="row"><a href="/resources/{{ .repository.ID }}/new" class="btn btn-primary">Add Resource</a> 
+            <div class="row"><a href="/resources/new?repository_id={{ .repository.ID }}"class="btn btn-primary">Add Resource</a> 
             <a href="/repositories/{{ .repository.ID}}/edit" class="btn btn-secondary">Edit Repository</a></div>
     </div>
 </div>
