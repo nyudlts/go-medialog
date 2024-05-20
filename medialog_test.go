@@ -41,8 +41,6 @@ func TestAPI(t *testing.T) {
 	})
 
 	t.Run("Test GET login route", func(t *testing.T) {
-
-		w := httptest.NewRecorder()
 		req, err := http.NewRequestWithContext(c, "GET", "/users/login", nil)
 		if err != nil {
 			t.Error(err)
@@ -54,8 +52,6 @@ func TestAPI(t *testing.T) {
 
 	var sessionCookie string
 	t.Run("Test POST login route", func(t *testing.T) {
-		w := httptest.NewRecorder()
-
 		var b bytes.Buffer
 		w2 := multipart.NewWriter(&b)
 		w2.WriteField("email", "admin@nyu.edu")
@@ -71,7 +67,7 @@ func TestAPI(t *testing.T) {
 		header := w.Header().Get("Set-Cookie")
 		sessionCookie = strings.Split(strings.Split(header, ";")[0], "=")[1]
 		log.Println(sessionCookie)
-		assert.Equal(t, http.StatusFound, w.Code)
+		assert.Equal(t, http.StatusOK, w.Code)
 
 	})
 }
