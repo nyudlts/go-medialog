@@ -28,7 +28,7 @@ func TestUsers(t *testing.T) {
 		user.IsAdmin = false
 
 		var err error
-		userID, err = database.InsertUser(&user)
+		userID, err = InsertUser(&user)
 		if err != nil {
 			t.Error(err)
 		}
@@ -39,7 +39,7 @@ func TestUsers(t *testing.T) {
 	var user models.User
 	t.Run("Test get a user", func(t *testing.T) {
 		var err error
-		user, err = database.FindUser(userID)
+		user, err = FindUser(userID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -66,11 +66,11 @@ func TestUsers(t *testing.T) {
 
 	t.Run("Test update a user", func(t *testing.T) {
 		user.IsActive = false
-		if err := database.UpdateUser(&user); err != nil {
+		if err := UpdateUser(&user); err != nil {
 			t.Error(err)
 		}
 
-		user2, err := database.FindUser(userID)
+		user2, err := FindUser(userID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -81,13 +81,13 @@ func TestUsers(t *testing.T) {
 	})
 
 	t.Run("Test delete a user", func(t *testing.T) {
-		if err := database.DeleteUser(userID); err != nil {
+		if err := DeleteUser(userID); err != nil {
 			t.Error(err)
 		}
 
 		t.Logf("deleted user %d", userID)
 
-		if _, err := database.FindUser(userID); err == nil {
+		if _, err := FindUser(userID); err == nil {
 			t.Logf("Found deleted user %d", userID)
 		}
 	})

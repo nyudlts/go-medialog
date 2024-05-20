@@ -7,14 +7,13 @@ import (
 	"time"
 
 	"github.com/nyudlts/go-medialog/config"
-	database "github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
 
 func TestAccessions(t *testing.T) {
 	flag.Parse()
 	env, _ = config.GetEnvironment(configuration, environment)
-	database.ConnectDatabase(env.DatabaseLocation)
+	ConnectDatabase(env.DatabaseLocation)
 
 	var accessionID uint
 	t.Run("Test create an accession", func(t *testing.T) {
@@ -27,7 +26,7 @@ func TestAccessions(t *testing.T) {
 		accession.CreatedBy = 56
 		accession.CreatedAt = time.Now()
 		var err error
-		accessionID, err = database.InsertAccession(&accession)
+		accessionID, err = InsertAccession(&accession)
 		if err != nil {
 			t.Error(err)
 		}
@@ -41,7 +40,7 @@ func TestAccessions(t *testing.T) {
 	var accession models.Accession
 	t.Run("Test get an accession", func(t *testing.T) {
 		var err error
-		accession, err = database.FindAccession(accessionID)
+		accession, err = FindAccession(accessionID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -58,11 +57,11 @@ func TestAccessions(t *testing.T) {
 		accession.AccessionNote = "test"
 		accession.UpdatedAt = time.Now()
 
-		if err := database.UpdateAccession(&accession); err != nil {
+		if err := UpdateAccession(&accession); err != nil {
 			t.Error(err)
 		}
 
-		accession2, err := database.FindAccession(accessionID)
+		accession2, err := FindAccession(accessionID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -75,13 +74,13 @@ func TestAccessions(t *testing.T) {
 	})
 
 	t.Run("Test delete an accession", func(t *testing.T) {
-		if err := database.DeleteAccession(accessionID); err != nil {
+		if err := DeleteAccession(accessionID); err != nil {
 			t.Error(err)
 		}
 
 		t.Logf("deleted accessions %d", accessionID)
 
-		if _, err := database.FindAccession(accessionID); err == nil {
+		if _, err := FindAccession(accessionID); err == nil {
 			t.Logf("Found deleted accession %d", accessionID)
 		}
 	})

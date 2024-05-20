@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	database "github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
 
@@ -22,7 +21,7 @@ func TestResources(t *testing.T) {
 		resource.RepositoryID = 3
 
 		var err error
-		resourceID, err = database.InsertResource(&resource)
+		resourceID, err = InsertResource(&resource)
 		if err != nil {
 			t.Error(err)
 		}
@@ -32,7 +31,7 @@ func TestResources(t *testing.T) {
 	var resource models.Collection
 	t.Run("Test Get A Resource", func(t *testing.T) {
 		var err error
-		resource, err = database.FindResource(resourceID)
+		resource, err = FindResource(resourceID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -46,13 +45,13 @@ func TestResources(t *testing.T) {
 
 	t.Run("Test update a resource", func(t *testing.T) {
 		resource.Title = "updated title"
-		if err := database.UpdateResource(&resource); err != nil {
+		if err := UpdateResource(&resource); err != nil {
 			t.Error(err)
 		}
 
 		t.Logf("Updated resource %d", resource.ID)
 
-		resource2, err := database.FindResource(resource.ID)
+		resource2, err := FindResource(resource.ID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -63,11 +62,11 @@ func TestResources(t *testing.T) {
 	})
 
 	t.Run("Test Delete A Resource", func(t *testing.T) {
-		if err := database.DeleteResource(resource.ID); err != nil {
+		if err := DeleteResource(resource.ID); err != nil {
 			t.Error(err)
 		}
 
-		if _, err := database.FindResource(resource.ID); err == nil {
+		if _, err := FindResource(resource.ID); err == nil {
 			t.Logf("Found deleted resource %d", resource.ID)
 		}
 	})

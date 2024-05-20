@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	database "github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
 
@@ -22,7 +21,7 @@ func TestRepositories(t *testing.T) {
 		repository.UpdatedBy = 56
 
 		var err error
-		repositoryID, err = database.CreateRepository(&repository)
+		repositoryID, err = CreateRepository(&repository)
 		if err != nil {
 			t.Error(err)
 		}
@@ -33,7 +32,7 @@ func TestRepositories(t *testing.T) {
 	var repo models.Repository
 	t.Run("Test Get A Repository", func(t *testing.T) {
 		var err error
-		repo, err = database.FindRepository(repositoryID)
+		repo, err = FindRepository(repositoryID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -47,12 +46,12 @@ func TestRepositories(t *testing.T) {
 
 	t.Run("Test Update a Repository", func(t *testing.T) {
 		repo.Slug = "tests"
-		if err := database.UpdateRepository(&repo); err != nil {
+		if err := UpdateRepository(&repo); err != nil {
 			t.Error(err)
 		}
 		t.Logf("Repository %d Updated", repo.ID)
 
-		repo2, err := database.FindRepository(repo.ID)
+		repo2, err := FindRepository(repo.ID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -63,12 +62,12 @@ func TestRepositories(t *testing.T) {
 	})
 
 	t.Run("Test Delete a Repository", func(t *testing.T) {
-		if err := database.DeleteRepository(repo.ID); err != nil {
+		if err := DeleteRepository(repo.ID); err != nil {
 			t.Error(err)
 		}
 		t.Logf("Repository %d Deleted", repo.ID)
 
-		if _, err := database.FindRepository(repo.ID); err == nil {
+		if _, err := FindRepository(repo.ID); err == nil {
 			t.Logf("Found deleted repository")
 		}
 	})
