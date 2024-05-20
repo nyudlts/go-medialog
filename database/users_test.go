@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/nyudlts/go-medialog/controllers"
-	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
 
