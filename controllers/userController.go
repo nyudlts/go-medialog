@@ -109,7 +109,6 @@ func AuthenticateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
-	log.Printf("[INFO] Successfully authenticated user")
 
 	if user.IsAdmin {
 		setCookie("is-admin", true, c)

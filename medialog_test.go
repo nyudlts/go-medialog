@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"flag"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -66,8 +65,7 @@ func TestAPI(t *testing.T) {
 		r.ServeHTTP(w, req)
 		header := w.Header().Get("Set-Cookie")
 		sessionCookie = strings.Split(strings.Split(header, ";")[0], "=")[1]
-		log.Println(sessionCookie)
 		assert.Equal(t, http.StatusOK, w.Code)
-
+		t.Logf(sessionCookie) //placeholder
 	})
 }
