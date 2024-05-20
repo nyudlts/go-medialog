@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
-	"github.com/nyudlts/go-medialog/utils"
 )
 
 func GetResource(c *gin.Context) {
@@ -56,7 +55,7 @@ func GetResource(c *gin.Context) {
 		}
 	}
 
-	pagination := utils.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
+	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
 
 	entries, err := database.FindEntriesByResourceID(resource.ID, pagination)
 	if err != nil {

@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
-	"github.com/nyudlts/go-medialog/utils"
 )
 
 func GetAccessions(c *gin.Context) {
@@ -79,7 +78,7 @@ func GetAccession(c *gin.Context) {
 		}
 	}
 
-	pagination := utils.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
+	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
 
 	entries, err := database.FindEntriesByAccessionID(accession.ID, pagination)
 	if err != nil {
@@ -332,7 +331,7 @@ func SlewAccession(c *gin.Context) {
 		return
 	}
 
-	pagination := utils.Pagination{Limit: 10, Offset: 0, Sort: "media_id"}
+	pagination := database.Pagination{Limit: 10, Offset: 0, Sort: "media_id"}
 
 	entries, err := database.FindEntriesByAccessionID(accession.ID, pagination)
 	if err != nil {

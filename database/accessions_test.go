@@ -1,15 +1,20 @@
-package test
+package database
 
 import (
 	"encoding/json"
+	"flag"
 	"testing"
 	"time"
 
+	"github.com/nyudlts/go-medialog/config"
 	database "github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
 
 func TestAccessions(t *testing.T) {
+	flag.Parse()
+	env, _ = config.GetEnvironment(configuration, environment)
+	database.ConnectDatabase(env.DatabaseLocation)
 
 	var accessionID uint
 	t.Run("Test create an accession", func(t *testing.T) {

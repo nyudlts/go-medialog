@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
-	"github.com/nyudlts/go-medialog/utils"
 )
 
 func GetEntry(c *gin.Context) {
@@ -148,7 +147,7 @@ func GetEntries(c *gin.Context) {
 		p = 0
 	}
 
-	pagination := utils.Pagination{Limit: 10, Offset: (p * 10), Sort: "updated_at desc"}
+	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "updated_at desc"}
 
 	entries, err := database.FindPaginatedEntries(pagination)
 	if err != nil {

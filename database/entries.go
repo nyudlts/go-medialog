@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/nyudlts/bytemath"
 	"github.com/nyudlts/go-medialog/models"
-	"github.com/nyudlts/go-medialog/utils"
 	"gorm.io/gorm/clause"
 )
 
@@ -40,7 +39,7 @@ func FindEntries() ([]models.Entry, error) {
 	return entries, nil
 }
 
-func FindEntriesByResourceID(id uint, pagination utils.Pagination) ([]models.Entry, error) {
+func FindEntriesByResourceID(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Where("collection_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
@@ -48,7 +47,7 @@ func FindEntriesByResourceID(id uint, pagination utils.Pagination) ([]models.Ent
 	return entries, nil
 }
 
-func FindEntriesByAccessionID(id uint, pagination utils.Pagination) ([]models.Entry, error) {
+func FindEntriesByAccessionID(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Where("accession_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
@@ -72,7 +71,7 @@ func FindEntriesSorted(numRecords int) ([]models.Entry, error) {
 	return entries, nil
 }
 
-func FindPaginatedEntries(pagination utils.Pagination) ([]models.Entry, error) {
+func FindPaginatedEntries(pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Preload(clause.Associations).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err

@@ -18,6 +18,16 @@ var filename_partner_codes = map[string]string{
 
 func getMediatypes() map[string]string { return mediatypes }
 
+func GetMediaType(s string) string {
+
+	for k, y := range mediatypes {
+		if k == s {
+			return y
+		}
+	}
+	return "No Match"
+}
+
 var mediatypes = map[string]string{
 	"":                          "",
 	"mediatype_transfer":        "Network Transfer",
@@ -40,16 +50,6 @@ var mediatypes = map[string]string{
 	"mediatype_data_cartridge":  "Data Cartridge",
 	"mediatype_laserdisc":       "Laserdisc",
 	"mediatype_orb":             "Orb Disk",
-}
-
-func GetMediaType(s string) string {
-
-	for k, y := range mediatypes {
-		if k == s {
-			return y
-		}
-	}
-	return "No Match"
 }
 
 func getInterfaces() map[string]string { return interfaces }

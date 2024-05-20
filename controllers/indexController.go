@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
-	"github.com/nyudlts/go-medialog/utils"
 )
 
 func GetIndex(c *gin.Context) {
@@ -16,7 +15,7 @@ func GetIndex(c *gin.Context) {
 	}
 
 	p := 0
-	pagination := utils.Pagination{Limit: 10, Offset: 0, Sort: "updated_at desc"}
+	pagination := database.Pagination{Limit: 10, Offset: 0, Sort: "updated_at desc"}
 
 	entries, err := database.FindPaginatedEntries(pagination)
 	if err != nil {
