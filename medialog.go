@@ -41,7 +41,7 @@ func main() {
 	}
 
 	//get a router
-	router, err = setupRouter("templates/**/*.html")
+	router, err = setupRouter()
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ func main() {
 
 }
 
-func setupRouter(templateLoc string) (*gin.Engine, error) {
+func setupRouter() (*gin.Engine, error) {
 	//configure logger
 	gin.DisableConsoleColor()
 	f, _ := os.Create(env.LogLocation)
@@ -67,7 +67,7 @@ func setupRouter(templateLoc string) (*gin.Engine, error) {
 	utils.SetGlobalFuncs(r)
 
 	//configure the router
-	r.LoadHTMLGlob(templateLoc)
+	r.LoadHTMLGlob("templates/**/*.html")
 	r.StaticFile("/favicon.ico", "./public/favicon.ico")
 	r.Static("/public", "./public")
 	r.SetTrustedProxies([]string{"127.0.0.1"})

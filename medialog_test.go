@@ -21,10 +21,8 @@ func TestAPI(t *testing.T) {
 		panic(err)
 	}
 
-	templates := "../templates/**/*.html"
-
 	t.Run("Test get router", func(t *testing.T) {
-		r, err := setupRouter(templates)
+		r, err := setupRouter()
 		if err != nil {
 			t.Error(err)
 		}
@@ -32,7 +30,7 @@ func TestAPI(t *testing.T) {
 	})
 
 	t.Run("TestLoginRoute", func(t *testing.T) {
-		router, err := setupRouter(templates)
+		router, err := setupRouter()
 		if err != nil {
 			t.Error(err)
 		}
