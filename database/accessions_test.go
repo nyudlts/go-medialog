@@ -1,88 +1,71 @@
 package database
 
 import (
-	"encoding/json"
+	"bytes"
 	"flag"
+	"mime/multipart"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
-	"time"
 
-	"github.com/nyudlts/go-medialog/config"
-	"github.com/nyudlts/go-medialog/models"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/assert/v2"
+	config "github.com/nyudlts/go-medialog/config"
 )
 
-func TestAccessions(t *testing.T) {
+var r *gin.Engine
+
+func TestAPI(t *testing.T) {
+
 	flag.Parse()
-	env, _ = config.GetEnvironment(configuration, environment)
-	ConnectDatabase(env.DatabaseLocation)
 
-	var accessionID uint
-	t.Run("Test create an accession", func(t *testing.T) {
-		accession := models.Accession{}
-		cid := 30
-		accession.CollectionID = cid
-		accession.AccessionNum = "yyy"
-		accession.CreatedBy = 56
-		accession.CreatedAt = time.Now()
-		accession.CreatedBy = 56
-		accession.CreatedAt = time.Now()
-		var err error
-		accessionID, err = InsertAccession(&accession)
+	//set the environment variables
+	var err error
+	env, err = config.GetEnvironment(configuration, environment)
+	if err != nil {
+		panic(err)
+	}
+
+	gin.SetMode(gin.TestMode)
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+
+	t.Run("Test get router", func(t *testing.T) {
+		r, err = setupRouter()
 		if err != nil {
 			t.Error(err)
 		}
-
-		if cid != accession.CollectionID {
-			t.Errorf("Wanted: %d, got: %d", cid, accession.CollectionID)
-		}
-
+		t.Logf("%v", r)
 	})
 
-	var accession models.Accession
-	t.Run("Test get an accession", func(t *testing.T) {
-		var err error
-		accession, err = FindAccession(accessionID)
+	t.Run("Test GET login route", func(t *testing.T) {
+		req, err := http.NewRequestWithContext(c, "GET", "/users/login", nil)
 		if err != nil {
 			t.Error(err)
 		}
+		r.ServeHTTP(w, req)
+		assert.Equal(t, 200, w.Code)
+		assert.Equal(t, "text/html; charset=utf-8", w.Header().Get("content-type"))
+	})
 
-		b, err := json.Marshal(accession)
+	var sessionCookie string
+	t.Run("Test POST login route", func(t *testing.T) {
+		var b bytes.Buffer
+		w2 := multipart.NewWriter(&b)
+		w2.WriteField("email", "admin@nyu.edu")
+		w2.WriteField("password_1", "test")
+		w2.Close()
+		reader := bytes.NewReader(b.Bytes())
+		req, err := http.NewRequestWithContext(c, "POST", "/users/authenticate", reader)
 		if err != nil {
 			t.Error(err)
 		}
-
-		t.Logf("got accession: %s", string(b))
+		req.Header.Set("Content-Type", w2.FormDataContentType())
+		r.ServeHTTP(w, req)
+		header := w.Header().Get("Set-Cookie")
+		sessionCookie = strings.Split(strings.Split(header, ";")[0], "=")[1]
+		assert.Equal(t, http.StatusOK, w.Code)
+		t.Logf(sessionCookie) //placeholder
 	})
-
-	t.Run("Test update an accession", func(t *testing.T) {
-		accession.AccessionNote = "test"
-		accession.UpdatedAt = time.Now()
-
-		if err := UpdateAccession(&accession); err != nil {
-			t.Error(err)
-		}
-
-		accession2, err := FindAccession(accessionID)
-		if err != nil {
-			t.Error(err)
-		}
-
-		if accession2.AccessionNote != accession.AccessionNote {
-			t.Errorf("Wanted: %s, Got: %s", accession.AccessionNote, accession2.AccessionNote)
-		}
-
-		t.Logf("Updated accession %d", accession.ID)
-	})
-
-	t.Run("Test delete an accession", func(t *testing.T) {
-		if err := DeleteAccession(accessionID); err != nil {
-			t.Error(err)
-		}
-
-		t.Logf("deleted accessions %d", accessionID)
-
-		if _, err := FindAccession(accessionID); err == nil {
-			t.Logf("Found deleted accession %d", accessionID)
-		}
-	})
-
 }

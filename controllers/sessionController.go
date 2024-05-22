@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -71,12 +72,14 @@ type SessionCookies struct {
 }
 
 func DumpSession(c *gin.Context) {
+	log.Println("HI")
 	session := sessions.Default(c)
 	sessionCookies := SessionCookies{}
 	userID := session.Get(userkey)
 	if userID != nil {
 		sessionCookies.UserID = userID.(int)
 	}
+	fmt.Println("USERID:", userID)
 
 	adminCookie := session.Get(isAdmin).(bool)
 	sessionCookies.IsAdmin = adminCookie

@@ -21,7 +21,6 @@ func ConnectDatabase(dbLoc string) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 
 }
