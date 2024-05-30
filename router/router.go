@@ -32,7 +32,7 @@ func SetupRouter(env config.Environment) (*gin.Engine, error) {
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
 	//connect the database
-	if err := database.ConnectDatabase(env.DatabaseLocation); err != nil {
+	if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
 		os.Exit(2)
 	}
 

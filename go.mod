@@ -11,6 +11,7 @@ require (
 	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/nyudlts/bytemath v0.0.0-20240402225830-6a01d2be0bdb
 	gopkg.in/yaml.v2 v2.2.2
+	gorm.io/driver/mysql v1.4.0
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.8
 )
@@ -26,6 +27,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.19.0 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gorilla/context v1.1.2 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect

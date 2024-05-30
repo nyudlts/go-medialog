@@ -17,8 +17,9 @@ import (
 )
 
 var (
-	pgdb          *gorm.DB
-	sqdb          *gorm.DB
+	pgdb *gorm.DB
+	//sqdb          *gorm.DB
+	db            *gorm.DB
 	test          bool
 	migrateTables bool
 	migrateData   bool
@@ -68,20 +69,20 @@ func main() {
 
 	fmt.Println("Migrating", env.DatabaseLocation)
 
-	if err := database.ConnectDatabase(env.DatabaseLocation); err != nil {
+	if err := database.ConnectMySQL(); err != nil {
 		panic(err)
 	} else {
 		fmt.Println("Connected to database")
 	}
 
-	sqdb = database.GetDB()
+	db = database.GetDB()
 
 	if migrateTable != "" {
 		switch migrateTable {
 		case "repositories":
 			{
 				fmt.Print("Migrating repositories table: ")
-				if err := sqdb.AutoMigrate(models.Repository{}); err != nil {
+				if err := db.AutoMigrate(models.Repository{}); err != nil {
 					fmt.Printf("ERROR %s\n", err.Error())
 				} else {
 					fmt.Println("OK")
@@ -91,7 +92,7 @@ func main() {
 		case "users":
 			{
 				fmt.Print("Migrating users table")
-				if err := sqdb.AutoMigrate(models.User{}); err != nil {
+				if err := db.AutoMigrate(models.User{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				}
 			}
@@ -99,7 +100,7 @@ func main() {
 		case "entries":
 			{
 				fmt.Println("Migrating entries table: ")
-				if err := sqdb.AutoMigrate(models.Entry{}); err != nil {
+				if err := db.AutoMigrate(models.Entry{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				} else {
 					fmt.Println("OK")
@@ -108,14 +109,14 @@ func main() {
 		case "collections":
 			{
 				fmt.Println("Migrating collections table")
-				if err := sqdb.AutoMigrate(models.Collection{}); err != nil {
+				if err := db.AutoMigrate(models.Collection{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				}
 			}
 		case "accessions":
 			{
 				fmt.Println("Migrating accession table")
-				if err := sqdb.AutoMigrate(models.Accession{}); err != nil {
+				if err := db.AutoMigrate(models.Accession{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				}
 			}
@@ -147,7 +148,7 @@ func main() {
 
 func migrateDBTables() error {
 	fmt.Println("migrating database tables")
-	if err := sqdb.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Collection{}, &models.User{}, &models.Entry{}); err != nil {
+	if err := db.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Collection{}, &models.User{}, &models.Entry{}); err != nil {
 		return err
 	}
 	return nil
@@ -189,7 +190,7 @@ func migrateUsersToGorm() error {
 	pgdb.Find(&usersPG)
 	for _, userPG := range usersPG {
 		u := userPG.ToGormModel()
-		sqdb.Create(&u)
+		db.Create(&u)
 	}
 
 	return nil
@@ -202,12 +203,12 @@ func migrateEntriesToGorm() error {
 	for _, entryPG := range mlog_EntryPGs {
 		e := entryPG.ToGormModel()
 		c := models.Collection{}
-		if err := sqdb.Where("id = ?", e.CollectionID).First(&c).Error; err != nil {
+		if err := db.Where("id = ?", e.CollectionID).First(&c).Error; err != nil {
 			return err
 		}
 		e.RepositoryID = c.RepositoryID
 
-		if err := sqdb.Create(&e).Error; err != nil {
+		if err := db.Create(&e).Error; err != nil {
 			return err
 		}
 	}
@@ -227,7 +228,7 @@ func migrateCollectionsToGorm() error {
 		} else if c.PartnerCode == "nyuarchives" {
 			c.RepositoryID = 6
 		}
-		sqdb.Create(&c)
+		db.Create(&c)
 	}
 
 	return nil
@@ -239,7 +240,7 @@ func migrateAccessionsToGorm() error {
 
 	for _, accessionPG := range accessionsPG {
 		a := accessionPG.ToGormModel()
-		sqdb.Create(&a)
+		db.Create(&a)
 	}
 	return nil
 }
@@ -262,7 +263,7 @@ func populateRepos() error {
 	nyuarchives.Title = "NYU University Archives"
 
 	for _, repo := range []models.Repository{fales, tamwag, nyuarchives} {
-		if err := sqdb.Create(&repo).Error; err != nil {
+		if err := db.Create(&repo).Error; err != nil {
 			return err
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
 
@@ -21,7 +22,7 @@ func TestEntries(t *testing.T) {
 		entry.CollectionID = 1
 		entry.ImagedBy = "Donald Mennerich"
 		var err error
-		entryID, err = InsertEntry(&entry)
+		entryID, err = database.InsertEntry(&entry)
 		if err != nil {
 			t.Error(err)
 		}

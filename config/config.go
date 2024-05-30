@@ -8,8 +8,16 @@ import (
 )
 
 type Environment struct {
-	LogLocation      string `yaml:"log"`
-	DatabaseLocation string `yaml:"database"`
+	LogLocation    string         `yaml:"log"`
+	DatabaseConfig DatabaseConfig `yaml:"database"`
+}
+
+type DatabaseConfig struct {
+	Username     string `yaml:"username"`
+	Password     string `yaml:"password"`
+	URL          string `yaml:"url"`
+	Port         string `yaml:"port"`
+	DatabaseName string `yaml:"database_name"`
 }
 
 func GetEnvironment(config string, environment string) (Environment, error) {
