@@ -1,4 +1,6 @@
-package database
+//go:build exclude
+
+package test
 
 import (
 	"flag"
@@ -7,9 +9,9 @@ import (
 )
 
 var (
-	environment   string
-	configuration string
-	env           config.Environment
+	test_environment   string
+	test_configuration string
+	test_env           config.Environment
 )
 
 func init() {

@@ -1,4 +1,6 @@
 *.db
 *.exe
 build/*
-config/*
+.vscode/*
+.idea/*
+config/go-medialog.conf

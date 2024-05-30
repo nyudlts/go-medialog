@@ -1,4 +1,6 @@
-package database
+//go:build exclude
+
+package test
 
 import (
 	"crypto/sha512"

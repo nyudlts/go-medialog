@@ -1,3 +1,5 @@
+//go:build exclude
+
 package main
 
 import (
@@ -5,12 +7,11 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
-	"os"
 
+	"github.com/nyudlts/go-medialog/config"
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
-	"gopkg.in/yaml.v2"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -24,7 +25,7 @@ var (
 	migrateTable  string
 	createAdmin   bool
 	environment   string
-	config        string
+	conf          string
 	env           Environment
 )
 
@@ -35,28 +36,11 @@ type Environment struct {
 
 func init() {
 	flag.StringVar(&environment, "environment", "", "")
-	flag.StringVar(&config, "config", "", "")
+	flag.StringVar(&conf, "config", "", "")
 	flag.BoolVar(&migrateTables, "migrate-tables", false, "migrate tables")
 	flag.BoolVar(&migrateData, "migrate-data", false, "migrate data from legacy psql")
 	flag.StringVar(&migrateTable, "migrate-table", "", "migrate a table")
 	flag.BoolVar(&createAdmin, "create-admin", false, "")
-}
-
-func getEnvironment(environment string, configBytes []byte) (Environment, error) {
-	envMap := map[string]Environment{}
-
-	err := yaml.Unmarshal(configBytes, &envMap)
-	if err != nil {
-		return Environment{}, err
-	}
-
-	for k, v := range envMap {
-		if environment == k {
-			return v, nil
-		}
-	}
-
-	return Environment{}, fmt.Errorf("Error")
 }
 
 func main() {
@@ -67,7 +51,7 @@ func main() {
 	if migrateData {
 		var err error
 		pgdb, err = gorm.Open(postgres.New(postgres.Config{
-			DSN:                  "host=localhost user=medialog password=medialog dbname=medialog port=5432 sslmode=disable",
+			DSN:                  "host=172.27.16.1 user=medialog password=medialog dbname=medialog port=5432 sslmode=disable",
 			PreferSimpleProtocol: true,
 		}), &gorm.Config{})
 		if err != nil {
@@ -77,19 +61,14 @@ func main() {
 		fmt.Println("Skipping connecting to postgres db")
 	}
 
-	bytes, err := os.ReadFile(config)
+	env, err := config.GetEnvironment(conf, environment)
 	if err != nil {
 		panic(err)
 	}
 
-	env, err := getEnvironment(environment, bytes)
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println("Migrating", env.DatabaseLocation)
 
-	fmt.Println("Migrating", env.DatbaseLocation)
-
-	if err := database.ConnectDatabase(env.DatbaseLocation); err != nil {
+	if err := database.ConnectDatabase(env.DatabaseLocation); err != nil {
 		panic(err)
 	} else {
 		fmt.Println("Connected to database")

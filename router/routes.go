@@ -1,4 +1,4 @@
-package medialog
+package router
 
 import (
 	"net/http"

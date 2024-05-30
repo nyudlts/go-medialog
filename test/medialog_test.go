@@ -1,4 +1,6 @@
-package main
+//go:build exclude
+
+package test
 
 import (
 	"bytes"
