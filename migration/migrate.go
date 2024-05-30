@@ -27,13 +27,8 @@ var (
 	createAdmin   bool
 	environment   string
 	conf          string
-	env           Environment
+	env           config.Environment
 )
-
-type Environment struct {
-	LogLocation     string `yaml:"log"`
-	DatbaseLocation string `yaml:"database"`
-}
 
 func init() {
 	flag.StringVar(&environment, "environment", "", "")
@@ -62,14 +57,15 @@ func main() {
 		fmt.Println("Skipping connecting to postgres db")
 	}
 
-	env, err := config.GetEnvironment(conf, environment)
+	var err error
+	env, err = config.GetEnvironment(conf, environment)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Migrating", env.DatabaseLocation)
+	fmt.Println("Migrating:", env.DatabaseConfig.DatabaseName)
 
-	if err := database.ConnectMySQL(); err != nil {
+	if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
 		panic(err)
 	} else {
 		fmt.Println("Connected to database")
