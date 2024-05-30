@@ -1,5 +1,3 @@
-//go:build exclude
-
 package test
 
 import (
@@ -10,11 +8,14 @@ import (
 	"time"
 
 	"github.com/nyudlts/go-medialog/controllers"
+	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
 
+var userID uint
+
 func TestUsers(t *testing.T) {
-	var userID uint
+
 	var email = "test@nyu.edu"
 	var password = "parallel"
 
@@ -30,7 +31,7 @@ func TestUsers(t *testing.T) {
 		user.IsAdmin = false
 
 		var err error
-		userID, err = InsertUser(&user)
+		userID, err = database.InsertUser(&user)
 		if err != nil {
 			t.Error(err)
 		}
@@ -41,7 +42,7 @@ func TestUsers(t *testing.T) {
 	var user models.User
 	t.Run("Test get a user", func(t *testing.T) {
 		var err error
-		user, err = FindUser(userID)
+		user, err = database.FindUser(userID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -68,29 +69,17 @@ func TestUsers(t *testing.T) {
 
 	t.Run("Test update a user", func(t *testing.T) {
 		user.IsActive = false
-		if err := UpdateUser(&user); err != nil {
+		if err := database.UpdateUser(&user); err != nil {
 			t.Error(err)
 		}
 
-		user2, err := FindUser(userID)
+		user2, err := database.FindUser(userID)
 		if err != nil {
 			t.Error(err)
 		}
 
 		if user2.IsActive {
 			t.Errorf("Wanted false, Got True")
-		}
-	})
-
-	t.Run("Test delete a user", func(t *testing.T) {
-		if err := DeleteUser(userID); err != nil {
-			t.Error(err)
-		}
-
-		t.Logf("deleted user %d", userID)
-
-		if _, err := FindUser(userID); err == nil {
-			t.Logf("Found deleted user %d", userID)
 		}
 	})
 }

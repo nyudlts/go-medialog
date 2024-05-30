@@ -1,23 +1,12 @@
-//go:build exclude
-
 package test
 
 import (
-	"bytes"
-	"flag"
-	"mime/multipart"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
-
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/assert/v2"
-	config "github.com/nyudlts/go-medialog/config"
 )
 
 var r *gin.Engine
 
+/*
 func TestAPI(t *testing.T) {
 
 	flag.Parse()
@@ -153,5 +142,4 @@ func TestAPI(t *testing.T) {
 					assert.Equal(t, 200, w.Code)
 					assert.Equal(t, "text/html; charset=utf-8", w.Header().Get("content-type"))
 				})
-	*/
-}
+*/

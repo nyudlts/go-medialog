@@ -1,5 +1,3 @@
-//go:build exclude
-
 package test
 
 import (
@@ -7,23 +5,26 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
 
+var resourceID uint
+
 func TestResources(t *testing.T) {
 
-	var resourceID uint
 	t.Run("Test Create A Resource", func(t *testing.T) {
 		resource := models.Collection{}
 		resource.PartnerCode = "fales"
 		resource.CollectionCode = "mss.1000"
 		resource.Title = "Test Resource"
-		resource.CreatedBy = 56
+		resource.CreatedBy = int(userID)
 		resource.CreatedAt = time.Now()
-		resource.RepositoryID = 3
+		resource.UpdatedBy = int(userID)
+		resource.RepositoryID = int(repositoryID)
 
 		var err error
-		resourceID, err = InsertResource(&resource)
+		resourceID, err = database.InsertResource(&resource)
 		if err != nil {
 			t.Error(err)
 		}
@@ -33,7 +34,7 @@ func TestResources(t *testing.T) {
 	var resource models.Collection
 	t.Run("Test Get A Resource", func(t *testing.T) {
 		var err error
-		resource, err = FindResource(resourceID)
+		resource, err = database.FindResource(resourceID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -47,29 +48,19 @@ func TestResources(t *testing.T) {
 
 	t.Run("Test update a resource", func(t *testing.T) {
 		resource.Title = "updated title"
-		if err := UpdateResource(&resource); err != nil {
+		if err := database.UpdateResource(&resource); err != nil {
 			t.Error(err)
 		}
 
 		t.Logf("Updated resource %d", resource.ID)
 
-		resource2, err := FindResource(resource.ID)
+		resource2, err := database.FindResource(resource.ID)
 		if err != nil {
 			t.Error(err)
 		}
 
 		if resource2.Title != resource.Title {
 			t.Errorf("Got: %s, Wanted: %s", resource2.Title, resource.Title)
-		}
-	})
-
-	t.Run("Test Delete A Resource", func(t *testing.T) {
-		if err := DeleteResource(resource.ID); err != nil {
-			t.Error(err)
-		}
-
-		if _, err := FindResource(resource.ID); err == nil {
-			t.Logf("Found deleted resource %d", resource.ID)
 		}
 	})
 }

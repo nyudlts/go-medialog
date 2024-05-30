@@ -1,5 +1,3 @@
-//go:build exclude
-
 package test
 
 import (
@@ -11,16 +9,21 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
+var entryID uuid.UUID
+
 func TestEntries(t *testing.T) {
 
-	var entryID uuid.UUID
 	t.Run("Test create an entry", func(t *testing.T) {
 		uid, _ := uuid.NewUUID()
 		entry := models.Entry{}
 		entry.ID = uid
 		entry.MediaID = 789
-		entry.CollectionID = 1
+		entry.CollectionID = int(resourceID)
+		entry.RepositoryID = int(repositoryID)
+		entry.AccessionID = int(accessionID)
 		entry.ImagedBy = "Donald Mennerich"
+		entry.CreatedBy = int(userID)
+		entry.UpdatedBy = int(userID)
 		var err error
 		entryID, err = database.InsertEntry(&entry)
 		if err != nil {
@@ -33,7 +36,7 @@ func TestEntries(t *testing.T) {
 	var entry models.Entry
 	t.Run("Test get an entry", func(t *testing.T) {
 		var err error
-		entry, err = FindEntry(entryID)
+		entry, err = database.FindEntry(entryID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -49,9 +52,9 @@ func TestEntries(t *testing.T) {
 
 	t.Run("Test Unique Media ID in Resource", func(t *testing.T) {
 		mediaID := 5
-		resourceID := uint(1)
+		resourceID := resourceID
 
-		got, err := IsMediaIDUniqueInResource(mediaID, resourceID)
+		got, err := database.IsMediaIDUniqueInResource(mediaID, resourceID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -65,9 +68,9 @@ func TestEntries(t *testing.T) {
 	t.Run("Test Non-Unique Media ID in Resource", func(t *testing.T) {
 
 		mediaID := 789
-		resourceID := uint(1)
+		resourceID := resourceID
 
-		got, err := IsMediaIDUniqueInResource(mediaID, resourceID)
+		got, err := database.IsMediaIDUniqueInResource(mediaID, resourceID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -81,29 +84,17 @@ func TestEntries(t *testing.T) {
 
 	t.Run("test update an entry", func(t *testing.T) {
 		entry.DispositionNote = "To Be Deleted"
-		if err := UpdateEntry(&entry); err != nil {
+		if err := database.UpdateEntry(&entry); err != nil {
 			t.Error(err)
 		}
 
-		entry2, err := FindEntry(entryID)
+		entry2, err := database.FindEntry(entryID)
 		if err != nil {
 			t.Error(err)
 		}
 
 		if entry.DispositionNote != entry2.DispositionNote {
 			t.Errorf("Wanted: %s, Got %s", entry.DispositionNote, entry2.DispositionNote)
-		}
-	})
-
-	t.Run("Test delete an entry", func(t *testing.T) {
-		if err := DeleteEntry(entryID); err != nil {
-			t.Error(err)
-		}
-
-		t.Logf("deleted entry %d", entryID)
-
-		if _, err := FindEntry(entryID); err == nil {
-			t.Logf("Found deleted entry %d", entryID)
 		}
 	})
 }
