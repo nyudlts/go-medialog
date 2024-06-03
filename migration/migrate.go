@@ -27,10 +27,11 @@ var (
 	createAdmin   bool
 	environment   string
 	conf          string
-	env           config.Environment
+	sqlite        bool
 )
 
 func init() {
+	flag.BoolVar(&sqlite, "sqlite", false, "")
 	flag.StringVar(&environment, "environment", "", "")
 	flag.StringVar(&conf, "config", "", "")
 	flag.BoolVar(&migrateTables, "migrate-tables", false, "migrate tables")
@@ -57,18 +58,34 @@ func main() {
 		fmt.Println("Skipping connecting to postgres db")
 	}
 
-	var err error
-	env, err = config.GetEnvironment(conf, environment)
-	if err != nil {
-		panic(err)
-	}
+	if sqlite {
+		env, err := config.GetSQlite(conf, environment)
+		if err != nil {
+			panic(err)
+		}
 
-	fmt.Println("Migrating:", env.DatabaseConfig.DatabaseName)
-
-	if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
-		panic(err)
-	} else {
+		fmt.Println("Migrating:", env.DatabaseLocation)
+		if err := database.ConnectDatabase(env.DatabaseLocation); err != nil {
+			panic(err)
+		}
 		fmt.Println("Connected to database")
+
+	} else {
+
+		var err error
+		env, err := config.GetEnvironment(conf, environment)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println("Migrating:", env.DatabaseConfig.DatabaseName)
+
+		if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
+			panic(err)
+		}
+
+		fmt.Println("Connected to database")
+
 	}
 
 	db = database.GetDB()

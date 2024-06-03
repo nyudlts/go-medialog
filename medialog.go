@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	config "github.com/nyudlts/go-medialog/config"
 	router "github.com/nyudlts/go-medialog/router"
 )
@@ -11,7 +12,7 @@ import (
 var (
 	environment   string
 	configuration string
-	env           config.Environment
+	sqlite        bool
 )
 
 const version = "v0.1.1-alpha"
@@ -20,6 +21,7 @@ func init() {
 
 	flag.StringVar(&environment, "environment", "", "")
 	flag.StringVar(&configuration, "config", "", "")
+	flag.BoolVar(&sqlite, "sqlite", false, "")
 }
 
 func main() {
@@ -27,16 +29,29 @@ func main() {
 	flag.Parse()
 
 	//set the environment variables
-	var err error
-	env, err = config.GetEnvironment(configuration, environment)
-	if err != nil {
-		panic(err)
-	}
 
 	//get a router
-	r, err := router.SetupRouter(env)
-	if err != nil {
-		panic(err)
+	var r *gin.Engine
+	if sqlite {
+		env, err := config.GetSQlite(configuration, environment)
+		if err != nil {
+			panic(err)
+		}
+		r, err = router.SetupSQRouter(env)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+
+		env, err := config.GetEnvironment(configuration, environment)
+		if err != nil {
+			panic(err)
+		}
+
+		r, err = router.SetupRouter(env)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	//start the application
