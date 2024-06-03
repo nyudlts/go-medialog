@@ -14,7 +14,7 @@ var (
 	env           config.Environment
 )
 
-const version = "v0.1.0-alpha"
+const version = "v0.1.1-alpha"
 
 func init() {
 
