@@ -388,10 +388,23 @@ func createSlewEntry(slew Slew, accession models.Accession) error {
 		if err != nil {
 			return err
 		}
+
+		resource, err := database.FindResource(uint(accession.CollectionID))
+		if err != nil {
+			return err
+		}
+
+		repository, err := database.FindRepository(uint(resource.RepositoryID))
+		if err != nil {
+			return err
+		}
+
 		entry.MediaID = mediaID
 		entry.AccessionID = int(accession.ID)
 		entry.RepositoryID = int(accession.Collection.RepositoryID)
+		entry.Repository = repository
 		entry.CollectionID = int(accession.Collection.ID)
+		entry.Collection = resource
 		entry.Mediatype = slew.Mediatype
 		entry.StockSizeNum = slew.MediaStockSize
 		entry.StockUnit = slew.MediaStockUnit
