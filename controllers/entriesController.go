@@ -451,6 +451,24 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
+	accession, err := database.FindAccession(uint(entry.AccessionID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource, err := database.FindResource(uint(accession.CollectionID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	repository, err := database.FindRepository(uint(resource.RepositoryID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	entry.ID = newUUID
 	entry.MediaID = nextID
 	entry.CreatedAt = time.Now()
@@ -458,6 +476,12 @@ func CloneEntry(c *gin.Context) {
 	entry.UpdatedAt = time.Now()
 	entry.UpdatedBy = userID
 	entry.LabelText = ""
+	entry.AccessionID = int(accession.ID)
+	entry.Accession = accession
+	entry.CollectionID = int(resource.ID)
+	entry.Collection = resource
+	entry.RepositoryID = int(resource.RepositoryID)
+	entry.Repository = repository
 
 	if _, err := database.InsertEntry(&entry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
