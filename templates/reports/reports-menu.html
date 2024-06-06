@@ -1,67 +1,65 @@
-<div class="container">
-    <div class="card card-default">
-        <div class="card-header">
-            <h5 class="card-title">Reports</h5>
-        </div>
-        <div class="card-body">                   
-            <form action="/reports/range" method="post">
-                <div class="form-group row">
-                    <div class="col-sm-2">start-date</div>
-                    <div class="col-sm-4">
-                        <select name="start-year" id="start-year">
-                            {{ range $year := .years }}
-                                <option value="{{ $year }}">{{ $year }}</option>
-                            {{ end }}
-                        </select>
-                        
-                        <select name="start-month" id="start-month">
-                            {{ range $month := .months }}
-                                <option value="{{ $month }}">{{ $month }}</option>
-                            {{ end }}
-                        </select>
-                        
-                        <select name="start-day" id="start-day">
-                            {{ range $day := .days }}
-                                <option value="{{ $day }}">{{ $day }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
+<div class="card card-default">
+    <div class="card-header">
+        <h5 class="card-title">Reports</h5>
+    </div>
+    <div class="card-body">                   
+        <form action="/reports/range" method="post">
+            <div class="form-group row">
+                <div class="col-sm-2">start-date</div>
+                <div class="col-sm-4">
+                    <select name="start-year" id="start-year">
+                        {{ range $year := .years }}
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        {{ end }}
+                    </select>
+                    
+                    <select name="start-month" id="start-month">
+                        {{ range $month := .months }}
+                            <option value="{{ $month }}">{{ $month }}</option>
+                        {{ end }}
+                    </select>
+                    
+                    <select name="start-day" id="start-day">
+                        {{ range $day := .days }}
+                            <option value="{{ $day }}">{{ $day }}</option>
+                        {{ end }}
+                    </select>
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm-2">end-date</div>
-                    <div class="col-sm-4">
-                        <select name="end-year" id="end-year">
-                            {{ range $year := .years }}
-                                <option value="{{ $year }}">{{ $year }}</option>
-                            {{ end }}
-                        </select>
-                        
-                        <select name="end-month" id="end-month">
-                            {{ range $month := .months }}
-                                <option value="{{ $month }}">{{ $month }}</option>
-                            {{ end }}
-                        </select>
-                
-                        <select name="end-day" id="end-day">
-                            {{ range $day := .days }}
-                                <option value="{{ $day }}">{{ $day }}</option>
-                            {{ end }}
-                        </select> 
-                    </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">end-date</div>
+                <div class="col-sm-4">
+                    <select name="end-year" id="end-year">
+                        {{ range $year := .years }}
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        {{ end }}
+                    </select>
+                    
+                    <select name="end-month" id="end-month">
+                        {{ range $month := .months }}
+                            <option value="{{ $month }}">{{ $month }}</option>
+                        {{ end }}
+                    </select>
+            
+                    <select name="end-day" id="end-day">
+                        {{ range $day := .days }}
+                            <option value="{{ $day }}">{{ $day }}</option>
+                        {{ end }}
+                    </select> 
                 </div>
-                <div class="form-group row">
-                    <div class="col-sm-2">repository</div>
-                    <div class="col-sm-4">
-                        <select name="partner_code" id="partner_code">
-                            {{ range $id, $slug := .partner_codes }}
-                                <option value="{{ $id }}">{{ $slug }}</option>
-                            {{ end }}
-                        </select>
-                    </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2">repository</div>
+                <div class="col-sm-4">
+                    <select name="partner_code" id="partner_code">
+                        {{ range $id, $slug := .partner_codes }}
+                            <option value="{{ $id }}">{{ $slug }}</option>
+                        {{ end }}
+                    </select>
                 </div>
-                <br>
-                <input type="submit">
-            </form>
-        </div>
+            </div>
+            <br>
+            <input type="submit">
+        </form>
     </div>
 </div>

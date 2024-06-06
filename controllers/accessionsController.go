@@ -293,7 +293,7 @@ func DeleteAccession(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/resources/accession.ResourceID/show", accession.CollectionID))
+	c.Redirect(302, fmt.Sprintf("/resources/%d/show", accession.CollectionID))
 }
 
 type Slew struct {
