@@ -18,9 +18,9 @@ func TestEntries(t *testing.T) {
 		entry := models.Entry{}
 		entry.ID = uid
 		entry.MediaID = 789
-		entry.CollectionID = int(resourceID)
-		entry.RepositoryID = int(repositoryID)
-		entry.AccessionID = int(accessionID)
+		entry.ResourceID = resourceID
+		entry.RepositoryID = repositoryID
+		entry.AccessionID = accessionID
 		entry.ImagedBy = "Donald Mennerich"
 		entry.CreatedBy = int(userID)
 		entry.UpdatedBy = int(userID)
@@ -51,7 +51,7 @@ func TestEntries(t *testing.T) {
 	})
 
 	t.Run("Test Unique Media ID in Resource", func(t *testing.T) {
-		mediaID := 5
+		mediaID := uint(5)
 		resourceID := resourceID
 
 		got, err := database.IsMediaIDUniqueInResource(mediaID, resourceID)
@@ -67,7 +67,7 @@ func TestEntries(t *testing.T) {
 
 	t.Run("Test Non-Unique Media ID in Resource", func(t *testing.T) {
 
-		mediaID := 789
+		mediaID := uint(789)
 		resourceID := resourceID
 
 		got, err := database.IsMediaIDUniqueInResource(mediaID, resourceID)

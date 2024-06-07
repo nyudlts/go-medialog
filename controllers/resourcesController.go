@@ -144,7 +144,7 @@ func CreateResource(c *gin.Context) {
 	}
 
 	//bind the form to a resource
-	var resource = models.Collection{}
+	var resource = models.Resource{}
 	if err := c.Bind(&resource); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -216,7 +216,7 @@ func UpdateResource(c *gin.Context) {
 		return
 	}
 
-	var updateResource = models.Collection{}
+	var updateResource = models.Resource{}
 	if err := c.Bind(&updateResource); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return

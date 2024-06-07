@@ -12,7 +12,7 @@ var accessionID uint
 func TestAccessions(t *testing.T) {
 	t.Run("Test Create a Accession", func(t *testing.T) {
 		accession := models.Accession{}
-		accession.CollectionID = int(resourceID)
+		accession.ResourceID = resourceID
 		accession.AccessionNum = "test.acc"
 		accession.CreatedBy = int(userID)
 		accession.UpdatedBy = int(userID)

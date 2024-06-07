@@ -181,7 +181,7 @@ func GetRepository(c *gin.Context) {
 		return
 	}
 
-	collections, err := database.FindResourcesByRepositoryID(repository.ID)
+	resources, err := database.FindResourcesByRepositoryID(repository.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -189,7 +189,7 @@ func GetRepository(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "repositories-show.html", gin.H{
 		"repository":      repository,
-		"resources":       collections,
+		"resources":       resources,
 		"isAdmin":         isAdmin,
 		"isAuthenticated": true,
 	})

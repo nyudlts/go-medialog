@@ -25,7 +25,7 @@ func (a *AccessionPG) ToGormModel() Accession {
 	accession.AccessionNum = a.AccessionNum
 	accession.AccessionNote = a.AccessionNote
 	accession.AccessionState = a.AccessionState
-	accession.CollectionID = a.CollectionID
+	accession.ResourceID = uint(a.CollectionID)
 	accession.CreatedAt = a.CreatedAt
 	accession.CreatedBy = a.CreatedBy
 	accession.UpdatedAt = a.ModifiedAt
@@ -45,17 +45,17 @@ type CollectionPG struct {
 	ModifiedAt     time.Time `json:"modified_at"`
 }
 
-func (c *CollectionPG) ToGormModel() Collection {
-	collection := Collection{}
-	collection.ID = uint(c.ID)
-	collection.Title = c.Title
-	collection.CollectionCode = c.CollectionCode
-	collection.PartnerCode = c.PartnerCode
-	collection.CreatedBy = c.CreatedBy
-	collection.CreatedAt = c.CreatedAt
-	collection.UpdatedBy = c.ModifiedBy
-	collection.UpdatedAt = c.ModifiedAt
-	return collection
+func (c *CollectionPG) ToGormModel() Resource {
+	resource := Resource{}
+	resource.ID = uint(c.ID)
+	resource.Title = c.Title
+	resource.CollectionCode = c.CollectionCode
+	resource.PartnerCode = c.PartnerCode
+	resource.CreatedBy = c.CreatedBy
+	resource.CreatedAt = c.CreatedAt
+	resource.UpdatedBy = c.ModifiedBy
+	resource.UpdatedAt = c.ModifiedAt
+	return resource
 }
 
 type UserPG struct {
@@ -159,7 +159,7 @@ func (mlog *Mlog_EntryPG) ToGormModel() Entry {
 	e.UpdatedAt = mlog.UpdatedAt
 	e.CreatedBy = mlog.CreatedBy
 	e.UpdatedBy = mlog.UpdatedBy
-	e.MediaID = mlog.MediaID
+	e.MediaID = uint(mlog.MediaID)
 	e.Mediatype = mlog.Mediatype
 	e.Manufacturer = mlog.Manufacturer
 	e.ManufacturerSerial = mlog.ManufacturerSerial
@@ -179,8 +179,8 @@ func (mlog *Mlog_EntryPG) ToGormModel() Entry {
 	e.DispositionNote = mlog.DispositionNote
 	e.StockUnit = mlog.StockUnit
 	e.StockSizeNum = mlog.StockSizeNum
-	e.CollectionID = mlog.CollectionID
-	e.AccessionID = mlog.AccessionID
+	e.ResourceID = uint(mlog.CollectionID)
+	e.AccessionID = uint(mlog.AccessionID)
 	e.IsRefreshed = mlog.IsRefreshed
 	e.IsTransferred = mlog.IsTransferred
 	e.ContentType = mlog.ContentType

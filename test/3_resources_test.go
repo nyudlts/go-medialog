@@ -14,14 +14,14 @@ var resourceID uint
 func TestResources(t *testing.T) {
 
 	t.Run("Test Create A Resource", func(t *testing.T) {
-		resource := models.Collection{}
+		resource := models.Resource{}
 		resource.PartnerCode = "fales"
 		resource.CollectionCode = "mss.1000"
 		resource.Title = "Test Resource"
 		resource.CreatedBy = int(userID)
 		resource.CreatedAt = time.Now()
 		resource.UpdatedBy = int(userID)
-		resource.RepositoryID = int(repositoryID)
+		resource.RepositoryID = repositoryID
 
 		var err error
 		resourceID, err = database.InsertResource(&resource)
@@ -31,7 +31,7 @@ func TestResources(t *testing.T) {
 		t.Logf("Created resource %d", resourceID)
 	})
 
-	var resource models.Collection
+	var resource models.Resource
 	t.Run("Test Get A Resource", func(t *testing.T) {
 		var err error
 		resource, err = database.FindResource(resourceID)

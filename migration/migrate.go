@@ -85,7 +85,6 @@ func main() {
 		}
 
 		fmt.Println("Connected to database")
-
 	}
 
 	db = database.GetDB()
@@ -119,10 +118,10 @@ func main() {
 					fmt.Println("OK")
 				}
 			}
-		case "collections":
+		case "resources":
 			{
-				fmt.Println("Migrating collections table")
-				if err := db.AutoMigrate(models.Collection{}); err != nil {
+				fmt.Println("Migrating resourcess table")
+				if err := db.AutoMigrate(models.Resource{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				}
 			}
@@ -161,7 +160,7 @@ func main() {
 
 func migrateDBTables() error {
 	fmt.Println("migrating database tables")
-	if err := db.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Collection{}, &models.User{}, &models.Entry{}); err != nil {
+	if err := db.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Resource{}, &models.User{}, &models.Entry{}); err != nil {
 		return err
 	}
 	return nil
@@ -215,8 +214,8 @@ func migrateEntriesToGorm() error {
 	pgdb.Find(&mlog_EntryPGs)
 	for _, entryPG := range mlog_EntryPGs {
 		e := entryPG.ToGormModel()
-		c := models.Collection{}
-		if err := db.Where("id = ?", e.CollectionID).First(&c).Error; err != nil {
+		c := models.Resource{}
+		if err := db.Where("id = ?", e.ResourceID).First(&c).Error; err != nil {
 			return err
 		}
 		e.RepositoryID = c.RepositoryID

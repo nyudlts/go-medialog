@@ -16,7 +16,7 @@ type Repository struct {
 	Title     string    `json:"title" form:"title"`
 }
 
-type Collection struct {
+type Resource struct {
 	ID             uint       `json:"id" gorm:"primaryKey" form:"id"`
 	Title          string     `json:"title" form:"title"`
 	CollectionCode string     `json:"collection_code" form:"collection_code"`
@@ -25,21 +25,21 @@ type Collection struct {
 	UpdatedAt      time.Time  `json:"updated_at"`
 	CreatedBy      int        `json:"created_by"`
 	UpdatedBy      int        `json:"modified_by"`
-	RepositoryID   int        `json:"repository_id" form:"repository_id"`
+	RepositoryID   uint       `json:"repository_id" form:"repository_id"`
 	Repository     Repository `json:"repository"`
 }
 
 type Accession struct {
-	ID             uint       `json:"id" gorm:"primaryKey" form:"id"`
-	AccessionNum   string     `json:"accession_num" form:"accession_num"`
-	AccessionNote  string     `json:"accession_note"`  //deprecated
-	AccessionState string     `json:"accession_state"` //deprecated
-	CreatedAt      time.Time  `json:"created_at"`
-	UpdatedAt      time.Time  `json:"updated_at"`
-	CreatedBy      int        `json:"created_by"`
-	UpdatedBy      int        `json:"updated_by"`
-	CollectionID   int        `json:"collection_id" form:"collection_id"`
-	Collection     Collection `json:"collection"`
+	ID             uint      `json:"id" gorm:"primaryKey" form:"id"`
+	AccessionNum   string    `json:"accession_num" form:"accession_num"`
+	AccessionNote  string    `json:"accession_note"`  //deprecated
+	AccessionState string    `json:"accession_state"` //deprecated
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	CreatedBy      int       `json:"created_by"`
+	UpdatedBy      int       `json:"updated_by"`
+	ResourceID     uint      `json:"resource_id" form:"resource_id"`
+	Resource       Resource  `json:"resource"`
 }
 
 type Entry struct {
@@ -48,7 +48,7 @@ type Entry struct {
 	UpdatedAt             time.Time  `json:"updated_at"`
 	CreatedBy             int        `json:"created_by"`
 	UpdatedBy             int        `json:"updated_by"`
-	MediaID               int        `json:"media_id" form:"media_id"`
+	MediaID               uint       `json:"media_id" form:"media_id"`
 	Mediatype             string     `json:"mediatype" form:"mediatype"`
 	Manufacturer          string     `json:"manufacturer" form:"manufacturer"`
 	ManufacturerSerial    string     `json:"manufacturer_serial" form:"manufacturer_serial"`
@@ -68,12 +68,12 @@ type Entry struct {
 	DispositionNote       string     `json:"disposition_note" form:"disposition_note"`
 	StockUnit             string     `json:"stock_unit" form:"stock_unit"`
 	StockSizeNum          float32    `json:"stock_size_num" form:"stock_size_num"`
-	CollectionID          int        `json:"collection_id" form:"collection_id"`
-	Collection            Collection `json:"collection"`
-	AccessionID           int        `json:"accession_id" form:"accession_id"`
-	Accession             Accession  `json:"accession"`
-	RepositoryID          int        `json:"repository_id" form:"repository_id"`
+	RepositoryID          uint       `json:"repository_id" form:"repository_id"`
 	Repository            Repository `json:"repository"`
+	ResourceID            uint       `json:"resource_id" form:"resource_id"`
+	Resource              Resource   `json:"resource"`
+	AccessionID           uint       `json:"accession_id" form:"accession_id"`
+	Accession             Accession  `json:"accession"`
 	IsRefreshed           bool       `json:"is_refreshed" form:"is_refreshed"`
 	IsTransferred         bool       `json:"is_transferred"`
 	ContentType           string     `json:"content_type" form:"content_type"`

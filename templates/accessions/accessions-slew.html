@@ -5,7 +5,7 @@
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/">Medialog<</a></li>
       <li class="breadcrumb-item"><a href="/repositories/{{ .repository.ID }}/show">{{ .repository.Slug}}</a></li>
-      <li class="breadcrumb-item"><a href="/resources/{{ .accession.Collection.ID }}/show">{{ .accession.Collection.CollectionCode }}: {{ .accession.Collection.Title }}</a></li>
+      <li class="breadcrumb-item"><a href="/resources/{{ .accession.Resource.ID }}/show">{{ .accession.Resource.CollectionCode }}: {{ .accession.Resource.Title }}</a></li>
       <li class="breadcrumb-item active" aria-current="page">{{ .accession.AccessionNum }}</li>
     </ol>
 </nav>

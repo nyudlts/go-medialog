@@ -14,31 +14,62 @@ var (
 	configuration string
 	env           config.Environment
 	db            *gorm.DB
+	sqlite        bool
+	sqEnv         config.SQLiteEnv
 )
 
 func init() {
 	flag.StringVar(&environment, "environment", "", "")
 	flag.StringVar(&configuration, "config", "", "")
+	flag.BoolVar(&sqlite, "sqlite", false, "")
 }
 
 func TestDatabase(t *testing.T) {
-	t.Run("Test get the environment", func(t *testing.T) {
-		var err error
-		env, err = config.GetEnvironment(configuration, environment)
+
+	if sqlite {
+		t.Run("Test get a sqlite environment", func(t *testing.T) {
+			var err error
+			sqEnv, err = config.GetSQlite(configuration, environment)
+			if err != nil {
+				t.Error(err)
+			}
+		})
+
+		t.Run("Test COnnect SQLite database", func(t *testing.T) {
+			if err := database.ConnectDatabase(sqEnv.DatabaseLocation); err != nil {
+				t.Error(err)
+			}
+		})
+
+	} else {
+		t.Run("Test get the mysql environment", func(t *testing.T) {
+			var err error
+			env, err = config.GetEnvironment(configuration, environment)
+			if err != nil {
+				t.Error(err)
+			}
+			t.Logf("%v", env)
+		})
+
+		t.Run("Test Connect Database", func(t *testing.T) {
+			if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
+				t.Error(err)
+			}
+		})
+
+	}
+
+	t.Run("Test get the database", func(t *testing.T) {
+		db = database.GetDB()
+		t.Logf("%v", db)
+	})
+
+	t.Run("Test get a table", func(t *testing.T) {
+		entries, err := database.FindEntries()
 		if err != nil {
 			t.Error(err)
 		}
-		t.Logf("%v", env)
-	})
 
-	t.Run("Test Connect Database", func(t *testing.T) {
-		if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
-			t.Error(err)
-		}
-	})
-
-	t.Run("Test get the database", func(t *testing.T) {
-		db := database.GetDB()
-		t.Logf("%v", db)
+		t.Logf("%v", entries)
 	})
 }

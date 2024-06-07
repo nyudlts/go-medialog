@@ -16,7 +16,7 @@
         {{ range $entry := .entries }}
         <tr>
             <td>{{ $entry.Repository.Slug }}</td>
-            <td>{{ $entry.Collection.CollectionCode }}<br>{{ $entry.Collection.Title}}</td>
+            <td>{{ $entry.Resource.sCode }}<br>{{ $entry.Resource.Title}}</td>
             <td>{{ $entry.Accession.AccessionNum }}</td>
             <td>{{ $entry.MediaID }}</td>
             <td>{{ getMediatype $entry.Mediatype }}</td>

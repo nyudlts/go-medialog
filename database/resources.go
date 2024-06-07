@@ -5,39 +5,39 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func FindResources() ([]models.Collection, error) {
-	collections := []models.Collection{}
-	if err := db.Find(&collections).Error; err != nil {
-		return collections, err
+func FindResources() ([]models.Resource, error) {
+	resources := []models.Resource{}
+	if err := db.Find(&resources).Error; err != nil {
+		return resources, err
 	}
-	return collections, nil
+	return resources, nil
 }
 
-func FindResource(id uint) (models.Collection, error) {
-	collection := models.Collection{}
-	if err := db.Preload(clause.Associations).Where("id = ?", id).First(&collection).Error; err != nil {
-		return collection, err
+func FindResource(id uint) (models.Resource, error) {
+	resource := models.Resource{}
+	if err := db.Preload(clause.Associations).Where("id = ?", id).First(&resource).Error; err != nil {
+		return resource, err
 	}
-	return collection, nil
+	return resource, nil
 }
 
-func FindResourcesByRepositoryID(repositoryID uint) ([]models.Collection, error) {
-	collections := []models.Collection{}
-	if err := db.Where("repository_id = ?", repositoryID).Find(&collections).Error; err != nil {
-		return collections, err
+func FindResourcesByRepositoryID(repositoryID uint) ([]models.Resource, error) {
+	resources := []models.Resource{}
+	if err := db.Where("repository_id = ?", repositoryID).Find(&resources).Error; err != nil {
+		return resources, err
 	}
-	return collections, nil
+	return resources, nil
 }
 
-func FindPaginatedResources(pagination Pagination) ([]models.Collection, error) {
-	resources := []models.Collection{}
+func FindPaginatedResources(pagination Pagination) ([]models.Resource, error) {
+	resources := []models.Resource{}
 	if err := db.Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&resources).Error; err != nil {
 		return resources, err
 	}
 	return resources, nil
 }
 
-func InsertResource(resource *models.Collection) (uint, error) {
+func InsertResource(resource *models.Resource) (uint, error) {
 	if err := db.Create(resource).Error; err != nil {
 		return 0, err
 	}
@@ -45,13 +45,13 @@ func InsertResource(resource *models.Collection) (uint, error) {
 }
 
 func DeleteResource(id uint) error {
-	if err := db.Delete(models.Collection{}, id).Error; err != nil {
+	if err := db.Delete(models.Resource{}, id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpdateResource(resource *models.Collection) error {
+func UpdateResource(resource *models.Resource) error {
 	if err := db.Save(resource).Error; err != nil {
 		return err
 	}

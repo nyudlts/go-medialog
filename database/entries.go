@@ -41,7 +41,7 @@ func FindEntries() ([]models.Entry, error) {
 
 func FindEntriesByResourceID(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Where("collection_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+	if err := db.Where("resource_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil
@@ -106,7 +106,7 @@ func (s Summaries) GetTotals() Totals {
 
 func GetSummaryByResource(id uint) (Summaries, error) {
 	entries := []models.Entry{}
-	if err := db.Where("collection_id = ?", id).Find(&entries).Error; err != nil {
+	if err := db.Where("resource_id = ?", id).Find(&entries).Error; err != nil {
 		return Summaries{}, err
 	}
 	return getSummary(entries), nil
@@ -194,17 +194,17 @@ func getSummary(entries []models.Entry) Summaries {
 	return summaries
 }
 
-func FindEntryByMediaIDAndCollectionID(mediaID int, collectionID int) (uuid.UUID, error) {
+func FindEntryByMediaIDAndCollectionID(mediaID uint, ResourceID uint) (uuid.UUID, error) {
 	entry := models.Entry{}
-	if err := db.Where("media_id = ? AND collection_id = ?", mediaID, collectionID).First(&entry).Error; err != nil {
+	if err := db.Where("media_id = ? AND resource_id = ?", mediaID, ResourceID).First(&entry).Error; err != nil {
 		return uuid.New(), err
 	}
 	return entry.ID, nil
 }
 
-func FindNextMediaCollectionInResource(resourceID uint) (int, error) {
+func FindNextMediaCollectionInResource(resourceID uint) (uint, error) {
 	var entry models.Entry
-	if err := db.Where("collection_id = ?", resourceID).Order("media_id desc").First(&entry).Error; err != nil {
+	if err := db.Where("resource_id = ?", resourceID).Order("media_id desc").First(&entry).Error; err != nil {
 		if (entry == models.Entry{}) {
 			return 1, nil
 		} else {
@@ -215,11 +215,11 @@ func FindNextMediaCollectionInResource(resourceID uint) (int, error) {
 	return entry.MediaID + 1, nil
 }
 
-func IsMediaIDUniqueInResource(mediaID int, resourceID uint) (bool, error) {
+func IsMediaIDUniqueInResource(mediaID uint, resourceID uint) (bool, error) {
 	fmt.Println("TEST", mediaID, resourceID)
 	entries := []models.Entry{}
 
-	if err := db.Where("collection_id = ?", int(resourceID)).Find(&entries).Error; err != nil {
+	if err := db.Where("resource_id = ?", int(resourceID)).Find(&entries).Error; err != nil {
 		return false, err
 	}
 
@@ -236,7 +236,7 @@ func IsMediaIDUniqueInResource(mediaID int, resourceID uint) (bool, error) {
 
 func FindEntryInResource(resourceID int, mediaID int) (string, error) {
 	entry := models.Entry{}
-	if err := db.Where("collection_id = ? AND media_id = ?", resourceID, mediaID).First(&entry).Error; err != nil {
+	if err := db.Where("resources_id = ? AND media_id = ?", resourceID, mediaID).First(&entry).Error; err != nil {
 		return "", err
 	}
 	return entry.ID.String(), nil

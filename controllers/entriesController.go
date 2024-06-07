@@ -38,13 +38,13 @@ func GetEntry(c *gin.Context) {
 		return
 	}
 
-	resource, err := database.FindResource(uint(accession.CollectionID))
+	resource, err := database.FindResource(accession.ResourceID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	repository, err := database.FindRepository(uint(resource.RepositoryID))
+	repository, err := database.FindRepository(resource.RepositoryID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -85,7 +85,7 @@ func GetPreviousEntry(c *gin.Context) {
 		return
 	}
 
-	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(entry.MediaID-1, entry.CollectionID)
+	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(entry.MediaID-1, entry.ResourceID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -112,7 +112,7 @@ func GetNextEntry(c *gin.Context) {
 		return
 	}
 
-	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(entry.MediaID+1, entry.CollectionID)
+	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(entry.MediaID+1, entry.ResourceID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -192,14 +192,14 @@ func NewEntry(c *gin.Context) {
 		return
 	}
 
-	resource, err := database.FindResource(accession.Collection.ID)
+	resource, err := database.FindResource(accession.ResourceID)
 	if err != nil {
 		fmt.Println("RESOURCE")
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	repository, err := database.FindRepository(resource.Repository.ID)
+	repository, err := database.FindRepository(resource.RepositoryID)
 	if err != nil {
 		fmt.Println("REPOSITORY")
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -244,14 +244,14 @@ func CreateEntry(c *gin.Context) {
 	}
 
 	//check if media id is unique
-	b, err := database.IsMediaIDUniqueInResource(createEntry.MediaID, createEntry.Collection.ID)
+	b, err := database.IsMediaIDUniqueInResource(createEntry.MediaID, createEntry.ResourceID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if b != true {
-		c.JSON(http.StatusBadRequest, fmt.Errorf("%d is not a unique ID in resource %d", createEntry.MediaID, createEntry.CollectionID))
+		c.JSON(http.StatusBadRequest, fmt.Errorf("%d is not a unique ID in resource %d", createEntry.MediaID, createEntry.ResourceID))
 		return
 	}
 
@@ -280,7 +280,7 @@ func CreateEntry(c *gin.Context) {
 	//get the resource
 
 	//get the repository
-	repository, err := database.FindRepository(uint(accession.Collection.RepositoryID))
+	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -351,7 +351,7 @@ func EditEntry(c *gin.Context) {
 		return
 	}
 
-	resource, err := database.FindResource(uint(accession.CollectionID))
+	resource, err := database.FindResource(uint(accession.ResourceID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -432,7 +432,7 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
-	nextID, err := database.FindNextMediaCollectionInResource(uint(entry.CollectionID))
+	nextID, err := database.FindNextMediaCollectionInResource(uint(entry.ResourceID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -457,13 +457,13 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
-	resource, err := database.FindResource(uint(accession.CollectionID))
+	resource, err := database.FindResource(uint(accession.ResourceID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	repository, err := database.FindRepository(uint(resource.RepositoryID))
+	repository, err := database.FindRepository(resource.RepositoryID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -476,11 +476,11 @@ func CloneEntry(c *gin.Context) {
 	entry.UpdatedAt = time.Now()
 	entry.UpdatedBy = userID
 	entry.LabelText = ""
-	entry.AccessionID = int(accession.ID)
+	entry.AccessionID = accession.ID
 	entry.Accession = accession
-	entry.CollectionID = int(resource.ID)
-	entry.Collection = resource
-	entry.RepositoryID = int(resource.RepositoryID)
+	entry.ResourceID = resource.ID
+	entry.Resource = resource
+	entry.RepositoryID = repository.ID
 	entry.Repository = repository
 
 	if _, err := database.InsertEntry(&entry); err != nil {

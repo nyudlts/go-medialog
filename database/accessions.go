@@ -15,7 +15,7 @@ func FindAccessions() ([]models.Accession, error) {
 
 func FindAccessionsByResourceID(id uint) ([]models.Accession, error) {
 	accessions := []models.Accession{}
-	if err := db.Where("collection_id = ?", id).Find(&accessions).Error; err != nil {
+	if err := db.Where("resource_id = ?", id).Find(&accessions).Error; err != nil {
 		return accessions, err
 	}
 	return accessions, nil

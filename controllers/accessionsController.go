@@ -86,7 +86,7 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
-	repository, err := database.FindRepository(uint(accession.Collection.RepositoryID))
+	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -162,12 +162,12 @@ func CreateAccession(c *gin.Context) {
 	}
 
 	//get the parent resource from the database
-	resource, err := database.FindResource(uint(accession.CollectionID))
+	resource, err := database.FindResource(uint(accession.ResourceID))
 	if err := c.Bind(&accession); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	accession.Collection = resource
+	accession.Resource = resource
 
 	//get the current user's id
 	userID, err := getUserkey(c)
@@ -214,7 +214,7 @@ func EditAccession(c *gin.Context) {
 		return
 	}
 
-	repository, err := database.FindRepository(uint(accession.Collection.RepositoryID))
+	repository, err := database.FindRepository(accession.Resource.RepositoryID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -293,7 +293,7 @@ func DeleteAccession(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/resources/%d/show", accession.CollectionID))
+	c.Redirect(302, fmt.Sprintf("/resources/%d/show", accession.ResourceID))
 }
 
 type Slew struct {
@@ -325,7 +325,7 @@ func SlewAccession(c *gin.Context) {
 		return
 	}
 
-	repository, err := database.FindRepository(uint(accession.Collection.RepositoryID))
+	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -384,12 +384,12 @@ func createSlewEntry(slew Slew, accession models.Accession) error {
 		entry := models.Entry{}
 		id, _ := uuid.NewUUID()
 		entry.ID = id
-		mediaID, err := database.FindNextMediaCollectionInResource(uint(accession.CollectionID))
+		mediaID, err := database.FindNextMediaCollectionInResource(accession.ResourceID)
 		if err != nil {
 			return err
 		}
 
-		resource, err := database.FindResource(uint(accession.CollectionID))
+		resource, err := database.FindResource(uint(accession.ResourceID))
 		if err != nil {
 			return err
 		}
@@ -400,11 +400,11 @@ func createSlewEntry(slew Slew, accession models.Accession) error {
 		}
 
 		entry.MediaID = mediaID
-		entry.AccessionID = int(accession.ID)
-		entry.RepositoryID = int(accession.Collection.RepositoryID)
+		entry.AccessionID = accession.ID
+		entry.RepositoryID = accession.Resource.RepositoryID
 		entry.Repository = repository
-		entry.CollectionID = int(accession.Collection.ID)
-		entry.Collection = resource
+		entry.ResourceID = accession.ResourceID
+		entry.Resource = resource
 		entry.Mediatype = slew.Mediatype
 		entry.StockSizeNum = slew.MediaStockSize
 		entry.StockUnit = slew.MediaStockUnit
