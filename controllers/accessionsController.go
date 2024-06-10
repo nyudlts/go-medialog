@@ -326,7 +326,7 @@ func SlewAccession(c *gin.Context) {
 		return
 	}
 
-	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
+	repository, err := database.FindRepository(accession.Resource.RepositoryID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

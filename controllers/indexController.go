@@ -10,7 +10,7 @@ import (
 func GetIndex(c *gin.Context) {
 
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+		throwError(401, "Please authenticate to access this service", c)
 		return
 	}
 
@@ -19,7 +19,7 @@ func GetIndex(c *gin.Context) {
 
 	entries, err := database.FindPaginatedEntries(pagination)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -27,7 +27,7 @@ func GetIndex(c *gin.Context) {
 
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 

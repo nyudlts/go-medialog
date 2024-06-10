@@ -24,6 +24,8 @@ func TestEntries(t *testing.T) {
 		entry.ImagedBy = "Donald Mennerich"
 		entry.CreatedBy = int(userID)
 		entry.UpdatedBy = int(userID)
+		entry.StockSizeNum = 1.2
+		entry.StockUnit = "MB"
 		var err error
 		entryID, err = database.InsertEntry(&entry)
 		if err != nil {
