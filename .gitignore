@@ -3,8 +3,6 @@
 build/*
 .vscode/*
 .idea/*
-config/go-medialog.conf
-config/medialog.service
-config/go-medialog-nginx.conf
 *.log
 *.conf
+sys/*
