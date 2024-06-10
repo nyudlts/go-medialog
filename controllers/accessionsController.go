@@ -303,6 +303,7 @@ type Slew struct {
 	MediaStockSize float32 `form:"media_stock_size"`
 	MediaStockUnit string  `form:"media_stock_unit"`
 	BoxNum         int     `form:"box_num"`
+	userID         int
 }
 
 func SlewAccession(c *gin.Context) {
@@ -370,6 +371,14 @@ func CreateAccessionSlew(c *gin.Context) {
 		return
 	}
 
+	userId, err := getUserkey(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	slew.userID = userId
+
 	if err := createSlewEntry(slew, accession); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -385,6 +394,8 @@ func createSlewEntry(slew Slew, accession models.Accession) error {
 		id, _ := uuid.NewUUID()
 		entry.ID = id
 		mediaID, err := database.FindNextMediaCollectionInResource(accession.ResourceID)
+		userID := slew.userID
+
 		if err != nil {
 			return err
 		}
@@ -408,7 +419,9 @@ func createSlewEntry(slew Slew, accession models.Accession) error {
 		entry.Mediatype = slew.Mediatype
 		entry.StockSizeNum = slew.MediaStockSize
 		entry.StockUnit = slew.MediaStockUnit
+		entry.CreatedBy = userID
 		entry.CreatedAt = time.Now()
+		entry.UpdatedBy = userID
 		entry.UpdatedAt = time.Now()
 
 		if _, err := database.InsertEntry(&entry); err != nil {

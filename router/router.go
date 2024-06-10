@@ -13,11 +13,13 @@ import (
 )
 
 func SetupRouter(env config.Environment) (*gin.Engine, error) {
-	//configure logger
-	gin.DisableConsoleColor()
-	f, _ := os.Create(env.LogLocation)
-	defer f.Close()
-	gin.DefaultWriter = io.MultiWriter(f)
+	/*
+		//configure logger
+		gin.DisableConsoleColor()
+		f, _ := os.Create(env.LogLocation)
+		defer f.Close()
+		gin.DefaultWriter = io.MultiWriter(f)
+	*/
 
 	//initialize the router
 	r := gin.Default()
