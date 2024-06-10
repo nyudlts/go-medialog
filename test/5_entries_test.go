@@ -46,7 +46,7 @@ func TestEntries(t *testing.T) {
 			t.Error(err)
 		}
 
-		t.Logf("got accession: %s", string(b))
+		t.Logf("got entry: %s", string(b))
 
 	})
 

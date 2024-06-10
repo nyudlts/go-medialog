@@ -64,7 +64,13 @@ func TestUsers(t *testing.T) {
 			t.Errorf("Got %s, wanted %s", userSHA512, user.EncryptedPassword)
 		}
 
-		t.Logf("Authenticated user %d", userID)
+		user.SignInCount++
+
+		if err := database.UpdateUser(&user); err != nil {
+			t.Error(err)
+		} else {
+			t.Logf("Authenticated user %d", userID)
+		}
 	})
 
 	t.Run("Test update a user", func(t *testing.T) {
