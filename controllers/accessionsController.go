@@ -14,8 +14,7 @@ import (
 
 func GetAccessions(c *gin.Context) {
 
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 
@@ -47,8 +46,7 @@ func GetAccessions(c *gin.Context) {
 }
 
 func GetAccession(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 
@@ -118,8 +116,7 @@ func GetAccession(c *gin.Context) {
 }
 
 func NewAccession(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 
@@ -149,8 +146,7 @@ func NewAccession(c *gin.Context) {
 
 func CreateAccession(c *gin.Context) {
 	//check the user is logged in
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 
@@ -195,8 +191,7 @@ func CreateAccession(c *gin.Context) {
 }
 
 func EditAccession(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 
@@ -229,8 +224,7 @@ func EditAccession(c *gin.Context) {
 }
 
 func UpdateAccession(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 
@@ -271,8 +265,7 @@ func UpdateAccession(c *gin.Context) {
 }
 
 func DeleteAccession(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 
@@ -307,8 +300,7 @@ type Slew struct {
 }
 
 func SlewAccession(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 
@@ -353,8 +345,7 @@ func SlewAccession(c *gin.Context) {
 }
 
 func CreateAccessionSlew(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	if err := checkLogin(c); err != nil {
 		return
 	}
 

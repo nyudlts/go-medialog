@@ -9,8 +9,7 @@ import (
 
 func GetIndex(c *gin.Context) {
 
-	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+	if err := checkLogin(c); err != nil {
 		return
 	}
 

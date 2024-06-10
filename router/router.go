@@ -12,7 +12,7 @@ import (
 	"github.com/nyudlts/go-medialog/utils"
 )
 
-func SetupRouter(env config.Environment) (*gin.Engine, error) {
+func SetupRouter(env config.Environment, gormDebug bool) (*gin.Engine, error) {
 	/*
 		//configure logger
 		gin.DisableConsoleColor()
@@ -34,7 +34,7 @@ func SetupRouter(env config.Environment) (*gin.Engine, error) {
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
 	//connect the database
-	if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
+	if err := database.ConnectMySQL(env.DatabaseConfig, gormDebug); err != nil {
 		os.Exit(2)
 	}
 

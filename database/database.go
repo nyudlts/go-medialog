@@ -19,12 +19,16 @@ type Pagination struct {
 	Sort   string `json:"sort"`
 }
 
-func ConnectMySQL(dbconfig config.DatabaseConfig) error {
+func ConnectMySQL(dbconfig config.DatabaseConfig, gormDebug bool) error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbconfig.Username, dbconfig.Password, dbconfig.URL, dbconfig.Port, dbconfig.DatabaseName)
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err
+	}
+
+	if gormDebug {
+		db.Debug()
 	}
 	return nil
 

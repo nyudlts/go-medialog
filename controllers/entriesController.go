@@ -14,7 +14,7 @@ import (
 
 func GetEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+		throwError(401, "Please authenticate to access this service", c)
 		return
 	}
 
@@ -69,7 +69,7 @@ func GetEntry(c *gin.Context) {
 
 func GetPreviousEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+		throwError(401, "Please authenticate to access this service", c)
 		return
 	}
 
@@ -96,7 +96,7 @@ func GetPreviousEntry(c *gin.Context) {
 
 func GetNextEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+		throwError(401, "Please authenticate to access this service", c)
 		return
 	}
 
@@ -123,7 +123,7 @@ func GetNextEntry(c *gin.Context) {
 
 func GetEntries(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+		throwError(401, "Please authenticate to access this service", c)
 		return
 	}
 
@@ -172,7 +172,7 @@ func GetEntries(c *gin.Context) {
 
 func NewEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+		throwError(401, "Please authenticate to access this service", c)
 		return
 	}
 
@@ -235,6 +235,10 @@ func NewEntry(c *gin.Context) {
 
 func CreateEntry(c *gin.Context) {
 	//check user is logged in
+	if !isLoggedIn(c) {
+		throwError(401, "Please authenticate to access this service", c)
+		return
+	}
 
 	//bind form to entry
 	var createEntry = models.Entry{}
@@ -383,6 +387,12 @@ func EditEntry(c *gin.Context) {
 }
 
 func UpdateEntry(c *gin.Context) {
+	//check for login
+	if !isLoggedIn(c) {
+		throwError(401, "Please authenticate to access this service", c)
+		return
+	}
+
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -420,6 +430,13 @@ func UpdateEntry(c *gin.Context) {
 }
 
 func CloneEntry(c *gin.Context) {
+
+	//check login
+	if !isLoggedIn(c) {
+		throwError(401, "Please authenticate to access this service", c)
+		return
+	}
+
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -498,6 +515,11 @@ type FindEntryInResource struct {
 }
 
 func FindEntry(c *gin.Context) {
+	if !isLoggedIn(c) {
+		throwError(401, "Please authenticate to access this service", c)
+		return
+	}
+
 	findEntry := FindEntryInResource{}
 	if err := c.Bind(&findEntry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())

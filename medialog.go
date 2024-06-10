@@ -13,6 +13,7 @@ var (
 	environment   string
 	configuration string
 	sqlite        bool
+	gormDebug     bool
 )
 
 const version = "v0.1.1-alpha"
@@ -22,6 +23,7 @@ func init() {
 	flag.StringVar(&environment, "environment", "", "")
 	flag.StringVar(&configuration, "config", "", "")
 	flag.BoolVar(&sqlite, "sqlite", false, "")
+	flag.BoolVar(&gormDebug, "gorm-debug", false, "")
 }
 
 func main() {
@@ -48,7 +50,7 @@ func main() {
 			panic(err)
 		}
 
-		r, err = router.SetupRouter(env)
+		r, err = router.SetupRouter(env, gormDebug)
 		if err != nil {
 			panic(err)
 		}
