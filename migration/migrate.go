@@ -216,12 +216,14 @@ func migrateEntriesToGorm() error {
 		e := entryPG.ToGormModel()
 		c := models.Resource{}
 		if err := db.Where("id = ?", e.ResourceID).First(&c).Error; err != nil {
-			return err
+			fmt.Printf("ERROR: %s", err.Error())
+			continue
 		}
 		e.RepositoryID = c.RepositoryID
 
 		if err := db.Create(&e).Error; err != nil {
-			return err
+			fmt.Printf("ERROR: %s", err.Error())
+			continue
 		}
 	}
 	return nil
