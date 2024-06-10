@@ -39,7 +39,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		r, err = router.SetupSQRouter(env)
+		r, err = router.SetupSQRouter(env, gormDebug)
 		if err != nil {
 			panic(err)
 		}

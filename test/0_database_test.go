@@ -36,7 +36,7 @@ func TestDatabase(t *testing.T) {
 		})
 
 		t.Run("Test COnnect SQLite database", func(t *testing.T) {
-			if err := database.ConnectDatabase(sqEnv.DatabaseLocation); err != nil {
+			if err := database.ConnectSQDatabase(sqEnv, true); err != nil {
 				t.Error(err)
 			}
 		})
@@ -52,7 +52,7 @@ func TestDatabase(t *testing.T) {
 		})
 
 		t.Run("Test Connect Database", func(t *testing.T) {
-			if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
+			if err := database.ConnectMySQL(env.DatabaseConfig, true); err != nil {
 				t.Error(err)
 			}
 		})

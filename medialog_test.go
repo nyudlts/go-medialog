@@ -25,21 +25,33 @@ func TestAPI(t *testing.T) {
 	flag.Parse()
 
 	//set the environment variables
-	var err error
-	env, err = config.GetEnvironment(configuration, environment)
-	if err != nil {
-		panic(err)
-	}
 
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
-	t.Run("Test sutup router", func(t *testing.T) {
-		r, err = router.SetupRouter(env)
+	if sqlite {
+		env, err := config.GetSQlite(configuration, environment)
 		if err != nil {
-			t.Error(err)
+			panic(err)
 		}
+		r, err = router.SetupSQRouter(env, gormDebug)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+
+		env, err := config.GetEnvironment(configuration, environment)
+		if err != nil {
+			panic(err)
+		}
+
+		r, err = router.SetupRouter(env, gormDebug)
+		if err != nil {
+			panic(err)
+		}
+	}
+	t.Run("Test sutup router", func(t *testing.T) {
 		t.Logf("context: %v", c)
 		t.Logf("router: %v", r)
 	})

@@ -10,8 +10,6 @@ import (
 )
 
 var db *gorm.DB
-var DatabaseLoc = "medialog.db"
-var TestDatabaseLoc = "../database/medialog-test.db"
 
 type Pagination struct {
 	Limit  int    `json:"limit"`
@@ -34,12 +32,17 @@ func ConnectMySQL(dbconfig config.DatabaseConfig, gormDebug bool) error {
 
 }
 
-func ConnectDatabase(dbLoc string) error {
+func ConnectSQDatabase(env config.SQLiteEnv, gormDebug bool) error {
 	var err error
-	db, err = gorm.Open(sqlite.Open(dbLoc), &gorm.Config{})
+	db, err = gorm.Open(sqlite.Open(env.DatabaseLocation), &gorm.Config{})
 	if err != nil {
 		return err
 	}
+
+	if gormDebug {
+		db.Debug()
+	}
+
 	return nil
 
 }

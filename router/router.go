@@ -52,7 +52,7 @@ func SetupRouter(env config.Environment, gormDebug bool) (*gin.Engine, error) {
 	return r, nil
 }
 
-func SetupSQRouter(env config.SQLiteEnv) (*gin.Engine, error) {
+func SetupSQRouter(env config.SQLiteEnv, gormDebug bool) (*gin.Engine, error) {
 	//configure logger
 	gin.DisableConsoleColor()
 	f, _ := os.Create(env.LogLocation)
@@ -72,7 +72,7 @@ func SetupSQRouter(env config.SQLiteEnv) (*gin.Engine, error) {
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
 	//connect the database
-	if err := database.ConnectDatabase(env.DatabaseLocation); err != nil {
+	if err := database.ConnectSQDatabase(env, gormDebug); err != nil {
 		os.Exit(2)
 	}
 
