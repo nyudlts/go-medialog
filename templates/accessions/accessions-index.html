@@ -21,7 +21,7 @@
             <tbody>
             {{ range $accession := .accessions }}
             <tr>
-                <td>{{ index $.repositoryMap $accession.Repository.RepositoryID }}</td>
+                <td>{{ index $.repositoryMap $accession.Resource.RepositoryID }}</td>
                 <td>{{ $accession.Resource.CollectionCode }}<br/>{{ $accession.Repository.Title }}</td>
                 <td>{{ $accession.AccessionNum }}</td>
                 <td>tbc</td>
