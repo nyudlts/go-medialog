@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -25,11 +26,15 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
+	log.Printf("ResourceID: %d", id)
+
 	resource, err := database.FindResource(uint(id))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
+	log.Printf("Resource: %v", resource)
 
 	summary, err := database.GetSummaryByResource(resource.ID)
 	if err != nil {

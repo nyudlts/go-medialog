@@ -65,7 +65,7 @@ func main() {
 		}
 
 		fmt.Println("Migrating:", env.DatabaseLocation)
-		if err := database.ConnectDatabase(env.DatabaseLocation); err != nil {
+		if err := database.ConnectSQDatabase(env, false); err != nil {
 			panic(err)
 		}
 		fmt.Println("Connected to database")
@@ -80,7 +80,7 @@ func main() {
 
 		fmt.Println("Migrating:", env.DatabaseConfig.DatabaseName)
 
-		if err := database.ConnectMySQL(env.DatabaseConfig); err != nil {
+		if err := database.ConnectMySQL(env.DatabaseConfig, false); err != nil {
 			panic(err)
 		}
 

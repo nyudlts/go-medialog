@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -118,7 +119,7 @@ func GetNextEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTempopraryRedirect, fmt.Sprintf("/entries/%s/show", prevEntryID))
+	c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/entries/%s/show", prevEntryID))
 }
 
 func GetEntries(c *gin.Context) {
@@ -185,11 +186,11 @@ func NewEntry(c *gin.Context) {
 		return
 	}
 
+	log.Println("Accession:", accessionID)
+
 	accession, err := database.FindAccession(uint(accessionID))
 	if err != nil {
-		fmt.Println("ACCESSION")
 		c.JSON(http.StatusBadRequest, err.Error())
-		return
 	}
 
 	resource, err := database.FindResource(accession.ResourceID)
@@ -247,6 +248,8 @@ func CreateEntry(c *gin.Context) {
 		return
 	}
 
+	log.Printf("CREATE_ENTRY: %v", createEntry)
+
 	//check if media id is unique
 	b, err := database.IsMediaIDUniqueInResource(createEntry.MediaID, createEntry.ResourceID)
 	if err != nil {
@@ -254,7 +257,7 @@ func CreateEntry(c *gin.Context) {
 		return
 	}
 
-	if b != true {
+	if !b {
 		c.JSON(http.StatusBadRequest, fmt.Errorf("%d is not a unique ID in resource %d", createEntry.MediaID, createEntry.ResourceID))
 		return
 	}
@@ -282,6 +285,13 @@ func CreateEntry(c *gin.Context) {
 	createEntry.Accession = accession
 
 	//get the resource
+	resource, err := database.FindResource(accession.ResourceID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	createEntry.Resource = resource
 
 	//get the repository
 	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
@@ -468,13 +478,13 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(uint(entry.AccessionID))
+	accession, err := database.FindAccession(entry.AccessionID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	resource, err := database.FindResource(uint(accession.ResourceID))
+	resource, err := database.FindResource(accession.ResourceID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
@@ -492,7 +502,6 @@ func CloneEntry(c *gin.Context) {
 	entry.CreatedBy = userID
 	entry.UpdatedAt = time.Now()
 	entry.UpdatedBy = userID
-	entry.LabelText = ""
 	entry.AccessionID = accession.ID
 	entry.Accession = accession
 	entry.ResourceID = resource.ID

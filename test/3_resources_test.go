@@ -39,10 +39,18 @@ func TestResources(t *testing.T) {
 			t.Error(err)
 		}
 
+		want := "mss.1000"
+		got := resource.CollectionCode
+
+		if want != got {
+			t.Errorf("Wanted: %s, Got: %s", want, got)
+		}
+
 		b, err := json.Marshal(resource)
 		if err != nil {
 			t.Error(err)
 		}
+
 		t.Log("returned resource: " + string(b))
 	})
 
