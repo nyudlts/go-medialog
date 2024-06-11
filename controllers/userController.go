@@ -174,7 +174,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusPermanentRedirect, "/users")
+	c.Redirect(http.StatusTemporaryRedirect, "/users")
 }
 
 func DeactivateUser(c *gin.Context) {
@@ -197,7 +197,7 @@ func DeactivateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusPermanentRedirect, "/users")
+	c.Redirect(http.StatusTemporaryRedirect, "/users")
 
 }
 
@@ -221,7 +221,7 @@ func ReactivateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusPermanentRedirect, "/users")
+	c.Redirect(http.StatusTemporaryRedirect, "/users")
 
 }
 
@@ -245,7 +245,7 @@ func MakeUserAdmin(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusPermanentRedirect, "/users")
+	c.Redirect(http.StatusTemporaryRedirect, "/users")
 }
 
 func RemoveUserAdmin(c *gin.Context) {
@@ -268,7 +268,7 @@ func RemoveUserAdmin(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusPermanentRedirect, "/users")
+	c.Redirect(http.StatusTemporaryRedirect, "/users")
 }
 
 func LoginUser(c *gin.Context) { c.HTML(http.StatusOK, "users-login.html", gin.H{}) }
