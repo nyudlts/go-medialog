@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ var (
 	gormDebug     bool
 )
 
-const version = "v0.2.1-beta"
+const version = "v0.2.2-beta"
 
 func init() {
 
@@ -45,11 +46,13 @@ func main() {
 		}
 	} else {
 
+		log.Println("Getting Configuration")
 		env, err := config.GetEnvironment(configuration, environment)
 		if err != nil {
 			panic(err)
 		}
 
+		log.Println("Setting Up Router")
 		r, err = router.SetupRouter(env, gormDebug)
 		if err != nil {
 			panic(err)
@@ -57,6 +60,7 @@ func main() {
 	}
 
 	//start the application
+	log.Printf("Running Go-Medialog %s", version)
 	if err := r.Run(":8080"); err != nil {
 		os.Exit(1)
 	}
