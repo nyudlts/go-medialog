@@ -13,7 +13,7 @@ func Subtract(a int, b int) int { return a - b }
 
 func FormatAsDate(t time.Time) string { return t.Format(time.UnixDate) }
 
-func getMediatypes() map[string]string { return mediatypes }
+//func getMediatypes() map[string]string { return mediatypes }
 
 func GetMediatype(s string) string {
 
