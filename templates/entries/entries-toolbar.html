@@ -1,9 +1,6 @@
 <div class="card card-default">
     <div class="card-body">
         <div class="row">
-            <div class="col-sm-3">
-                <a href="/entries/{{ .entry.ID }}/previous" class="btn btn-secondary">prev</a>
-            </div>
             <div class="col-sm-2">
                 <a class="btn btn-primary" href="/entries/{{ .entry.ID}}/edit">Edit</a> 
             </div>
@@ -14,7 +11,10 @@
                 <a href="/entries/{{ .entry.ID }}/delete" class="btn btn-danger">Delete</a>
             </div>
             <div class="col-sm-3">
-                <a href="/entries/{{ .entry.ID }}/next" class="btn btn-secondary">next</a>
+                <a href="/entries/{{ .entry.ID }}/previous" class="btn btn-secondary"><-- prev</a>
+            </div>
+            <div class="col-sm-3">
+                <a href="/entries/{{ .entry.ID }}/next" class="btn btn-secondary">next --></a>
             </div>
         </div>
         <br />
@@ -29,7 +29,7 @@
                             <input type="number" id="media_id" name="media_id"/>
                         </div>
                         <div class="col-sm-4"> 
-                            <input type="submit" class="btn btn-primary btn-sm">
+                            <input type="submit" class="btn btn-primary btn-sm" value="Save" />
                         </div> 
                         <input type="hidden" id="resource_id" name="resource_id" value= "{{ .resource.ID }}" >
                     </div>
