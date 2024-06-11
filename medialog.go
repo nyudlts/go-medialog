@@ -16,7 +16,7 @@ var (
 	gormDebug     bool
 )
 
-const version = "v0.1.1-alpha"
+const version = "v0.2.0-beta"
 
 func init() {
 
