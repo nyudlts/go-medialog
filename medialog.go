@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -15,6 +16,7 @@ var (
 	configuration string
 	sqlite        bool
 	gormDebug     bool
+	vers          bool
 )
 
 const version = "v0.2.2-beta"
@@ -25,15 +27,18 @@ func init() {
 	flag.StringVar(&configuration, "config", "", "")
 	flag.BoolVar(&sqlite, "sqlite", false, "")
 	flag.BoolVar(&gormDebug, "gorm-debug", false, "")
+	flag.BoolVar(&vers, "version", false, "")
 }
 
 func main() {
 	//parse cli flags
 	flag.Parse()
 
-	//set the environment variables
+	if vers {
+		fmt.Printf("{ \"version\": \"%s\"}", version)
+		os.Exit(0)
+	}
 
-	//get a router
 	var r *gin.Engine
 	if sqlite {
 		env, err := config.GetSQlite(configuration, environment)
