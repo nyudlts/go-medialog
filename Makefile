@@ -6,23 +6,23 @@ build:
 
 archive:
 	sudo systemctl stop medialog
-	sudo mkdir /var/www/medialog/prev
-	sudo mv /var/www/medialog/medialog /var/www/medialog/prev
-	sudo mv /var/www/medialog/public /var/www/medialog/prev
-	sudo mv /var/www/medialog/templates /var/www/medialog/prev
-	sudo mv /var/www/medialog/prev /var/www/medialog/previouse-versions
-	sudo chown -R centos:centos /var/www/medialog
+	sudo mkdir /$MEDIALOG_HOME/prev
+	sudo mv /$MEDIALOG_HOME/medialog /$MEDIALOG_HOME/prev
+	sudo mv /$MEDIALOG_HOME/public /$MEDIALOG_HOME/prev
+	sudo mv /$MEDIALOG_HOME/templates /$MEDIALOG_HOME/prev
+	sudo mv /$MEDIALOG_HOME/prev /$MEDIALOG_HOME/previouse-versions
+	sudo chown -R centos:centos /$MEDIALOG_HOME
 
 install:
 	sudo systemctl stop medialog
-	sudo cp medialog /var/www/medialog/
-	sudo cp -r templates /var/www/medialog
-	sudo cp -r public /var/www/medialog
-	sudo chown -R centos:centos /var/www/medialog
+	sudo cp medialog /$MEDIALOG_HOME/
+	sudo cp -r templates /$MEDIALOG_HOME
+	sudo cp -r public /$MEDIALOG_HOME
+	sudo chown -R centos:centos /$MEDIALOG_HOME
 
 clean:
 	rm medialog
 
 update-templates:
-	sudo cp -r templates /var/www/medialog
-	sudo chown -R centos:centos /var/www/medialog
+	sudo cp -r templates /$MEDIALOG_HOME
+	sudo chown -R centos:centos /$MEDIALOG_HOME
