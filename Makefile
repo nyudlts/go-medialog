@@ -4,16 +4,25 @@ tidy:
 build:
 	go build -o medialog
 
+archive:
+	sudo systemctl stop medialog
+	sudo mkdir /var/www/medialog/prev
+	sudo mv /var/www/medialog/medialog /var/www/medialog/prev
+	sudo mv /var/www/medialog/public /var/www/medialog/prev
+	sudo mv /var/www/medialog/templates /var/www/medialog/prev
+	sudo mv /var/www/medialog/prev /var/www/medialog/previouse-versions
+	sudo chown -R centos:centos /var/www/medialog
+
 install:
 	sudo systemctl stop medialog
-	sudo mkdir /usr/lib/medialog/prev
-	sudo mv /usr/lib/medialog/medialog /usr/lib/medialog/prev
-	sudo mv /usr/lib/medialog/public /usr/lib/medialog/prev
-	sudo mv /usr/lib/medialog/templates /usr/lib/medialog/prev
-	sudo cp medialog /usr/lib/medialog/
-	sudo cp -r templates /usr/lib/medialog
-	sudo cp -r public /usr/lib/medialog
-	sudo chown -R centos:centos /usr/lib/medialog
+	sudo cp medialog /var/www/medialog/
+	sudo cp -r templates /var/www/medialog
+	sudo cp -r public /var/www/medialog
+	sudo chown -R centos:centos /var/www/medialog
 
 clean:
 	rm medialog
+
+update-templates:
+	sudo cp -r templates /var/www/medialog
+	sudo chown -R centos:centos /var/www/medialog
