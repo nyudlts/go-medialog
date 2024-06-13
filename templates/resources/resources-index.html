@@ -17,8 +17,12 @@
             <tbody class="tbody">
                 {{ range $resource := .resources }}
                 <tr>
-                    <td>{{ index $.repositoryMap $resource.RepositoryID }}</td>
-                    <td>{{ $resource.CollectionCode}}: {{ $resource.Title }}</td>
+                    <td>
+                        <a href="/repositories/{{ $resource.RepositoryID }}/show">{{ index $.repositoryMap $resource.RepositoryID }}</a>
+                    </td>
+                    <td>
+                        <a href="/resources/{{ $resource.ID }}/show">{{ $resource.CollectionCode}}</a><br>{{ printf "%.50s" $resource.Title }}
+                    </td>
                     <td>tbc</td>
                     <td>
                         <div class="col">

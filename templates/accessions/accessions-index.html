@@ -21,9 +21,9 @@
             <tbody>
             {{ range $accession := .accessions }}
             <tr>
-                <td>{{ index $.repositoryMap $accession.Resource.RepositoryID }}</td>
-                <td>{{ $accession.Resource.CollectionCode }}<br/>{{ $accession.Resource.Title }}</td>
-                <td>{{ $accession.AccessionNum }}</td>
+                <td><a href="/repositories/{{ $accession.Resource.RepositoryID}}/show">{{ index $.repositoryMap $accession.Resource.RepositoryID }}</a></td>
+                <td><a href="/resources/{{ $accession.ResourceID}}/show">{{ $accession.Resource.CollectionCode }}</a><br/>{{ printf "%.50s" $accession.Resource.Title }}</td>
+                <td><a href="/accessions/{{ $accession.ID }}/show">{{ $accession.AccessionNum }}</a></td>
                 <td>tbc</td>
                 <td>
                     <a href="/accessions/{{ $accession.ID }}/show" class="btn btn-primary">View</a>
