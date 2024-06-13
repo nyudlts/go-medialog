@@ -14,30 +14,29 @@
             <div class="col-sm">
                 <a href="/resources/new?repository_id={{ .repository.ID }}"class="btn btn-primaryv">Add Resource</a> 
             </div>
-                <div class="col-sm">
+            <div class="col-sm">
                     <a href="/repositories/{{ .repository.ID}}/edit" class="btn btn-secondary">Edit Repository</a>
             </div>
         </div>
     </div>
-        <div class="card-body">
-            <div class="row mt-2">
-                <h5 class="card-title">Resources</h5>
-                <table class="table table-striped table-bordered table-sm">
-                    {{ range $resource := .resources }}
-                    <tr>
-                        <td>
-                            {{ $resource.CollectionCode }}: {{  $resource.Title }}
-                        </td>
-                        <td>
-                            <a href="/resources/{{ $resource.ID }}/show" class="btn btn-primary">View</a>
-                            <a href="/resources/{{ $resource.ID }}/edit" class="btn btn-secondary">Edit</a>
-                            <a href="/resources/{{ $resource.ID }}/delete" class="btn btn-danger">Delete</a>
-                        </td>
-                    </tr>
-                    {{ end }}
-                </table>
-            </div>
+    <div class="card-body">
+        <div class="row mt-2">
+            <h5 class="card-title">Resources</h5>
+            <table class="table table-striped table-bordered table-sm">
+                {{ range $resource := .resources }}
+                <tr>
+                    <td>
+                        {{ $resource.CollectionCode }}: {{  $resource.Title }}
+                    </td>
+                    <td>
+                        <a href="/resources/{{ $resource.ID }}/show" class="btn btn-primary">View</a>
+                        <a href="/resources/{{ $resource.ID }}/edit" class="btn btn-secondary">Edit</a>
+                        <a href="/resources/{{ $resource.ID }}/delete" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {{ end }}
+            </table>
+        </div>
     </div>
-</div>
 
 {{ template "footer.html" .}}
