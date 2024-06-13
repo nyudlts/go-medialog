@@ -15,9 +15,9 @@
         <tbody>
         {{ range $entry := .entries }}
         <tr>
-            <td><a href="/repositories/{{ $entry.RepositoryID }}">{{ $entry.Repository.Slug }}</a></td>
-            <td><a href="/resources/{{ $entry.ResourceID }}">{{ $entry.Resource.CollectionCode }}</a><br>{{ $entry.Resource.Title}}</td>
-            <td><a href="/accessions/{{ $entry.AccessionID }}">{{ $entry.Accession.AccessionNum }}</a></td>
+            <td><a href="/repositories/{{ $entry.RepositoryID }}/show">{{ $entry.Repository.Slug }}</a></td>
+            <td><a href="/resources/{{ $entry.ResourceID }}/show">{{ $entry.Resource.CollectionCode }}</a><br>{{ $entry.Resource.Title}}</td>
+            <td><a href="/accessions/{{ $entry.AccessionID }}/show">{{ $entry.Accession.AccessionNum }}</a></td>
             <td>{{ $entry.MediaID }}</td>
             <td>{{ getMediatype $entry.Mediatype }}</td>
             <td>{{ $entry.IsRefreshed }}</td>
