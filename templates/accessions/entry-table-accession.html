@@ -3,6 +3,7 @@
         <thead class="thead thead-dark">
         <tr>
             <th>MediaID</th>
+            <th>Label Text</th>
             <th>Type</th>
             <th>Stock Size</th>
             <th>Refreshed</th>
@@ -14,6 +15,7 @@
         {{ range $entry := .entries }}
         <tr>
             <td>{{ $entry.MediaID }}</td>
+            <td>{{ printf "%0.40s" $entry.LabelText }}</td>
             <td>{{ getMediatype $entry.Mediatype }}</td>
             <td>{{ $entry.StockSizeNum}} {{ $entry.StockUnit }}</td>
             <td>{{ $entry.IsRefreshed }}</td>

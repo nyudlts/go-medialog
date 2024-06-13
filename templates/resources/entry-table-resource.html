@@ -12,7 +12,7 @@
         {{ range $entry := .entries }}
         <tr>
             <td>{{ $entry.MediaID }}</td>
-            <td>{{ $entry.Mediatype }}</td>
+            <td>{{ getMediatype $entry.Mediatype }}</td>
             <td>{{ $entry.IsRefreshed }}</td>
             <td>
                 <a href="/entries/{{ $entry.ID }}/show" class="btn btn-primary">view</a>
