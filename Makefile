@@ -1,3 +1,10 @@
+v := $(shell $(MEDIALOG_HOME)/medialog --version | jq '.version')
+ts := $(shell date +%s)
+ver := $(v)-$(ts)
+
+pull:
+	git pull origin main
+
 tidy:
 	go mod tidy
 
@@ -9,11 +16,11 @@ build:
 
 archive:
 	sudo systemctl stop medialog
-	sudo mkdir $(MEDIALOG_HOME)/prev
-	sudo mv $(MEDIALOG_HOME)/medialog $(MEDIALOG_HOME)/prev
-	sudo mv $(MEDIALOG_HOME)/public $(MEDIALOG_HOME)/prev
-	sudo mv $(MEDIALOG_HOME)/templates $(MEDIALOG_HOME)/prev
-	sudo mv $(MEDIALOG_HOME)/prev $(MEDIALOG_HOME)/previous-versions
+	sudo mkdir $(MEDIALOG_HOME)/$(ver)
+	sudo mv $(MEDIALOG_HOME)/medialog $(MEDIALOG_HOME)/$(ver)
+	sudo mv $(MEDIALOG_HOME)/public $(MEDIALOG_HOME)/$(ver)
+	sudo mv $(MEDIALOG_HOME)/templates $(MEDIALOG_HOME)/$(ver)
+	sudo mv $(MEDIALOG_HOME)/$(ver) $(MEDIALOG_HOME)/previous-versions
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
 
 install:
@@ -26,3 +33,6 @@ install:
 update-templates:
 	sudo cp -r templates $(MEDIALOG_HOME)
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
+
+version:
+	@echo $(ver)

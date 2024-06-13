@@ -380,7 +380,7 @@ func EditEntry(c *gin.Context) {
 	c.HTML(http.StatusOK, "entries-edit.html", gin.H{
 		"isAdmin":                isAdmin,
 		"entry":                  entry,
-		"accession":              entry.Accession,
+		"accession":              accession,
 		"resource":               resource,
 		"repository":             repository,
 		"mediatypes":             getMediatypes(),
