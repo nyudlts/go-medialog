@@ -155,7 +155,7 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	if resetUser.Password1 != resetUser.Password2 {
-		c.JSON(http.StatusBadRequest, "passwords do not match")
+		throwError(http.StatusBadRequest, "passwords do not match", c)
 		return
 	}
 

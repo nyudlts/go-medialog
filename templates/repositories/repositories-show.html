@@ -10,8 +10,14 @@
 <div class="card card-default">
     <div class="card-header">
         <h5 class="card-title">{{ .repository.Title }}</h5>
-        <div class="row"><a href="/resources/new?repository_id={{ .repository.ID }}"class="btn btn-primary">Add Resource</a> 
-        <a href="/repositories/{{ .repository.ID}}/edit" class="btn btn-secondary">Edit Repository</a></div>
+        <div class="row">
+            <div class="col-sm">
+                <a href="/resources/new?repository_id={{ .repository.ID }}"class="btn btn-primaryv">Add Resource</a> 
+            </div>
+                <div class="col-sm">
+                    <a href="/repositories/{{ .repository.ID}}/edit" class="btn btn-secondary">Edit Repository</a>
+            </div>
+        </div>
     </div>
         <div class="card-body">
             <div class="row mt-2">
