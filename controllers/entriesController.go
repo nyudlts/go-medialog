@@ -359,7 +359,7 @@ func EditEntry(c *gin.Context) {
 		return
 	}
 
-	accession, err := database.FindAccession(uint(entry.AccessionID))
+	accession, err := database.FindAccession(entry.AccessionID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return

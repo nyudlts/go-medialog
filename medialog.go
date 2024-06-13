@@ -19,7 +19,7 @@ var (
 	vers          bool
 )
 
-const version = "v0.2.2-beta"
+const version = "v0.2.3-beta"
 
 func init() {
 
