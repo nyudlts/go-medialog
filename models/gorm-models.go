@@ -63,7 +63,7 @@ type Entry struct {
 	ImagedBy              string     `json:"imaged_by" form:"imaged_by"`
 	ImagingNote           string     `json:"imaging_note" form:"imaging_note"`
 	ImageFormat           string     `json:"image_format" form:"image_format"`
-	BoxNumber             int        `json:"box_number" form:"box_number"`
+	BoxNumber             string     `json:"box_number" form:"box_number"`
 	OriginalID            string     `json:"original_id" form:"original_id"`
 	DispositionNote       string     `json:"disposition_note" form:"disposition_note"`
 	StockUnit             string     `json:"stock_unit" form:"stock_unit"`

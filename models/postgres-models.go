@@ -150,6 +150,7 @@ type Mlog_EntryPG struct {
 	ContentType           string    `json:"content_type"`
 	Structure             string    `json:"structure"`
 	FileSystems           string    `json:"file_systems"`
+	BoxText               string    `json:"box_text"`
 }
 
 func (mlog *Mlog_EntryPG) ToGormModel() Entry {
@@ -174,7 +175,7 @@ func (mlog *Mlog_EntryPG) ToGormModel() Entry {
 	e.ImagedBy = mlog.ImagedBy
 	e.ImagingNote = mlog.ImagingNote
 	e.ImageFormat = mlog.ImageFormat
-	e.BoxNumber = mlog.BoxNumber
+	e.BoxNumber = mlog.BoxText
 	e.OriginalID = mlog.OriginalID
 	e.DispositionNote = mlog.DispositionNote
 	e.StockUnit = mlog.StockUnit

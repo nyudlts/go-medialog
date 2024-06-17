@@ -48,7 +48,7 @@ func main() {
 	if migrateData {
 		var err error
 		pgdb, err = gorm.Open(postgres.New(postgres.Config{
-			DSN:                  "host=172.27.16.1 user=medialog password=medialog dbname=medialog port=5432 sslmode=disable",
+			DSN:                  "host=localhost user=medialog password=medialog dbname=medialog port=5432 sslmode=disable",
 			PreferSimpleProtocol: true,
 		}), &gorm.Config{})
 		if err != nil {
