@@ -22,6 +22,7 @@ func TestEntries(t *testing.T) {
 		entry.RepositoryID = repositoryID
 		entry.AccessionID = accessionID
 		entry.ImagedBy = "Donald Mennerich"
+		entry.Mediatype = "stuff"
 		entry.CreatedBy = int(userID)
 		entry.UpdatedBy = int(userID)
 		entry.StockSizeNum = 1.2
@@ -53,9 +54,18 @@ func TestEntries(t *testing.T) {
 		}
 	})
 
+	t.Run("Test invalid media type in entry", func(t *testing.T) {
+		uid, _ := uuid.NewUUID()
+		entry := models.Entry{ID: uid, MediaID: 776}
+
+		if err := entry.ValidateEntry(); err == nil {
+			t.Error(err)
+		}
+	})
+
 	t.Run("Test invalid stock size in entry", func(t *testing.T) {
 		uid, _ := uuid.NewUUID()
-		entry := models.Entry{ID: uid, MediaID: 765}
+		entry := models.Entry{ID: uid, MediaID: 765, Mediatype: "thing"}
 		if err := entry.ValidateEntry(); err == nil {
 			t.Error(err)
 		}
@@ -63,7 +73,7 @@ func TestEntries(t *testing.T) {
 
 	t.Run("Test invalid stock unit in entry", func(t *testing.T) {
 		uid, _ := uuid.NewUUID()
-		entry := models.Entry{ID: uid, MediaID: 765, StockSizeNum: 4.7}
+		entry := models.Entry{ID: uid, MediaID: 765, Mediatype: "thing", StockSizeNum: 4.7}
 		if err := entry.ValidateEntry(); err == nil {
 			t.Error(err)
 		}
@@ -71,7 +81,7 @@ func TestEntries(t *testing.T) {
 
 	t.Run("Test valid entry", func(t *testing.T) {
 		uid, _ := uuid.NewUUID()
-		entry := models.Entry{ID: uid, MediaID: 765, StockSizeNum: 4.7, StockUnit: "GB"}
+		entry := models.Entry{ID: uid, MediaID: 765, Mediatype: "thing", StockSizeNum: 4.7, StockUnit: "GB"}
 		if err := entry.ValidateEntry(); err != nil {
 			t.Error(err)
 		}

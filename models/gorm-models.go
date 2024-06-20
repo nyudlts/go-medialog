@@ -110,7 +110,11 @@ func (e *Entry) UpdateEntry(updatedEntry Entry) {
 func (e *Entry) ValidateEntry() error {
 
 	if _, err := uuid.Parse(e.ID.String()); err != nil {
-		return fmt.Errorf("ID: `%v` is not valid", e.MediaID)
+		return fmt.Errorf("ID: `%v` is not valid", e.ID)
+	}
+
+	if e.Mediatype == "" {
+		return fmt.Errorf("mediatype: `%s` is not valid", e.Mediatype)
 	}
 
 	if e.MediaID < 1 {
