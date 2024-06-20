@@ -87,13 +87,13 @@ func AuthenticateUser(c *gin.Context) {
 	var authUser = UserForm{}
 	if err := c.Bind(&authUser); err != nil {
 		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user, err := database.FindUserByEmail(authUser.Email)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -101,12 +101,12 @@ func AuthenticateUser(c *gin.Context) {
 	userSHA512 := hex.EncodeToString(hash[:])
 
 	if userSHA512 != user.EncryptedPassword {
-		c.JSON(http.StatusBadRequest, "password was incorrect")
+		throwError(http.StatusBadRequest, "password was incorrect", c)
 		return
 	}
 
 	if err := login(int(user.ID), c); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		throwError(http.StatusInternalServerError, "Failed to save session", c)
 		return
 	}
 
@@ -129,13 +129,13 @@ func ResetUserPassword(c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -150,7 +150,7 @@ func ResetUserPassword(c *gin.Context) {
 func ResetPassword(c *gin.Context) {
 	var resetUser = UserForm{}
 	if err := c.Bind(&resetUser); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -161,7 +161,7 @@ func ResetPassword(c *gin.Context) {
 
 	user, err := database.FindUserByID(resetUser.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -170,7 +170,7 @@ func ResetPassword(c *gin.Context) {
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
 
 	if err := database.UpdateUser(&user); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -180,20 +180,20 @@ func ResetPassword(c *gin.Context) {
 func DeactivateUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user.IsActive = false
 
 	if err := database.UpdateUser(&user); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -204,20 +204,20 @@ func DeactivateUser(c *gin.Context) {
 func ReactivateUser(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user.IsActive = true
 
 	if err := database.UpdateUser(&user); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -228,20 +228,20 @@ func ReactivateUser(c *gin.Context) {
 func MakeUserAdmin(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user.IsAdmin = true
 
 	if err := database.UpdateUser(&user); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -251,20 +251,20 @@ func MakeUserAdmin(c *gin.Context) {
 func RemoveUserAdmin(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	user.IsAdmin = false
 
 	if err := database.UpdateUser(&user); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
