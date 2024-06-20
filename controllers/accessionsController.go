@@ -22,13 +22,13 @@ func GetAccessions(c *gin.Context) {
 
 	accessions, err := database.FindAccessions()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -54,13 +54,13 @@ func GetAccession(c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	accession, err := database.FindAccession(uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -71,7 +71,7 @@ func GetAccession(c *gin.Context) {
 	if len(page) > 0 {
 		p, err = strconv.Atoi(page[0])
 		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
+			throwError(http.StatusBadRequest, err.Error(), c)
 			return
 		}
 	}
@@ -80,25 +80,25 @@ func GetAccession(c *gin.Context) {
 
 	entries, err := database.FindEntriesByAccessionID(accession.ID, pagination)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	summary, err := database.GetSummaryByAccession(accession.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	users, err := getUserEmailMap([]int{accession.CreatedBy, accession.UpdatedBy})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		throwError(http.StatusInternalServerError, err.Error(), c)
 		return
 	}
 
@@ -122,19 +122,19 @@ func NewAccession(c *gin.Context) {
 
 	resourceID, err := strconv.Atoi(c.Query("resource_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	resource, err := database.FindResource(uint(resourceID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		throwError(http.StatusInternalServerError, err.Error(), c)
 		return
 	}
 
 	repository, err := database.FindRepository(uint(resource.RepositoryID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		throwError(http.StatusInternalServerError, err.Error(), c)
 		return
 	}
 
@@ -153,14 +153,19 @@ func CreateAccession(c *gin.Context) {
 	//bind the form to an accession
 	accession := models.Accession{}
 	if err := c.Bind(&accession); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
 	//get the parent resource from the database
 	resource, err := database.FindResource(uint(accession.ResourceID))
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
 	if err := c.Bind(&accession); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 	accession.Resource = resource

@@ -248,7 +248,11 @@ func CreateEntry(c *gin.Context) {
 		return
 	}
 
-	log.Printf("CREATE_ENTRY: %v", createEntry)
+	//validate the form
+	if err := createEntry.ValidateEntry(); err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	//check if media id is unique
 	b, err := database.IsMediaIDUniqueInResource(createEntry.MediaID, createEntry.ResourceID)
@@ -403,6 +407,7 @@ func UpdateEntry(c *gin.Context) {
 		return
 	}
 
+	//parse the id
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -411,26 +416,37 @@ func UpdateEntry(c *gin.Context) {
 
 	var editedEntry = models.Entry{}
 
+	//bind form to entry
 	if err := c.Bind(&editedEntry); err != nil {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
 		return
 	}
 
+	//validate the form
+	if err := editedEntry.ValidateEntry(); err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	//find the original entry
 	entry, err := database.FindEntry(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "find entry", err.Error()))
 		return
 	}
 
+	// get the user id
 	userID, err := getUserkey(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}
 
+	//updated user and timestamp
 	entry.UpdatedBy = userID
 	entry.UpdatedAt = time.Now()
 	entry.UpdateEntry(editedEntry)
 
+	//update the entry
 	if err := database.UpdateEntry(&entry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return

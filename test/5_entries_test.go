@@ -35,6 +35,48 @@ func TestEntries(t *testing.T) {
 		t.Logf("Created entry %s", entryID.String())
 	})
 
+	t.Run("Test invalid ID in entry", func(t *testing.T) {
+
+		entry := models.Entry{}
+
+		if err := entry.ValidateEntry(); err == nil {
+			t.Error(err)
+		}
+	})
+
+	t.Run("Test invalid mediaID in entry", func(t *testing.T) {
+		uid, _ := uuid.NewUUID()
+		entry := models.Entry{ID: uid}
+
+		if err := entry.ValidateEntry(); err == nil {
+			t.Error(err)
+		}
+	})
+
+	t.Run("Test invalid stock size in entry", func(t *testing.T) {
+		uid, _ := uuid.NewUUID()
+		entry := models.Entry{ID: uid, MediaID: 765}
+		if err := entry.ValidateEntry(); err == nil {
+			t.Error(err)
+		}
+	})
+
+	t.Run("Test invalid stock unit in entry", func(t *testing.T) {
+		uid, _ := uuid.NewUUID()
+		entry := models.Entry{ID: uid, MediaID: 765, StockSizeNum: 4.7}
+		if err := entry.ValidateEntry(); err == nil {
+			t.Error(err)
+		}
+	})
+
+	t.Run("Test valid entry", func(t *testing.T) {
+		uid, _ := uuid.NewUUID()
+		entry := models.Entry{ID: uid, MediaID: 765, StockSizeNum: 4.7, StockUnit: "GB"}
+		if err := entry.ValidateEntry(); err != nil {
+			t.Error(err)
+		}
+	})
+
 	var entry models.Entry
 	t.Run("Test get an entry", func(t *testing.T) {
 		var err error

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -104,7 +105,27 @@ func (e *Entry) UpdateEntry(updatedEntry Entry) {
 	e.ImagingNote = updatedEntry.ImagingNote
 	e.ImagingSoftware = updatedEntry.ImagingSoftware
 	e.ImageFormat = updatedEntry.ImageFormat
+}
 
+func (e *Entry) ValidateEntry() error {
+
+	if _, err := uuid.Parse(e.ID.String()); err != nil {
+		return fmt.Errorf("ID: `%v` is not valid", e.MediaID)
+	}
+
+	if e.MediaID < 1 {
+		return fmt.Errorf("mediaID: `%d` is not valid", e.MediaID)
+	}
+
+	if e.StockSizeNum < 1 {
+		return fmt.Errorf("stock size number: `%f` is not valid", e.StockSizeNum)
+	}
+
+	if e.StockUnit == "" {
+		return fmt.Errorf("stock Unit: `%s` is not valid", e.StockUnit)
+	}
+
+	return nil
 }
 
 type User struct {
