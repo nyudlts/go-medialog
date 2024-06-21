@@ -13,7 +13,7 @@
                     <th>Repository</th>
                     <th>Resource</th>
                     <th>AccessionNum</th>
-                    <th>Extent</th>
+                    <th>Last Updated</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -24,7 +24,7 @@
                 <td><a href="/repositories/{{ $accession.Resource.RepositoryID}}/show">{{ index $.repositoryMap $accession.Resource.RepositoryID }}</a></td>
                 <td><a href="/resources/{{ $accession.ResourceID}}/show">{{ $accession.Resource.CollectionCode }}</a><br/>{{ printf "%.50s" $accession.Resource.Title }}</td>
                 <td><a href="/accessions/{{ $accession.ID }}/show">{{ $accession.AccessionNum }}</a></td>
-                <td>tbc</td>
+                <td>{{ formatAsDate $accession.UpdatedAt }}</td>
                 <td>
                     <a href="/accessions/{{ $accession.ID }}/show" class="btn btn-primary">View</a>
                     <a href="/accessions/{{ $accession.ID }}/edit" class="btn btn-secondary">Edit</a>

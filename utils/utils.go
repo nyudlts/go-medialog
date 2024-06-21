@@ -11,6 +11,8 @@ func Add(a int, b int) int { return a + b }
 
 func Subtract(a int, b int) int { return a - b }
 
+func Multiply(a int, b int) int { return a * b }
+
 func FormatAsDate(t time.Time) string { return t.Format("2006-01-02") }
 
 //func getMediatypes() map[string]string { return mediatypes }
@@ -54,6 +56,7 @@ func SetGlobalFuncs(router *gin.Engine) {
 		"formatAsDate": FormatAsDate,
 		"add":          Add,
 		"subtract":     Subtract,
+		"multiply":     Multiply,
 		"getMediatype": GetMediatype,
 	})
 }
