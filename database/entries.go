@@ -71,6 +71,12 @@ func FindEntriesSorted(numRecords int) ([]models.Entry, error) {
 	return entries, nil
 }
 
+func FindMaxMediaIDInResource(resourceID uint) int {
+	var maxMediaID int
+	db.Table("entries").Where("resource_id = ?", resourceID).Order("media_id desc").Select("media_id").Limit(1).Find(&maxMediaID)
+	return maxMediaID
+}
+
 func FindPaginatedEntries(pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Preload(clause.Associations).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {

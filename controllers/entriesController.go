@@ -33,6 +33,8 @@ func GetEntry(c *gin.Context) {
 		return
 	}
 
+	maxMediaID := database.FindMaxMediaIDInResource(entry.ResourceID)
+
 	accession, err := database.FindAccession(uint(entry.AccessionID))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
