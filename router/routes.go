@@ -91,8 +91,7 @@ func LoadRoutes(router *gin.Engine) {
 	// general
 	router.NoRoute(func(c *gin.Context) {
 		session := sessions.Default(c)
-		session.AddFlash("This Page Does Not Exist", "WARNING")
-		c.HTML(404, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": 404})
+		controllers.ThrowError(http.StatusNotFound, "This Page Does Not Exist", c)
 		session.Save()
 	})
 

@@ -26,15 +26,11 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
-	log.Printf("ResourceID: %d", id)
-
 	resource, err := database.FindResource(uint(id))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-
-	log.Printf("Resource: %v", resource)
 
 	summary, err := database.GetSummaryByResource(resource.ID)
 	if err != nil {
@@ -48,6 +44,13 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
+	//get page count
+	pageCount, err := database.GetNumberPagesInResource(resource.ID)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+	}
+	log.Println("PAGE COUNT", pageCount)
+
 	//pagination
 	var p = 0
 	page := c.Request.URL.Query()["page"]
@@ -58,6 +61,10 @@ func GetResource(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, err.Error())
 			return
 		}
+	}
+
+	if p < 0 {
+		p = 0
 	}
 
 	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
@@ -84,6 +91,7 @@ func GetResource(c *gin.Context) {
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
 		"entry_users":     entryUsers,
+		"page_count":      pageCount,
 	})
 }
 

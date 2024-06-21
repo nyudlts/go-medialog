@@ -7,7 +7,7 @@ import (
 
 func FindAccessions() ([]models.Accession, error) {
 	accessions := []models.Accession{}
-	if err := db.Preload(clause.Associations).Find(&accessions).Error; err != nil {
+	if err := db.Preload(clause.Associations).Order("updated_at desc").Find(&accessions).Error; err != nil {
 		return accessions, err
 	}
 	return accessions, nil

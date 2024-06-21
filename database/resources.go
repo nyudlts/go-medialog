@@ -7,7 +7,7 @@ import (
 
 func FindResources() ([]models.Resource, error) {
 	resources := []models.Resource{}
-	if err := db.Find(&resources).Error; err != nil {
+	if err := db.Preload(clause.Associations).Order("repository_id, collection_code").Find(&resources).Error; err != nil {
 		return resources, err
 	}
 	return resources, nil
@@ -23,7 +23,7 @@ func FindResource(id uint) (models.Resource, error) {
 
 func FindResourcesByRepositoryID(repositoryID uint) ([]models.Resource, error) {
 	resources := []models.Resource{}
-	if err := db.Where("repository_id = ?", repositoryID).Find(&resources).Error; err != nil {
+	if err := db.Where("repository_id = ?", repositoryID).Order("collection_code").Find(&resources).Error; err != nil {
 		return resources, err
 	}
 	return resources, nil

@@ -79,6 +79,18 @@ func FindPaginatedEntries(pagination Pagination) ([]models.Entry, error) {
 	return entries, nil
 }
 
+func GetNumberPagesInResource(resourceID uint) (int, error) {
+	entryIDs := []uuid.UUID{}
+	if err := db.Table("entries").Where("resource_id = ?", resourceID).Select("id").Find(&entryIDs).Error; err != nil {
+		return 0, err
+	}
+
+	l := len(entryIDs)
+	p := l / 10
+
+	return p, nil
+}
+
 type Summary struct {
 	Mediatype string
 	Count     int
@@ -236,7 +248,7 @@ func IsMediaIDUniqueInResource(mediaID uint, resourceID uint) (bool, error) {
 
 func FindEntryInResource(resourceID int, mediaID int) (string, error) {
 	entry := models.Entry{}
-	if err := db.Where("resources_id = ? AND media_id = ?", resourceID, mediaID).First(&entry).Error; err != nil {
+	if err := db.Where("resource_id = ? AND media_id = ?", resourceID, mediaID).First(&entry).Error; err != nil {
 		return "", err
 	}
 	return entry.ID.String(), nil

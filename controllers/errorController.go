@@ -8,7 +8,16 @@ import (
 func throwError(code int, msg string, c *gin.Context) {
 	session := sessions.Default(c)
 	session.AddFlash(msg, "WARNING")
-	c.HTML(code, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": code})
+	ila := isLoggedIn(c)
+	c.HTML(code, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": code, "isLoggedIn": ila})
+	session.Save()
+}
+
+func ThrowError(code int, msg string, c *gin.Context) {
+	session := sessions.Default(c)
+	session.AddFlash(msg, "WARNING")
+	ila := isLoggedIn(c)
+	c.HTML(code, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": code, "isLoggedIn": ila})
 	session.Save()
 }
 
