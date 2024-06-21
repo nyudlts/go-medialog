@@ -2,14 +2,16 @@
 <br>
 <div class="card card-default">
     <div class="card-header">
-        <h5 class="card-title">Recent Entries</h5>
-    </div>
-    <div class="card-body">
-        <div class="row justify-content-end">
-            <div class="pl-2">
+        <div class="row">
+            <h5 class="card-title col">Recent Entries</h5>
+            <div clas="col pl-2">
+                <a href="/entries?page={{ subtract .page 1 }}" class="btn btn-primary btn-sm">prev 10</a>
                 <a href="/entries?page={{ add .page 1 }}" class="btn btn-primary btn-sm">next 10</a>
             </div>
         </div>
+    </div>
+    <div class="card-body">
+        <div class="row">showing entries {{ add .page 1 }} - {{ add .page 10 }} of {{ .entryCount }}</div>
         {{ template "entry-table-index.html" . }}
     </div>
 </div>

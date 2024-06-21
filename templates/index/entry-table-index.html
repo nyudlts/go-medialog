@@ -7,9 +7,9 @@
             <th>Accession</th>
             <th>Number</th>
             <th>Type</th>
+            <th>Box #</th>
             <th>Refreshed</th>
             <th>Last Updated</th>
-            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -18,15 +18,11 @@
             <td><a href="/repositories/{{ $entry.RepositoryID }}/show">{{ $entry.Repository.Slug }}</a></td>
             <td><a href="/resources/{{ $entry.ResourceID }}/show">{{ $entry.Resource.CollectionCode }}</a><br>{{ $entry.Resource.Title}}</td>
             <td><a href="/accessions/{{ $entry.AccessionID }}/show">{{ $entry.Accession.AccessionNum }}</a></td>
-            <td>{{ $entry.MediaID }}</td>
+            <td><a href="/entries/{{ $entry.ID }}/show">{{ $entry.MediaID }}</a></td>
             <td>{{ getMediatype $entry.Mediatype }}</td>
+            <td>{{ $entry.BoxNumber }}</td>
             <td>{{ $entry.IsRefreshed }}</td>
             <td>{{ formatAsDate $entry.UpdatedAt }}</td>
-            <td>
-                <a href="/entries/{{ $entry.ID }}/show" class="btn-sm btn-primary">View</a>
-                <a href="/entries/{{ $entry.ID }}/edit" class="btn-sm btn-secondary">Edit</a>
-                <a href="/entries/{{ $entry.ID }}/delete" class="btn-sm btn-danger">Delete</a>
-            </td>
         </tr>
         {{ end }}
         </tbody>

@@ -156,6 +156,8 @@ func GetEntries(c *gin.Context) {
 		return
 	}
 
+	entryCount := database.GetCountOfEntriesInDB()
+
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -168,6 +170,7 @@ func GetEntries(c *gin.Context) {
 		"isAdmin":         isAdmin,
 		"page":            p,
 		"repositoryMap":   repositoryMap,
+		"entryCount":      entryCount,
 	})
 }
 

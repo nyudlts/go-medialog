@@ -91,6 +91,12 @@ func GetNumberPagesInResource(resourceID uint) (int, error) {
 	return p, nil
 }
 
+func GetCountOfEntriesInDB() int64 {
+	var count int64
+	db.Model(&models.Entry{}).Count(&count)
+	return count
+}
+
 type Summary struct {
 	Mediatype string
 	Count     int

@@ -22,6 +22,8 @@ func GetIndex(c *gin.Context) {
 		return
 	}
 
+	entryCount := database.GetCountOfEntriesInDB()
+
 	isAdmin := getCookie("is-admin", c)
 
 	repositoryMap, err := database.GetRepositoryMap()
@@ -35,5 +37,6 @@ func GetIndex(c *gin.Context) {
 		"isAdmin":       isAdmin,
 		"page":          p,
 		"repositoryMap": repositoryMap,
+		"entryCount":    entryCount,
 	})
 }
