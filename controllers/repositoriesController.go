@@ -72,6 +72,7 @@ func EditRepository(c *gin.Context) {
 	c.HTML(200, "repositories-edit.html", gin.H{
 		"isAdmin":    isAdmin,
 		"repository": repository,
+		"isLoggedIn": true,
 	})
 
 }
@@ -157,6 +158,7 @@ func GetRepositories(c *gin.Context) {
 		"repositories":    repositories,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
+		"isLoggedIn":      true,
 	})
 
 }

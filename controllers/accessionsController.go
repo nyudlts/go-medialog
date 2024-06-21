@@ -42,6 +42,7 @@ func GetAccessions(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"repositoryMap":   repositoryMap2,
+		"isLoggedIn":      true,
 	})
 }
 
@@ -119,6 +120,7 @@ func GetAccession(c *gin.Context) {
 		"totals":          summary.GetTotals(),
 		"users":           users,
 		"entryCount":      entryCount,
+		"isLoggedIn":      true,
 	})
 }
 
@@ -148,6 +150,7 @@ func NewAccession(c *gin.Context) {
 	c.HTML(200, "accessions-new.html", gin.H{
 		"resource":   resource,
 		"repository": repository,
+		"isLoggedIn": true,
 	})
 }
 
@@ -231,6 +234,7 @@ func EditAccession(c *gin.Context) {
 		"isAdmin":    isAdmin,
 		"accession":  accession,
 		"repository": repository,
+		"isLoggedIn": true,
 	})
 
 }
@@ -353,6 +357,7 @@ func SlewAccession(c *gin.Context) {
 		"pagination":  pagination,
 		"page":        0,
 		"entries":     entries,
+		"isLoggedIn":  true,
 	})
 }
 

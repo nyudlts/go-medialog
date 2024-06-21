@@ -38,5 +38,6 @@ func GetIndex(c *gin.Context) {
 		"page":          p,
 		"repositoryMap": repositoryMap,
 		"entryCount":    entryCount,
+		"isLoggedIn":    true,
 	})
 }

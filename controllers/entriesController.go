@@ -65,6 +65,7 @@ func GetEntry(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"entryUsers":      entryUsers,
+		"isLoggedIn":      true,
 	})
 }
 
@@ -171,6 +172,7 @@ func GetEntries(c *gin.Context) {
 		"page":            p,
 		"repositoryMap":   repositoryMap,
 		"entryCount":      entryCount,
+		"isLoggedIn":      true,
 	})
 }
 
@@ -233,6 +235,7 @@ func NewEntry(c *gin.Context) {
 		"image_formats":          getImageFormats(),
 		"media_id":               mediaID,
 		"is_refreshed":           is_refreshed,
+		"isLoggedIn":             true,
 	})
 
 }
@@ -400,6 +403,7 @@ func EditEntry(c *gin.Context) {
 		"imaging_software":       getImagingSoftware(),
 		"image_formats":          getImageFormats(),
 		"is_refreshed":           is_refreshed,
+		"isLoggedIn":             true,
 	})
 }
 

@@ -17,19 +17,8 @@
 {{ if .isLoggedIn }}
     {{ template "header.html" .}}
 {{ else }}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light"></nav>
-    <a class="navbar-brand" href="/">Medialog</a>
-    <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="/users/login">Login</a>
-            </li>
-        </ul>
-    </div>
-    {{ end }}
+    {{ template "header.html" .}}
+{{ end }}
 </nav>
 <br>
 <br>

@@ -95,6 +95,7 @@ func GetResource(c *gin.Context) {
 		"entry_users":     entryUsers,
 		"page_count":      pageCount,
 		"entryCount":      entryCount,
+		"isLoggedIn":      true,
 	})
 }
 
@@ -123,6 +124,7 @@ func GetResources(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"repositoryMap":   repositoryMap,
+		"isLoggedIn":      true,
 	})
 }
 
@@ -149,6 +151,7 @@ func NewResource(c *gin.Context) {
 	c.HTML(200, "resources-new.html", gin.H{
 		"isAdmin":    isAdmin,
 		"repository": repository,
+		"isLoggedIn": true,
 	})
 }
 
@@ -221,8 +224,9 @@ func EditResource(c *gin.Context) {
 	}
 
 	c.HTML(200, "resources-edit.html", gin.H{
-		"isAdmin":  isAdmin,
-		"resource": resource,
+		"isAdmin":    isAdmin,
+		"resource":   resource,
+		"isLoggedIn": true,
 	})
 }
 

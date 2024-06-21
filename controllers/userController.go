@@ -31,6 +31,7 @@ func GetUsers(c *gin.Context) {
 		"users":           users,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
+		"isLoggedIn":      true,
 	})
 }
 
@@ -45,6 +46,7 @@ func NewUser(c *gin.Context) {
 	c.HTML(http.StatusOK, "users-new.html", gin.H{
 		"isAdmin":         isAdmin,
 		"isAuthenticated": true,
+		"isLoggedIn":      true,
 	})
 }
 
@@ -143,6 +145,7 @@ func ResetUserPassword(c *gin.Context) {
 		"user":            user,
 		"isAdmin":         isAdmin,
 		"isAuthenticated": true,
+		"isLoggedIn":      true,
 	})
 
 }

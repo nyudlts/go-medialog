@@ -13,6 +13,11 @@ var partnerCodes = map[int]string{0: "", 2: "tamwag", 3: "fales", 6: "nyu archiv
 
 func ReportsIndex(c *gin.Context) {
 
+	if !isLoggedIn(c) {
+		c.Redirect(302, "/error")
+		return
+	}
+
 	c.HTML(http.StatusOK, "reports-index.html", gin.H{
 		"months":        months,
 		"days":          days,
