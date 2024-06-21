@@ -97,6 +97,12 @@ func GetCountOfEntriesInDB() int64 {
 	return count
 }
 
+func GetCountOfEntriesInAccession(accessionID uint) int64 {
+	var count int64
+	db.Model(&models.Entry{}).Where("accession_id = ?", accessionID).Count(&count)
+	return count
+}
+
 type Summary struct {
 	Mediatype string
 	Count     int
