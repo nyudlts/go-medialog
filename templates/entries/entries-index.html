@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="row">showing entries {{ add .page 1 }} - {{ add .page 10 }} of {{ .entryCount }}</div>
+        <div class="row">showing entries {{ multAndAdd .page 10 1 }} - {{ multAndAdd .page 10 10 }} of {{ .entryCount }}</div>
         {{ template "entry-table-index.html" . }}
     </div>
 </div>
