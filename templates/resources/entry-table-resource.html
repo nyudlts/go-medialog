@@ -2,18 +2,24 @@
     <table class="table table-striped table-bordered table-sm">
         <thead class="thead thead-dark">
         <tr>
-            <th>ID</th>
+            <th>Accession</th>
+            <th>Media ID</th>
+            <th>Label Text</th>
             <th>Mediatype</th>
-            <th>IsRefreshed</th>
+            <th>Refreshed</th>
+            <th>Last Updated</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         {{ range $entry := .entries }}
         <tr>
+            <td><a href="/accessions/{{ $entry.AccessionID }}/show">{{ $entry.Accession.AccessionNum }}</a></td>
             <td>{{ $entry.MediaID }}</td>
+            <td>{{ printf "%0.40s" $entry.LabelText }}</td>
             <td>{{ getMediatype $entry.Mediatype }}</td>
             <td>{{ $entry.IsRefreshed }}</td>
+            <td>{{ formatAsDate $entry.UpdatedAt }}</td>
             <td>
                 <a href="/entries/{{ $entry.ID }}/show" class="btn btn-primary">view</a>
                 <a href="/entries/{{ $entry.ID }}/edit" class="btn btn-secondary">edit</a>

@@ -81,6 +81,8 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
+	entryCount := database.GetCountOfEntriesInResource(resource.ID)
+
 	c.HTML(http.StatusOK, "resources-show.html", gin.H{
 		"resource":        resource,
 		"accessions":      accessions,
@@ -92,6 +94,7 @@ func GetResource(c *gin.Context) {
 		"totals":          summary.GetTotals(),
 		"entry_users":     entryUsers,
 		"page_count":      pageCount,
+		"entryCount":      entryCount,
 	})
 }
 

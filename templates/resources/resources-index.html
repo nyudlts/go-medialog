@@ -8,10 +8,10 @@
         <table class="table table-sm table-striped">
             <thead class="thead thead-dark">
                 <tr>
-                    <th>repository</th>
-                    <th>resource</th>
-                    <th>extent</th>
-                    <th>actions</th>
+                    <th>Repository</th>
+                    <th>Resource</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody class="tbody">
@@ -23,7 +23,7 @@
                     <td>
                         <a href="/resources/{{ $resource.ID }}/show">{{ $resource.CollectionCode}}</a><br>{{ printf "%.50s" $resource.Title }}
                     </td>
-                    <td>tbc</td>
+                    <td>{{ formatAsDate $resource.UpdatedAt}}</td>
                     <td>
                         <div class="col">
                             <a href="/resources/{{ $resource.ID }}/show" class="btn btn-primary">view</a>

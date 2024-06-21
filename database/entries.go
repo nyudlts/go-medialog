@@ -41,7 +41,7 @@ func FindEntries() ([]models.Entry, error) {
 
 func FindEntriesByResourceID(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Where("resource_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+	if err := db.Preload(clause.Associations).Where("resource_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil
@@ -100,6 +100,12 @@ func GetCountOfEntriesInDB() int64 {
 func GetCountOfEntriesInAccession(accessionID uint) int64 {
 	var count int64
 	db.Model(&models.Entry{}).Where("accession_id = ?", accessionID).Count(&count)
+	return count
+}
+
+func GetCountOfEntriesInResource(resourceID uint) int64 {
+	var count int64
+	db.Model(&models.Entry{}).Where("resource_id = ?", resourceID).Count(&count)
 	return count
 }
 
