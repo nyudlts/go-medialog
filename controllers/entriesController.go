@@ -68,6 +68,7 @@ func GetEntry(c *gin.Context) {
 		"isAdmin":         isAdmin,
 		"entryUsers":      entryUsers,
 		"isLoggedIn":      true,
+		"maxMediaID":      maxMediaID,
 	})
 }
 
