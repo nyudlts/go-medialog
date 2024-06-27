@@ -13,7 +13,8 @@ var partnerCodes = map[int]string{0: "", 2: "tamwag", 3: "fales", 6: "nyu archiv
 
 func ReportsIndex(c *gin.Context) {
 
-	if !isLoggedIn(c) {
+	loggedIn := isLoggedIn(c)
+	if !loggedIn {
 		c.Redirect(302, "/error")
 		return
 	}
@@ -23,10 +24,18 @@ func ReportsIndex(c *gin.Context) {
 		"days":          days,
 		"years":         years,
 		"partner_codes": partnerCodes,
+		"isLoggedIn":    loggedIn,
 	})
 }
 
 func ReportRange(c *gin.Context) {
+
+	loggedIn := isLoggedIn(c)
+	if !loggedIn {
+		c.Redirect(302, "/error")
+		return
+	}
+
 	var dateRange = database.DateRange{}
 	if err := c.Bind(&dateRange); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -50,6 +59,7 @@ func ReportRange(c *gin.Context) {
 		"days":          days,
 		"repository":    partnerCodes[dateRange.RepositoryID],
 		"partner_codes": partnerCodes,
+		"isLoggedIn":    loggedIn,
 	})
 
 }
