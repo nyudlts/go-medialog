@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -41,8 +40,6 @@ func ReportRange(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-
-	log.Println("REPO", dateRange.RepositoryID)
 
 	summary, err := database.GetSummaryByDateRange(dateRange)
 	if err != nil {

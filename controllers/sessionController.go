@@ -79,7 +79,6 @@ func DumpSession(c *gin.Context) {
 	if userID != nil {
 		sessionCookies.UserID = userID.(int)
 	}
-	fmt.Println("USERID:", userID)
 
 	adminCookie := session.Get(isAdmin).(bool)
 	sessionCookies.IsAdmin = adminCookie

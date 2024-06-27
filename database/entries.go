@@ -181,8 +181,9 @@ func (dr DateRange) String() string {
 }
 
 func GetSummaryByDateRange(dr DateRange) (Summaries, error) {
-	startDate := fmt.Sprintf("%d-%d-%d", dr.StartYear, dr.StartMonth, dr.StartDay)
-	endDate := fmt.Sprintf("%d-%d-%d", dr.EndYear, dr.EndMonth, dr.EndDay)
+	startDate := fmt.Sprintf("%d-%d-%dT00:00:00Z", dr.StartYear, dr.StartMonth, dr.StartDay)
+	endDate := fmt.Sprintf("%d-%d-%dT23:59:59Z", dr.EndYear, dr.EndMonth, dr.EndDay)
+
 	entries := []models.Entry{}
 	if dr.RepositoryID == 0 {
 		if err := db.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
