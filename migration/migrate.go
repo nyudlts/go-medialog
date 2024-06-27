@@ -12,14 +12,11 @@ import (
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
+const version = "v0.2.3-beta"
+
 var (
-	pgdb *gorm.DB
-	//sqdb          *gorm.DB
-	db            *gorm.DB
 	test          bool
 	migrateTables bool
 	migrateData   bool
@@ -28,6 +25,7 @@ var (
 	environment   string
 	conf          string
 	sqlite        bool
+	compare       bool
 )
 
 func init() {
@@ -38,24 +36,21 @@ func init() {
 	flag.BoolVar(&migrateData, "migrate-data", false, "migrate data from legacy psql")
 	flag.StringVar(&migrateTable, "migrate-table", "", "migrate a table")
 	flag.BoolVar(&createAdmin, "create-admin", false, "")
+	flag.BoolVar(&compare, "compare-data", false, "")
 }
 
 func main() {
-	fmt.Println("go-medialog migration tool")
-	fmt.Println("parsing flags")
+	fmt.Println("go-medialog migration tool", version)
+	fmt.Println("  * Parsing flags")
 	flag.Parse()
 
-	if migrateData {
-		var err error
-		pgdb, err = gorm.Open(postgres.New(postgres.Config{
-			DSN:                  "host=localhost user=medialog password=medialog dbname=medialog port=5432 sslmode=disable",
-			PreferSimpleProtocol: true,
-		}), &gorm.Config{})
-		if err != nil {
+	if migrateData || compare {
+		if err := database.ConnectPGSQL(); err != nil {
 			panic(err)
 		}
+		fmt.Println("  * Connected to Postgres DB")
 	} else {
-		fmt.Println("Skipping connecting to postgres db")
+		fmt.Println("  * Skipping connecting to postgres db")
 	}
 
 	if sqlite {
@@ -68,7 +63,7 @@ func main() {
 		if err := database.ConnectSQDatabase(env, false); err != nil {
 			panic(err)
 		}
-		fmt.Println("Connected to database")
+		fmt.Println("  * Connected to SQLite3 database")
 
 	} else {
 
@@ -78,22 +73,21 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Println("Migrating:", env.DatabaseConfig.DatabaseName)
-
 		if err := database.ConnectMySQL(env.DatabaseConfig, false); err != nil {
 			panic(err)
 		}
 
-		fmt.Println("Connected to database")
+		fmt.Println("  * Connected to MySQL database")
 	}
 
-	db = database.GetDB()
+	db := database.GetDB()
 
 	if migrateTable != "" {
+
 		switch migrateTable {
 		case "repositories":
 			{
-				fmt.Print("Migrating repositories table: ")
+				fmt.Print("  * Migrating repositories table: ")
 				if err := db.AutoMigrate(models.Repository{}); err != nil {
 					fmt.Printf("ERROR %s\n", err.Error())
 				} else {
@@ -103,7 +97,7 @@ func main() {
 
 		case "users":
 			{
-				fmt.Print("Migrating users table")
+				fmt.Print("  * Migrating users table")
 				if err := db.AutoMigrate(models.User{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				}
@@ -111,7 +105,7 @@ func main() {
 
 		case "entries":
 			{
-				fmt.Println("Migrating entries table: ")
+				fmt.Println("  * Migrating entries table: ")
 				if err := db.AutoMigrate(models.Entry{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				} else {
@@ -120,14 +114,14 @@ func main() {
 			}
 		case "resources":
 			{
-				fmt.Println("Migrating resourcess table")
+				fmt.Println("  * Migrating resources table")
 				if err := db.AutoMigrate(models.Resource{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				}
 			}
 		case "accessions":
 			{
-				fmt.Println("Migrating accession table")
+				fmt.Println("  * Migrating accession table")
 				if err := db.AutoMigrate(models.Accession{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
 				}
@@ -156,9 +150,36 @@ func main() {
 		}
 	}
 
+	if compare {
+		if err := compareDbs(); err != nil {
+			panic(err)
+		}
+	}
+
+}
+
+func compareDbs() error {
+	fmt.Println("  * comparing databases")
+	fmt.Println("\nTable\t\tMySQL\t\tPostgreSQL")
+	fmt.Println("-----\t\t-----\t\t----------")
+	mAccessionCount := database.CountAccessions()
+	pAccessionCount := database.CountAccessionsPG()
+	fmt.Printf("Accessions\t%d\t\t%d\n", mAccessionCount, pAccessionCount)
+	mEntryCount := database.GetCountOfEntriesInDB()
+	pEntryCount := database.CountEntriesPG()
+	fmt.Printf("Entries\t\t%d\t\t%d\n", mEntryCount, pEntryCount)
+	mResourceCount := database.CountResources()
+	pResourceCount := database.CountResourcesPG()
+	fmt.Printf("Resources\t%d\t\t%d\n", mResourceCount, pResourceCount)
+	mUserCount := database.CountUsers()
+	pUserCount := database.CountUsersPG()
+	fmt.Printf("Users\t\t%d\t\t%d\n", mUserCount, pUserCount)
+	fmt.Println()
+	return nil
 }
 
 func migrateDBTables() error {
+	db := database.GetDB()
 	fmt.Println("migrating database tables")
 	if err := db.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Resource{}, &models.User{}, &models.Entry{}); err != nil {
 		return err
@@ -198,31 +219,56 @@ func migrateLegacyData() error {
 }
 
 func migrateUsersToGorm() error {
-	usersPG := []models.UserPG{}
-	pgdb.Find(&usersPG)
+
+	usersPG, err := database.GetUsersPG()
+	if err != nil {
+		return err
+	}
+
 	for _, userPG := range usersPG {
 		u := userPG.ToGormModel()
-		db.Create(&u)
+		if _, err := database.InsertUser(&u); err != nil {
+			fmt.Println(err.Error())
+		}
 	}
 
 	return nil
 }
 
+func migrateAccessionsToGorm() error {
+	accessionsPG, err := database.GetAccessionsPG()
+	if err != nil {
+		return err
+	}
+
+	for _, accessionPG := range accessionsPG {
+		a := accessionPG.ToGormModel()
+		if _, err := database.InsertAccession(&a); err != nil {
+
+			return err
+		}
+	}
+	return nil
+}
 func migrateEntriesToGorm() error {
 
-	mlog_EntryPGs := []models.Mlog_EntryPG{}
-	pgdb.Find(&mlog_EntryPGs)
-	for _, entryPG := range mlog_EntryPGs {
+	mlogEntryPGs, err := database.GetEntriesPG()
+	if err != nil {
+		return err
+	}
+
+	for _, entryPG := range mlogEntryPGs {
 		e := entryPG.ToGormModel()
-		c := models.Resource{}
-		if err := db.Where("id = ?", e.ResourceID).First(&c).Error; err != nil {
-			fmt.Printf("ERROR: %s", err.Error())
+		c, err := database.FindResource(e.ResourceID)
+		if err != nil {
+			fmt.Println(err.Error())
 			continue
 		}
+
 		e.RepositoryID = c.RepositoryID
 
-		if err := db.Create(&e).Error; err != nil {
-			fmt.Printf("ERROR: %s", err.Error())
+		if _, err := database.InsertEntry(&e); err != nil {
+			fmt.Println(err.Error())
 			continue
 		}
 	}
@@ -231,31 +277,29 @@ func migrateEntriesToGorm() error {
 
 func migrateCollectionsToGorm() error {
 
-	collectionsPG := []models.CollectionPG{}
-	pgdb.Find(&collectionsPG)
+	collectionsPG, err := database.GetCollectionsPG()
+	if err != nil {
+		return err
+	}
+
 	for _, collectionPG := range collectionsPG {
 		c := collectionPG.ToGormModel()
-		if c.PartnerCode == "tamwag" {
+
+		switch c.PartnerCode {
+		case "tamwag":
 			c.RepositoryID = 2
-		} else if c.PartnerCode == "fales" {
+		case "fales":
 			c.RepositoryID = 3
-		} else if c.PartnerCode == "nyuarchives" {
+		case "nyuarchives":
 			c.RepositoryID = 6
 		}
-		db.Create(&c)
+
+		if _, err := database.InsertResource(&c); err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
 	}
 
-	return nil
-}
-
-func migrateAccessionsToGorm() error {
-	accessionsPG := []models.AccessionPG{}
-	pgdb.Find(&accessionsPG)
-
-	for _, accessionPG := range accessionsPG {
-		a := accessionPG.ToGormModel()
-		db.Create(&a)
-	}
 	return nil
 }
 
@@ -277,7 +321,7 @@ func populateRepos() error {
 	nyuarchives.Title = "NYU University Archives"
 
 	for _, repo := range []models.Repository{fales, tamwag, nyuarchives} {
-		if err := db.Create(&repo).Error; err != nil {
+		if _, err := database.CreateRepository(&repo); err != nil {
 			return err
 		}
 	}

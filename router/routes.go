@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -91,6 +92,7 @@ func LoadRoutes(router *gin.Engine) {
 	// general
 	router.NoRoute(func(c *gin.Context) {
 		session := sessions.Default(c)
+		log.Println("NO ROUTE", c.Request.RequestURI)
 		controllers.ThrowError(http.StatusNotFound, "This Page Does Not Exist", c)
 		session.Save()
 	})

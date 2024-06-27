@@ -177,7 +177,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusTemporaryRedirect, "/users/")
 }
 
 func DeactivateUser(c *gin.Context) {

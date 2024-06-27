@@ -12,15 +12,18 @@ import (
 	"github.com/nyudlts/go-medialog/utils"
 )
 
-func SetupRouter(env config.Environment, gormDebug bool) (*gin.Engine, error) {
+func SetupRouter(env config.Environment, gormDebug bool, prod bool) (*gin.Engine, error) {
 	/*
-		//configure logger
+		//configure
 		gin.DisableConsoleColor()
 		f, _ := os.Create(env.LogLocation)
 		defer f.Close()
 		gin.DefaultWriter = io.MultiWriter(f)
 	*/
 
+	if prod {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	//initialize the router
 	r := gin.Default()
 

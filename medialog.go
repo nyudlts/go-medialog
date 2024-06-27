@@ -17,6 +17,7 @@ var (
 	sqlite        bool
 	gormDebug     bool
 	vers          bool
+	prod          bool
 )
 
 const version = "v0.2.3-beta"
@@ -28,6 +29,7 @@ func init() {
 	flag.BoolVar(&sqlite, "sqlite", false, "")
 	flag.BoolVar(&gormDebug, "gorm-debug", false, "")
 	flag.BoolVar(&vers, "version", false, "")
+	flag.BoolVar(&prod, "prod", false, "")
 }
 
 func main() {
@@ -58,7 +60,8 @@ func main() {
 		}
 
 		log.Println("Setting Up Router")
-		r, err = router.SetupRouter(env, gormDebug)
+
+		r, err = router.SetupRouter(env, gormDebug, prod)
 		if err != nil {
 			panic(err)
 		}
@@ -66,6 +69,7 @@ func main() {
 
 	//start the application
 	log.Printf("Running Go-Medialog %s", version)
+
 	if err := r.Run(":8080"); err != nil {
 		os.Exit(1)
 	}

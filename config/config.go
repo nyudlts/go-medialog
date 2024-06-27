@@ -49,7 +49,7 @@ func GetEnvironment(config string, environment string) (Environment, error) {
 		}
 	}
 
-	return Environment{}, fmt.Errorf("envirnoment %s does not exist in configuration", environment)
+	return Environment{}, fmt.Errorf("environment %s does not exist in configuration", environment)
 }
 
 func GetSQlite(config string, environment string) (SQLiteEnv, error) {

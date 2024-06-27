@@ -50,3 +50,9 @@ func DeleteRepository(id uint) error {
 	}
 	return nil
 }
+
+func CountRepositories() int64 {
+	var count int64
+	db.Model(models.Repository{}).Count(&count)
+	return count
+}

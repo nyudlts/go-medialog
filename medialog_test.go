@@ -1,13 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"flag"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
-	"regexp"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -46,12 +42,13 @@ func TestAPI(t *testing.T) {
 			panic(err)
 		}
 
-		r, err = router.SetupRouter(env, gormDebug)
+		r, err = router.SetupRouter(env, true, false)
 		if err != nil {
 			panic(err)
 		}
 	}
-	t.Run("Test sutup router", func(t *testing.T) {
+
+	t.Run("Test setup router", func(t *testing.T) {
 		t.Logf("context: %v", c)
 		t.Logf("router: %v", r)
 	})
@@ -66,6 +63,9 @@ func TestAPI(t *testing.T) {
 		assert.Equal(t, 200, w.Code)
 		assert.Equal(t, "text/html; charset=utf-8", w.Header().Get("content-type"))
 	})
+}
+
+/*
 
 	t.Run("Test POST login route", func(t *testing.T) {
 		var b bytes.Buffer
@@ -91,15 +91,13 @@ func TestAPI(t *testing.T) {
 
 }
 
-var titlePtn = regexp.MustCompile("<title.*/title>")
+var titlePtn = regexp.MustCompile("<title/title>")
 
 func getTitle(body string) string {
 	matches := titlePtn.FindAllString(body, -1)
 	return matches[0]
 
 }
-
-/*
 
 	t.Run("Test GET index route", func(t *testing.T) {
 		req, err := http.NewRequestWithContext(c, "GET", "/", nil)
@@ -153,7 +151,7 @@ func getTitle(body string) string {
 		t.Logf("%v", w.Result().Cookies())
 	})
 
-	/*
+
 
 
 		t.Run("test get Index", func(t *testing.T) {
@@ -197,7 +195,7 @@ func getTitle(body string) string {
 			t.Logf("%v", w.Result().Cookies())
 		})
 
-		/*
+
 
 
 

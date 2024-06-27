@@ -99,3 +99,9 @@ func DeleteUser(id uint) error {
 	}
 	return nil
 }
+
+func CountUsers() int64 {
+	var count int64
+	db.Model(models.User{}).Count(&count)
+	return count
+}

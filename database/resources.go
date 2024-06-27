@@ -57,3 +57,9 @@ func UpdateResource(resource *models.Resource) error {
 	}
 	return nil
 }
+
+func CountResources() int64 {
+	var count int64
+	db.Model(models.Resource{}).Count(&count)
+	return count
+}

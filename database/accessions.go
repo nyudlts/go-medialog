@@ -59,3 +59,9 @@ func DeleteAccession(id uint) error {
 	}
 	return nil
 }
+
+func CountAccessions() int64 {
+	var count int64
+	db.Model(&models.Accession{}).Count(&count)
+	return count
+}
