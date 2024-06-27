@@ -523,6 +523,7 @@ func CloneEntry(c *gin.Context) {
 	}
 
 	entry.ID = newUUID
+	entry.LabelText = ""
 	entry.MediaID = nextID
 	entry.CreatedAt = time.Now()
 	entry.CreatedBy = userID
