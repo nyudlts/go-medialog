@@ -19,7 +19,7 @@
                     
                     <select name="start-month" id="start-month">
                         {{ range $month := .months }}
-                            {{ if eq $month $.dateRange.startMonth }}
+                            {{ if eq $month $.dateRange.StartMonth }}
                                 <option value="{{ $month }}" selected="selected">{{ $month }}</option>
                             {{ else }}
                                 <option value="{{ $month }}">{{ $month }}</option>
@@ -29,7 +29,7 @@
                     
                     <select name="start-day" id="start-day">
                         {{ range $day := .days }}
-                            {{ if eq $day $.dateRange.startDay }}
+                            {{ if eq $day $.dateRange.StartDay }}
                                 <option value="{{ $day }}" selected="selected">{{ $day }}</option>
                             {{ else }}
                                 <option value="{{ $day }}">{{ $day }}</option>
