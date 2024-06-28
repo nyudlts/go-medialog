@@ -20,7 +20,7 @@ var (
 	prod          bool
 )
 
-const version = "v0.2.3-beta"
+const version = "v0.2.4-beta"
 
 func init() {
 

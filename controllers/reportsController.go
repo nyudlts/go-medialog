@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -50,7 +49,7 @@ func ReportRange(c *gin.Context) {
 	c.HTML(http.StatusOK, "reports-range.html", gin.H{
 		"summary":       summary,
 		"totals":        summary.GetTotals(),
-		"dateRange":     fmt.Sprintf("%v", dateRange),
+		"dateRange":     dateRange,
 		"years":         years,
 		"months":        months,
 		"days":          days,
