@@ -70,6 +70,6 @@ func TestDatabase(t *testing.T) {
 			t.Error(err)
 		}
 
-		t.Logf("%v", entries)
+		t.Logf("%v", len(entries))
 	})
 }

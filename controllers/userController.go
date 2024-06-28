@@ -118,6 +118,10 @@ func AuthenticateUser(c *gin.Context) {
 		setCookie("is-admin", false, c)
 	}
 
+	user.SignInCount = user.SignInCount + 1
+	if err := database.UpdateUser(&user); err != nil {
+		throwError(http.StatusInternalServerError, "failed to update user", c)
+	}
 	c.Redirect(302, "/")
 }
 
