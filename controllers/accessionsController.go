@@ -13,8 +13,9 @@ import (
 )
 
 func GetAccessions(c *gin.Context) {
-
-	if err := checkLogin(c); err != nil {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -42,12 +43,14 @@ func GetAccessions(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"repositoryMap":   repositoryMap2,
-		"isLoggedIn":      true,
+		"isLoggedIn":      isLoggedIn,
 	})
 }
 
 func GetAccession(c *gin.Context) {
-	if err := checkLogin(c); err != nil {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -120,12 +123,14 @@ func GetAccession(c *gin.Context) {
 		"totals":          summary.GetTotals(),
 		"users":           users,
 		"entryCount":      entryCount,
-		"isLoggedIn":      true,
+		"isLoggedIn":      isLoggedIn,
 	})
 }
 
 func NewAccession(c *gin.Context) {
-	if err := checkLogin(c); err != nil {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -150,13 +155,15 @@ func NewAccession(c *gin.Context) {
 	c.HTML(200, "accessions-new.html", gin.H{
 		"resource":   resource,
 		"repository": repository,
-		"isLoggedIn": true,
+		"isLoggedIn": isLoggedIn,
 	})
 }
 
 func CreateAccession(c *gin.Context) {
 	//check the user is logged in
-	if err := checkLogin(c); err != nil {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -206,7 +213,9 @@ func CreateAccession(c *gin.Context) {
 }
 
 func EditAccession(c *gin.Context) {
-	if err := checkLogin(c); err != nil {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -234,13 +243,15 @@ func EditAccession(c *gin.Context) {
 		"isAdmin":    isAdmin,
 		"accession":  accession,
 		"repository": repository,
-		"isLoggedIn": true,
+		"isLoggedIn": isLoggedIn,
 	})
 
 }
 
 func UpdateAccession(c *gin.Context) {
-	if err := checkLogin(c); err != nil {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -316,7 +327,9 @@ type Slew struct {
 }
 
 func SlewAccession(c *gin.Context) {
-	if err := checkLogin(c); err != nil {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -357,12 +370,14 @@ func SlewAccession(c *gin.Context) {
 		"pagination":  pagination,
 		"page":        0,
 		"entries":     entries,
-		"isLoggedIn":  true,
+		"isLoggedIn":  isLoggedIn,
 	})
 }
 
 func CreateAccessionSlew(c *gin.Context) {
-	if err := checkLogin(c); err != nil {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 

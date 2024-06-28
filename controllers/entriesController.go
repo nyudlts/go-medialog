@@ -14,8 +14,9 @@ import (
 )
 
 func GetEntry(c *gin.Context) {
-	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -67,14 +68,14 @@ func GetEntry(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"entryUsers":      entryUsers,
-		"isLoggedIn":      true,
+		"isLoggedIn":      isLoggedIn,
 		"maxMediaID":      maxMediaID,
 	})
 }
 
 func GetPreviousEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -101,7 +102,7 @@ func GetPreviousEntry(c *gin.Context) {
 
 func GetNextEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -128,7 +129,7 @@ func GetNextEntry(c *gin.Context) {
 
 func GetEntries(c *gin.Context) {
 	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -180,8 +181,9 @@ func GetEntries(c *gin.Context) {
 }
 
 func NewEntry(c *gin.Context) {
-	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -238,7 +240,7 @@ func NewEntry(c *gin.Context) {
 		"image_formats":          getImageFormats(),
 		"media_id":               mediaID,
 		"is_refreshed":           is_refreshed,
-		"isLoggedIn":             true,
+		"isLoggedIn":             isLoggedIn,
 	})
 
 }
@@ -246,7 +248,7 @@ func NewEntry(c *gin.Context) {
 func CreateEntry(c *gin.Context) {
 	//check user is logged in
 	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -327,7 +329,7 @@ func CreateEntry(c *gin.Context) {
 
 func DeleteEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -353,8 +355,9 @@ func DeleteEntry(c *gin.Context) {
 }
 
 func EditEntry(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -406,14 +409,14 @@ func EditEntry(c *gin.Context) {
 		"imaging_software":       getImagingSoftware(),
 		"image_formats":          getImageFormats(),
 		"is_refreshed":           is_refreshed,
-		"isLoggedIn":             true,
+		"isLoggedIn":             isLoggedIn,
 	})
 }
 
 func UpdateEntry(c *gin.Context) {
 	//check for login
 	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -469,7 +472,7 @@ func CloneEntry(c *gin.Context) {
 
 	//check login
 	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -552,7 +555,7 @@ type FindEntryInResource struct {
 
 func FindEntry(c *gin.Context) {
 	if !isLoggedIn(c) {
-		throwError(401, "Please authenticate to access this service", c)
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 

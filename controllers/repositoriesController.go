@@ -12,8 +12,9 @@ import (
 )
 
 func NewRepository(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	loggedIn := isLoggedIn(c)
+	if !loggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -22,6 +23,7 @@ func NewRepository(c *gin.Context) {
 	c.HTML(http.StatusOK, "repositories-new.html", gin.H{
 		"isAdmin":         isAdmin,
 		"isAuthenticated": true,
+		"isLoggedIn":      loggedIn,
 	})
 }
 
@@ -50,8 +52,9 @@ func CreateRepository(c *gin.Context) {
 }
 
 func EditRepository(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	loggedIn := isLoggedIn(c)
+	if !loggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -72,14 +75,15 @@ func EditRepository(c *gin.Context) {
 	c.HTML(200, "repositories-edit.html", gin.H{
 		"isAdmin":    isAdmin,
 		"repository": repository,
-		"isLoggedIn": true,
+		"isLoggedIn": loggedIn,
 	})
 
 }
 
 func UpdateRepository(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	loggedIn := isLoggedIn(c)
+	if !loggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -121,8 +125,9 @@ func UpdateRepository(c *gin.Context) {
 }
 
 func DeleteRepository(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	loggedIn := isLoggedIn(c)
+	if !loggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -141,8 +146,9 @@ func DeleteRepository(c *gin.Context) {
 }
 
 func GetRepositories(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	loggedIn := isLoggedIn(c)
+	if !loggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -158,14 +164,15 @@ func GetRepositories(c *gin.Context) {
 		"repositories":    repositories,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
-		"isLoggedIn":      true,
+		"isLoggedIn":      loggedIn,
 	})
 
 }
 
 func GetRepository(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	loggedIn := isLoggedIn(c)
+	if !loggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -193,6 +200,6 @@ func GetRepository(c *gin.Context) {
 		"repository":      repository,
 		"resources":       resources,
 		"isAdmin":         isAdmin,
-		"isAuthenticated": true,
+		"isAuthenticated": loggedIn,
 	})
 }

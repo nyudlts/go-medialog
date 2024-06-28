@@ -14,8 +14,9 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -31,13 +32,14 @@ func GetUsers(c *gin.Context) {
 		"users":           users,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
-		"isLoggedIn":      true,
+		"isLoggedIn":      isLoggedIn,
 	})
 }
 
 func NewUser(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -46,7 +48,7 @@ func NewUser(c *gin.Context) {
 	c.HTML(http.StatusOK, "users-new.html", gin.H{
 		"isAdmin":         isAdmin,
 		"isAuthenticated": true,
-		"isLoggedIn":      true,
+		"isLoggedIn":      isLoggedIn,
 	})
 }
 
@@ -58,6 +60,12 @@ type UserForm struct {
 }
 
 func CreateUser(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
 	var createUser = UserForm{}
 	if err := c.Bind(&createUser); err != nil {
 		log.Printf("\t[ERROR]\t[MEDIALOG] %s", err.Error())
@@ -81,10 +89,16 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, "/users")
+	c.Redirect(http.StatusTemporaryRedirect, "/users")
 }
 
 func AuthenticateUser(c *gin.Context) {
+
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
 
 	var authUser = UserForm{}
 	if err := c.Bind(&authUser); err != nil {
@@ -122,12 +136,13 @@ func AuthenticateUser(c *gin.Context) {
 	if err := database.UpdateUser(&user); err != nil {
 		throwError(http.StatusInternalServerError, "failed to update user", c)
 	}
-	c.Redirect(302, "/")
+	c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
 func ResetUserPassword(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -149,12 +164,17 @@ func ResetUserPassword(c *gin.Context) {
 		"user":            user,
 		"isAdmin":         isAdmin,
 		"isAuthenticated": true,
-		"isLoggedIn":      true,
+		"isLoggedIn":      isLoggedIn,
 	})
 
 }
 
 func ResetPassword(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
 	var resetUser = UserForm{}
 	if err := c.Bind(&resetUser); err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
@@ -181,10 +201,16 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users/")
+	c.Redirect(http.StatusTemporaryRedirect, "/users")
 }
 
 func DeactivateUser(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
@@ -209,6 +235,12 @@ func DeactivateUser(c *gin.Context) {
 }
 
 func ReactivateUser(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
@@ -233,6 +265,12 @@ func ReactivateUser(c *gin.Context) {
 }
 
 func MakeUserAdmin(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
@@ -256,6 +294,12 @@ func MakeUserAdmin(c *gin.Context) {
 }
 
 func RemoveUserAdmin(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
@@ -280,7 +324,15 @@ func RemoveUserAdmin(c *gin.Context) {
 
 func LoginUser(c *gin.Context) { c.HTML(http.StatusOK, "users-login.html", gin.H{}) }
 
-func LogoutUser(c *gin.Context) { logout(c) }
+func LogoutUser(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusInternalServerError, "not currently logged in -- cannot log out", c)
+		return
+	}
+
+	logout(c)
+}
 
 var runes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+{}[]:;<>,.?/")
 

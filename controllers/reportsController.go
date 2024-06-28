@@ -13,7 +13,7 @@ func ReportsIndex(c *gin.Context) {
 
 	loggedIn := isLoggedIn(c)
 	if !loggedIn {
-		c.Redirect(302, "/error")
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -30,7 +30,7 @@ func ReportRange(c *gin.Context) {
 
 	loggedIn := isLoggedIn(c)
 	if !loggedIn {
-		c.Redirect(302, "/error")
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 

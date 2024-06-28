@@ -13,8 +13,9 @@ import (
 )
 
 func GetResource(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -95,13 +96,14 @@ func GetResource(c *gin.Context) {
 		"entry_users":     entryUsers,
 		"page_count":      pageCount,
 		"entryCount":      entryCount,
-		"isLoggedIn":      true,
+		"isLoggedIn":      isLoggedIn,
 	})
 }
 
 func GetResources(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -124,13 +126,14 @@ func GetResources(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"repositoryMap":   repositoryMap,
-		"isLoggedIn":      true,
+		"isLoggedIn":      isLoggedIn,
 	})
 }
 
 func NewResource(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -151,14 +154,15 @@ func NewResource(c *gin.Context) {
 	c.HTML(200, "resources-new.html", gin.H{
 		"isAdmin":    isAdmin,
 		"repository": repository,
-		"isLoggedIn": true,
+		"isLoggedIn": isLoggedIn,
 	})
 }
 
 func CreateResource(c *gin.Context) {
 	//ensure user is logged in
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -204,8 +208,9 @@ func CreateResource(c *gin.Context) {
 }
 
 func EditResource(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -226,13 +231,14 @@ func EditResource(c *gin.Context) {
 	c.HTML(200, "resources-edit.html", gin.H{
 		"isAdmin":    isAdmin,
 		"resource":   resource,
-		"isLoggedIn": true,
+		"isLoggedIn": isLoggedIn,
 	})
 }
 
 func UpdateResource(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -274,8 +280,9 @@ func UpdateResource(c *gin.Context) {
 }
 
 func DeleteResource(c *gin.Context) {
-	if !isLoggedIn(c) {
-		c.Redirect(302, "/error")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 

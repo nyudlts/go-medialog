@@ -9,7 +9,8 @@ import (
 
 func GetIndex(c *gin.Context) {
 
-	if err := checkLogin(c); err != nil {
+	if !isLoggedIn(c) {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
