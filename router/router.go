@@ -17,15 +17,14 @@ func SetupRouter(env config.Environment, gormDebug bool, prod bool) (*gin.Engine
 
 	log.Println("Medialog starting up")
 
-	log.Println("  ** Configuring Gin logger")
-	//configure logger
-	gin.DisableConsoleColor()
-	f, _ := os.OpenFile(env.LogLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
-	defer f.Close()
-	gin.DefaultWriter = io.MultiWriter(f)
-
 	if prod {
 		gin.SetMode(gin.ReleaseMode)
+		log.Println("  ** Configuring Gin logger")
+		//configure logger
+		gin.DisableConsoleColor()
+		f, _ := os.OpenFile(env.LogLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
+		defer f.Close()
+		gin.DefaultWriter = io.MultiWriter(f)
 	}
 
 	log.Println("  ** Setting up router")

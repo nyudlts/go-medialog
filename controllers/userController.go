@@ -94,12 +94,6 @@ func CreateUser(c *gin.Context) {
 
 func AuthenticateUser(c *gin.Context) {
 
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
-		return
-	}
-
 	var authUser = UserForm{}
 	if err := c.Bind(&authUser); err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
