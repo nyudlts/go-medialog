@@ -102,7 +102,6 @@ func AuthenticateUser(c *gin.Context) {
 
 	var authUser = UserForm{}
 	if err := c.Bind(&authUser); err != nil {
-		log.Println(err.Error())
 		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}

@@ -53,12 +53,19 @@ func main() {
 		}
 	} else {
 
-		log.Println("Getting Configuration")
 		env, err := config.GetEnvironment(configuration, environment)
 		if err != nil {
 			panic(err)
 		}
 
+		logFile, err := os.OpenFile(env.LogLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
+		if err != nil {
+			panic(err)
+		}
+		defer logFile.Close()
+		log.SetOutput(logFile)
+
+		log.Println("Medialog starting up")
 		log.Println("Setting Up Router")
 
 		r, err = router.SetupRouter(env, gormDebug, prod)

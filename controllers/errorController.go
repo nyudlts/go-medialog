@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"log"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -9,6 +11,7 @@ func throwError(code int, msg string, c *gin.Context) {
 	session := sessions.Default(c)
 	session.AddFlash(msg, "WARNING")
 	ila := isLoggedIn(c)
+	log.Printf("[ERROR] %d %s", code, msg)
 	c.HTML(code, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": code, "isLoggedIn": ila})
 	session.Save()
 }

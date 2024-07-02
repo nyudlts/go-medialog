@@ -2,6 +2,7 @@ package router
 
 import (
 	"io"
+	"log"
 	"os"
 
 	"github.com/gin-contrib/sessions"
@@ -13,17 +14,21 @@ import (
 )
 
 func SetupRouter(env config.Environment, gormDebug bool, prod bool) (*gin.Engine, error) {
-	/*
-		//configure
-		gin.DisableConsoleColor()
-		f, _ := os.Create(env.LogLocation)
-		defer f.Close()
-		gin.DefaultWriter = io.MultiWriter(f)
-	*/
+
+	log.Println("Medialog starting up")
+
+	log.Println("  ** Configuring Gin logger")
+	//configure logger
+	gin.DisableConsoleColor()
+	f, _ := os.OpenFile(env.LogLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
+	defer f.Close()
+	gin.DefaultWriter = io.MultiWriter(f)
 
 	if prod {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
+	log.Println("  ** Setting up router")
 	//initialize the router
 	r := gin.Default()
 
@@ -36,12 +41,15 @@ func SetupRouter(env config.Environment, gormDebug bool, prod bool) (*gin.Engine
 	r.Static("/public", "./public")
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
+	log.Println("  ** Connecting to database")
 	//connect the database
 	if err := database.ConnectMySQL(env.DatabaseConfig, gormDebug); err != nil {
 		os.Exit(2)
 	}
 
-	//configure session parametes
+	log.Println("  ** Configuring sessions")
+	//configure session parameters
+
 	store := gormsessions.NewStore(database.GetDB(), true, []byte("secret"))
 	options := sessions.Options{}
 	options.HttpOnly = true
@@ -49,7 +57,8 @@ func SetupRouter(env config.Environment, gormDebug bool, prod bool) (*gin.Engine
 	options.MaxAge = 3600
 	r.Use(sessions.Sessions("mysession", store))
 
-	//load applicatin routes
+	//load application routes
+	log.Println("  ** Loading routes")
 	LoadRoutes(r)
 
 	return r, nil
@@ -79,7 +88,7 @@ func SetupSQRouter(env config.SQLiteEnv, gormDebug bool) (*gin.Engine, error) {
 		os.Exit(2)
 	}
 
-	//configure session parametes
+	//configure session parameters
 	store := gormsessions.NewStore(database.GetDB(), true, []byte("secret"))
 	options := sessions.Options{}
 	options.HttpOnly = true
@@ -87,7 +96,7 @@ func SetupSQRouter(env config.SQLiteEnv, gormDebug bool) (*gin.Engine, error) {
 	options.MaxAge = 3600
 	r.Use(sessions.Sessions("mysession", store))
 
-	//load applicatin routes
+	//load application routes
 	LoadRoutes(r)
 
 	return r, nil

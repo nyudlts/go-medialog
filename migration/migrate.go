@@ -14,7 +14,7 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
-const version = "v0.2.3-beta"
+const version = "v0.2.5-beta"
 
 var (
 	test          bool
@@ -26,6 +26,7 @@ var (
 	conf          string
 	sqlite        bool
 	compare       bool
+	clearSessions bool
 )
 
 func init() {
@@ -37,6 +38,7 @@ func init() {
 	flag.StringVar(&migrateTable, "migrate-table", "", "migrate a table")
 	flag.BoolVar(&createAdmin, "create-admin", false, "")
 	flag.BoolVar(&compare, "compare-data", false, "")
+	flag.BoolVar(&clearSessions, "clear-sessions", false, "")
 }
 
 func main() {
@@ -81,6 +83,10 @@ func main() {
 	}
 
 	db := database.GetDB()
+
+	if clearSessions {
+		fmt.Println("Clearing sessions")
+	}
 
 	if migrateTable != "" {
 

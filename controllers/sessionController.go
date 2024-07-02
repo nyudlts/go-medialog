@@ -83,5 +83,4 @@ func DumpSession(c *gin.Context) {
 	adminCookie := session.Get(isAdmin).(bool)
 	sessionCookies.IsAdmin = adminCookie
 	c.JSON(200, sessionCookies)
-	return
 }
