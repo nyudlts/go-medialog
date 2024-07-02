@@ -144,4 +144,7 @@ type User struct {
 	UpdatedBy         int       `json:"modified_by"`
 	IsActive          bool      `json:"is_active"`
 	IsAdmin           bool      `json:"admin"`
+	isLoggedIn        bool      `json:isLoggedIn`
+	CurrentIPAddress  string    `json:current_ip`
+	PreviousIPAddress string    `json:previous_ip`
 }

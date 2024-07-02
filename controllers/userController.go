@@ -3,6 +3,7 @@ package controllers
 import (
 	"crypto/sha512"
 	"encoding/hex"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -20,7 +21,11 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	isAdmin := getCookie("is-admin", c).(bool)
+	if !isAdmin {
+		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		return
+	}
 
 	users, err := database.FindUsers()
 	if err != nil {
@@ -106,6 +111,10 @@ func AuthenticateUser(c *gin.Context) {
 		return
 	}
 
+	if !user.IsActive {
+		throwError(http.StatusUnauthorized, fmt.Sprintf("User %s is not active, contact a system administrator", user.Email), c)
+	}
+
 	hash := sha512.Sum512([]byte(authUser.Password1 + user.Salt))
 	userSHA512 := hex.EncodeToString(hash[:])
 
@@ -129,6 +138,7 @@ func AuthenticateUser(c *gin.Context) {
 	if err := database.UpdateUser(&user); err != nil {
 		throwError(http.StatusInternalServerError, "failed to update user", c)
 	}
+
 	c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
