@@ -17,12 +17,15 @@ func ReportsIndex(c *gin.Context) {
 		return
 	}
 
+	isAdmin := getCookie("is-admin", c)
+
 	c.HTML(http.StatusOK, "reports-index.html", gin.H{
 		"months":        months,
 		"days":          days,
 		"years":         years,
 		"partner_codes": partnerCodes,
 		"isLoggedIn":    loggedIn,
+		"isAdmin":       isAdmin,
 	})
 }
 
@@ -33,6 +36,8 @@ func ReportRange(c *gin.Context) {
 		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
+
+	isAdmin := getCookie("is-admin", c)
 
 	var dateRange = database.DateRange{}
 	if err := c.Bind(&dateRange); err != nil {
@@ -56,6 +61,7 @@ func ReportRange(c *gin.Context) {
 		"repository":    partnerCodes[dateRange.RepositoryID],
 		"partner_codes": partnerCodes,
 		"isLoggedIn":    loggedIn,
+		"isAdmin":       isAdmin,
 	})
 
 }
