@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/nyudlts/go-medialog/config"
 	"github.com/nyudlts/go-medialog/controllers"
@@ -27,7 +28,6 @@ var (
 	conf          string
 	sqlite        bool
 	compare       bool
-	clearSessions bool
 )
 
 func init() {
@@ -39,7 +39,6 @@ func init() {
 	flag.StringVar(&migrateTable, "migrate-table", "", "migrate a table")
 	flag.BoolVar(&createAdmin, "create-admin", false, "")
 	flag.BoolVar(&compare, "compare-data", false, "")
-	flag.BoolVar(&clearSessions, "clear-sessions", false, "")
 }
 
 func main() {
@@ -47,13 +46,19 @@ func main() {
 	fmt.Println("  * Parsing flags")
 	flag.Parse()
 
+	logFile, _ := os.OpenFile("migration.log", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
+	defer logFile.Close()
+	log.SetOutput(logFile)
+
 	if migrateData || compare {
 		if err := database.ConnectPGSQL(); err != nil {
 			panic(err)
 		}
 		fmt.Println("  * Connected to Postgres DB")
+		log.Println("[INFO] connected to Postgres DB")
 	} else {
 		fmt.Println("  * Skipping connecting to postgres db")
+		log.Println("[INFO] Skipping connecting to postgres db")
 	}
 
 	if sqlite {
@@ -81,13 +86,10 @@ func main() {
 		}
 
 		fmt.Println("  * Connected to MySQL database")
+		log.Println("[INFO] Connected to MySQL db")
 	}
 
 	db := database.GetDB()
-
-	if clearSessions {
-		fmt.Println("Clearing sessions")
-	}
 
 	if migrateTable != "" {
 
@@ -95,28 +97,39 @@ func main() {
 		case "repositories":
 			{
 				fmt.Print("  * Migrating repositories table: ")
+				log.Println("[INFO] Migrating repositories table")
 				if err := db.AutoMigrate(models.Repository{}); err != nil {
 					fmt.Printf("ERROR %s\n", err.Error())
+					log.Printf("[ERROR] %s", err.Error())
 				} else {
 					fmt.Println("OK")
+					log.Println("[INFO] Repositories table migration complete")
 				}
 			}
 
 		case "users":
 			{
 				fmt.Print("  * Migrating users table")
+				log.Println("[INFO] Migrating users table")
 				if err := db.AutoMigrate(models.User{}); err != nil {
-					fmt.Printf("ERROR %s ", err.Error())
+					fmt.Printf("ERROR %s\n", err.Error())
+					log.Printf("[ERROR] %s", err.Error())
+				} else {
+					fmt.Println("OK")
+					log.Println("[INFO] Users table migration complete")
 				}
 			}
 
 		case "entries":
 			{
 				fmt.Println("  * Migrating entries table: ")
+				log.Println("[INFO] Migrating entries table")
 				if err := db.AutoMigrate(models.Entry{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
+					log.Printf("[ERROR] %s", err.Error())
 				} else {
 					fmt.Println("OK")
+					log.Println("[INFO] entries table migration complete")
 				}
 			}
 		case "resources":
@@ -124,6 +137,10 @@ func main() {
 				fmt.Println("  * Migrating resources table")
 				if err := db.AutoMigrate(models.Resource{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
+					log.Printf("[ERROR] %s", err.Error())
+				} else {
+					fmt.Println("OK")
+					log.Println("[INFO] Resources table migration complete")
 				}
 			}
 		case "accessions":
@@ -131,35 +148,39 @@ func main() {
 				fmt.Println("  * Migrating accession table")
 				if err := db.AutoMigrate(models.Accession{}); err != nil {
 					fmt.Printf("ERROR %s ", err.Error())
+					log.Printf("[ERROR] %s", err.Error())
+				} else {
+					fmt.Println("OK")
+					log.Println("[INFO] Accessions table migration complete")
 				}
 			}
 		default:
 			fmt.Printf("ERROR %s is not a valid table to migrate", migrateTable)
-
+			log.Printf("[ERROR] %s", migrateTable)
 		}
 	}
 
 	if createAdmin {
 		if err := createAdminUser(); err != nil {
-			panic(err)
+			log.Printf("[ERROR] %s", err.Error())
 		}
 	}
 
 	if migrateTables {
 		if err := migrateDBTables(); err != nil {
-			panic(err)
+			log.Printf("[ERROR] %s", err.Error())
 		}
 	}
 
 	if migrateData {
 		if err := migrateLegacyData(); err != nil {
-			panic(err)
+			log.Printf("[ERROR] %s", err.Error())
 		}
 	}
 
 	if compare {
 		if err := compareDbs(); err != nil {
-			panic(err)
+			log.Printf("[ERROR] %s", err.Error())
 		}
 	}
 
@@ -188,7 +209,10 @@ func compareDbs() error {
 func migrateDBTables() error {
 	db := database.GetDB()
 	fmt.Println("migrating database tables")
+	log.Println("[INFO] migrating database tables")
 	if err := db.AutoMigrate(&models.Repository{}, &models.Accession{}, &models.Resource{}, &models.User{}, &models.Entry{}); err != nil {
+		fmt.Printf("ERROR %s ", err.Error())
+		log.Printf("[ERROR] %s", err.Error())
 		return err
 	}
 	return nil
@@ -196,28 +220,34 @@ func migrateDBTables() error {
 
 func migrateLegacyData() error {
 	fmt.Println("migrating database data")
+	log.Println("[INFO] migrating database data")
 
 	fmt.Println("  * migrating users")
+	log.Println("[INFO] migrating users data")
 	if err := migrateUsersToGorm(); err != nil {
 		return err
 	}
 
 	fmt.Println("  * creating repositories")
+	log.Println("[INFO] creating repositories data")
 	if err := populateRepos(); err != nil {
 		return err
 	}
 
 	fmt.Println("  * migrating resources")
+	log.Println("[INFO] migrating resources data")
 	if err := migrateCollectionsToGorm(); err != nil {
 		return err
 	}
 
 	fmt.Println("  * migrating accessions")
+	log.Println("[INFO] migrating accessions data")
 	if err := migrateAccessionsToGorm(); err != nil {
 		return err
 	}
 
 	fmt.Println("  * migrating entries")
+	log.Println("[INFO] migrating entries data")
 	if err := migrateEntriesToGorm(); err != nil {
 		return err
 	}
@@ -236,7 +266,9 @@ func migrateUsersToGorm() error {
 		u := userPG.ToGormModel()
 		if _, err := database.InsertUser(&u); err != nil {
 			log.Printf("[ERROR] %s", err.Error())
+			continue
 		}
+		log.Printf("[INFO] User %d %s created", u.ID, u.Email)
 	}
 
 	return nil
@@ -254,6 +286,7 @@ func migrateAccessionsToGorm() error {
 			log.Printf("[ERROR] %s", err.Error())
 			continue
 		}
+		log.Printf("[INFO] Accession %d %s created", a.ID, a.AccessionNum)
 	}
 	return nil
 }
@@ -278,6 +311,7 @@ func migrateEntriesToGorm() error {
 			log.Printf("[ERROR] %s", err.Error())
 			continue
 		}
+		log.Printf("[INFO] Entry %s created", e.ID.String())
 	}
 	return nil
 }
@@ -305,6 +339,8 @@ func migrateCollectionsToGorm() error {
 			log.Printf("[ERROR] %s", err.Error())
 			continue
 		}
+
+		log.Printf("[INFO] Resource %d %s created", c.ID, c.CollectionCode)
 	}
 
 	return nil
@@ -331,6 +367,7 @@ func populateRepos() error {
 		if _, err := database.CreateRepository(&repo); err != nil {
 			log.Println("[ERROR] %s", err.Error())
 		}
+		log.Printf("[INFO] Repository %d %s created", repo.ID, repo.Slug)
 	}
 
 	return nil
