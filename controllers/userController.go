@@ -135,6 +135,8 @@ func AuthenticateUser(c *gin.Context) {
 	}
 
 	user.SignInCount = user.SignInCount + 1
+	user.PreviousIPAddress = user.CurrentIPAddress
+	user.CurrentIPAddress = c.ClientIP()
 	if err := database.UpdateUser(&user); err != nil {
 		throwError(http.StatusInternalServerError, "failed to update user", c)
 	}

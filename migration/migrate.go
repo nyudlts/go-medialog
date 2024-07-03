@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"log"
 
 	"github.com/nyudlts/go-medialog/config"
 	"github.com/nyudlts/go-medialog/controllers"
@@ -234,7 +235,7 @@ func migrateUsersToGorm() error {
 	for _, userPG := range usersPG {
 		u := userPG.ToGormModel()
 		if _, err := database.InsertUser(&u); err != nil {
-			fmt.Println(err.Error())
+			log.Println("[ERROR] %s", err.Error())
 		}
 	}
 
@@ -250,8 +251,8 @@ func migrateAccessionsToGorm() error {
 	for _, accessionPG := range accessionsPG {
 		a := accessionPG.ToGormModel()
 		if _, err := database.InsertAccession(&a); err != nil {
-
-			return err
+			log.Println("[ERROR] %s", err.Error())
+			continue
 		}
 	}
 	return nil
@@ -267,14 +268,14 @@ func migrateEntriesToGorm() error {
 		e := entryPG.ToGormModel()
 		c, err := database.FindResource(e.ResourceID)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Println("[ERROR] %s", err.Error())
 			continue
 		}
 
 		e.RepositoryID = c.RepositoryID
 
 		if _, err := database.InsertEntry(&e); err != nil {
-			fmt.Println(err.Error())
+			log.Println("[ERROR] %s", err.Error())
 			continue
 		}
 	}
@@ -285,7 +286,7 @@ func migrateCollectionsToGorm() error {
 
 	collectionsPG, err := database.GetCollectionsPG()
 	if err != nil {
-		return err
+		log.Println("[ERROR] %s", err.Error())
 	}
 
 	for _, collectionPG := range collectionsPG {
@@ -301,7 +302,7 @@ func migrateCollectionsToGorm() error {
 		}
 
 		if _, err := database.InsertResource(&c); err != nil {
-			fmt.Println(err.Error())
+			log.Println("[ERROR] %s", err.Error())
 			continue
 		}
 	}
@@ -328,7 +329,7 @@ func populateRepos() error {
 
 	for _, repo := range []models.Repository{fales, tamwag, nyuarchives} {
 		if _, err := database.CreateRepository(&repo); err != nil {
-			return err
+			log.Println("[ERROR] %s", err.Error())
 		}
 	}
 
@@ -337,10 +338,11 @@ func populateRepos() error {
 
 func createAdminUser() error {
 	user := models.User{}
-	user.Email = "admin@nyu.edu"
+	user.Email = "admin@medialog.com"
 	user.IsActive = true
 	user.IsAdmin = true
-	password := "test"
+	password := controllers.GenerateStringRunes(12)
+	log.Printf("[INFO] password set is `%s`", password)
 	user.Salt = controllers.GenerateStringRunes(16)
 	hash := sha512.Sum512([]byte(password + user.Salt))
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
