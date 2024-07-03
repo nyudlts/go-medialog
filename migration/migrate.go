@@ -16,7 +16,7 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
-const version = "v0.2.6-beta"
+const version = "v1.0.0"
 
 var (
 	test          bool
