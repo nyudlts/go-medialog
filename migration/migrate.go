@@ -235,7 +235,7 @@ func migrateUsersToGorm() error {
 	for _, userPG := range usersPG {
 		u := userPG.ToGormModel()
 		if _, err := database.InsertUser(&u); err != nil {
-			log.Println("[ERROR] %s", err.Error())
+			log.Printf("[ERROR] %s", err.Error())
 		}
 	}
 
@@ -251,7 +251,7 @@ func migrateAccessionsToGorm() error {
 	for _, accessionPG := range accessionsPG {
 		a := accessionPG.ToGormModel()
 		if _, err := database.InsertAccession(&a); err != nil {
-			log.Println("[ERROR] %s", err.Error())
+			log.Printf("[ERROR] %s", err.Error())
 			continue
 		}
 	}
@@ -268,14 +268,14 @@ func migrateEntriesToGorm() error {
 		e := entryPG.ToGormModel()
 		c, err := database.FindResource(e.ResourceID)
 		if err != nil {
-			log.Println("[ERROR] %s", err.Error())
+			log.Printf("[ERROR] %s", err.Error())
 			continue
 		}
 
 		e.RepositoryID = c.RepositoryID
 
 		if _, err := database.InsertEntry(&e); err != nil {
-			log.Println("[ERROR] %s", err.Error())
+			log.Printf("[ERROR] %s", err.Error())
 			continue
 		}
 	}
@@ -286,7 +286,7 @@ func migrateCollectionsToGorm() error {
 
 	collectionsPG, err := database.GetCollectionsPG()
 	if err != nil {
-		log.Println("[ERROR] %s", err.Error())
+		log.Printf("[ERROR] %s", err.Error())
 	}
 
 	for _, collectionPG := range collectionsPG {
@@ -302,7 +302,7 @@ func migrateCollectionsToGorm() error {
 		}
 
 		if _, err := database.InsertResource(&c); err != nil {
-			log.Println("[ERROR] %s", err.Error())
+			log.Printf("[ERROR] %s", err.Error())
 			continue
 		}
 	}
