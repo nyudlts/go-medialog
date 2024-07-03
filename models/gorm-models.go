@@ -12,7 +12,7 @@ type Repository struct {
 	CreatedAt time.Time `json:"created_at"`
 	CreatedBy int       `json:"created_by"`
 	UpdatedAt time.Time `json:"updated_at"`
-	UpdatedBy int       `json:"udpate_by"`
+	UpdatedBy int       `json:"updated_by"`
 	Slug      string    `json:"slug" form:"slug"`
 	Title     string    `json:"title" form:"title"`
 }
@@ -25,7 +25,7 @@ type Resource struct {
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`
 	CreatedBy      int        `json:"created_by"`
-	UpdatedBy      int        `json:"modified_by"`
+	UpdatedBy      int        `json:"updated_by"`
 	RepositoryID   uint       `json:"repository_id" form:"repository_id"`
 	Repository     Repository `json:"repository"`
 }
@@ -141,7 +141,7 @@ type User struct {
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
 	CreatedBy         int       `json:"created_by"`
-	UpdatedBy         int       `json:"modified_by"`
+	UpdatedBy         int       `json:"updated_by"`
 	IsActive          bool      `json:"is_active"`
 	IsAdmin           bool      `json:"admin"`
 	isLoggedIn        bool      `json:isLoggedIn`

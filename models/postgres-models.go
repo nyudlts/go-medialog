@@ -141,7 +141,7 @@ type Mlog_EntryPG struct {
 	StockUnit             string    `json:"stock_unit"`
 	StockSizeNum          float32   `json:"stock_size_num"`
 	CreatedBy             int       `json:"created_by"`
-	UpdatedBy             int       `json:"updated_by"`
+	ModifiedBy            int       `json:"modified_by"`
 	CollectionID          int       `json:"collection_id"`
 	AccessionID           int       `json:"accession_id"`
 	IsTransferred         bool      `json:"is_transferred"`
@@ -159,7 +159,7 @@ func (mlog *Mlog_EntryPG) ToGormModel() Entry {
 	e.CreatedAt = mlog.CreatedAt
 	e.UpdatedAt = mlog.UpdatedAt
 	e.CreatedBy = mlog.CreatedBy
-	e.UpdatedBy = mlog.UpdatedBy
+	e.UpdatedBy = mlog.ModifiedBy
 	e.MediaID = uint(mlog.MediaID)
 	e.Mediatype = mlog.Mediatype
 	e.Manufacturer = mlog.Manufacturer

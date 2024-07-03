@@ -268,6 +268,15 @@ func migrateUsersToGorm() error {
 
 	for _, userPG := range usersPG {
 		u := userPG.ToGormModel()
+
+		if u.CreatedBy == 0 {
+			u.CreatedBy = 101
+		}
+
+		if u.UpdatedBy == 0 {
+			u.UpdatedBy = 101
+		}
+
 		if _, err := database.InsertUser(&u); err != nil {
 			log.Printf("[ERROR] %s", err.Error())
 			continue
@@ -286,6 +295,15 @@ func migrateAccessionsToGorm() error {
 
 	for _, accessionPG := range accessionsPG {
 		a := accessionPG.ToGormModel()
+
+		if a.CreatedBy == 0 {
+			a.CreatedBy = 101
+		}
+
+		if a.UpdatedBy == 0 {
+			a.UpdatedBy = 101
+		}
+
 		if _, err := database.InsertAccession(&a); err != nil {
 			log.Printf("[ERROR] %s", err.Error())
 			continue
@@ -310,6 +328,14 @@ func migrateEntriesToGorm() error {
 		}
 
 		e.RepositoryID = c.RepositoryID
+
+		if e.CreatedBy == 0 {
+			e.CreatedBy = 101
+		}
+
+		if e.UpdatedBy == 0 {
+			e.UpdatedBy = 101
+		}
 
 		if _, err := database.InsertEntry(&e); err != nil {
 			log.Printf("[ERROR] %s", err.Error())
@@ -337,6 +363,14 @@ func migrateCollectionsToGorm() error {
 			c.RepositoryID = 3
 		case "nyuarchives":
 			c.RepositoryID = 6
+		}
+
+		if c.CreatedBy == 0 {
+			c.CreatedBy = 101
+		}
+
+		if c.UpdatedBy == 0 {
+			c.UpdatedBy = 101
 		}
 
 		if _, err := database.InsertResource(&c); err != nil {
@@ -368,6 +402,8 @@ func populateRepos() error {
 	nyuarchives.Title = "NYU University Archives"
 
 	for _, repo := range []models.Repository{fales, tamwag, nyuarchives} {
+		repo.CreatedBy = 100
+		repo.UpdatedBy = 100
 		if _, err := database.CreateRepository(&repo); err != nil {
 			log.Println("[ERROR] %s", err.Error())
 		}
@@ -379,9 +415,12 @@ func populateRepos() error {
 
 func createAdminUser() error {
 	user := models.User{}
-	user.Email = "admin@medialog.com"
+	user.Email = "admin@medialog.dlib.nyu.edu"
 	user.IsActive = true
 	user.IsAdmin = true
+	user.ID = 100
+	user.CreatedBy = 100
+	user.UpdatedBy = 100
 	password := controllers.GenerateStringRunes(12)
 	log.Printf("[INFO] admin password set is `%s`", password)
 	user.Salt = controllers.GenerateStringRunes(16)
@@ -401,7 +440,9 @@ func createUnknownUser() error {
 	user.Email = "unknown@medialog.dlib.nyu.edu"
 	user.IsActive = false
 	user.IsAdmin = false
-	user.ID = 0
+	user.ID = 101
+	user.CreatedBy = 100
+	user.UpdatedBy = 100
 	password := controllers.GenerateStringRunes(12)
 	log.Printf("[INFO] unknown password set is `%s`", password)
 	user.Salt = controllers.GenerateStringRunes(16)
