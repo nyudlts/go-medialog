@@ -23,7 +23,7 @@ var (
 	migrateTables bool
 	migrateData   bool
 	migrateTable  string
-	createAdmin   bool
+	createUsers   bool
 	environment   string
 	conf          string
 	sqlite        bool
@@ -37,7 +37,7 @@ func init() {
 	flag.BoolVar(&migrateTables, "migrate-tables", false, "migrate tables")
 	flag.BoolVar(&migrateData, "migrate-data", false, "migrate data from legacy psql")
 	flag.StringVar(&migrateTable, "migrate-table", "", "migrate a table")
-	flag.BoolVar(&createAdmin, "create-admin", false, "")
+	flag.BoolVar(&createUsers, "create-users", false, "")
 	flag.BoolVar(&compare, "compare-data", false, "")
 }
 
@@ -160,8 +160,12 @@ func main() {
 		}
 	}
 
-	if createAdmin {
+	if createUsers {
 		if err := createAdminUser(); err != nil {
+			log.Printf("[ERROR] %s", err.Error())
+		}
+
+		if err := createUnknownUser(); err != nil {
 			log.Printf("[ERROR] %s", err.Error())
 		}
 	}
@@ -379,7 +383,7 @@ func createAdminUser() error {
 	user.IsActive = true
 	user.IsAdmin = true
 	password := controllers.GenerateStringRunes(12)
-	log.Printf("[INFO] password set is `%s`", password)
+	log.Printf("[INFO] admin password set is `%s`", password)
 	user.Salt = controllers.GenerateStringRunes(16)
 	hash := sha512.Sum512([]byte(password + user.Salt))
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
@@ -389,5 +393,25 @@ func createAdminUser() error {
 	}
 
 	fmt.Println("    * Admin User Created")
+	return nil
+}
+
+func createUnknownUser() error {
+	user := models.User{}
+	user.Email = "unknown@medialog.dlib.nyu.edu"
+	user.IsActive = false
+	user.IsAdmin = false
+	user.ID = 0
+	password := controllers.GenerateStringRunes(12)
+	log.Printf("[INFO] unknown password set is `%s`", password)
+	user.Salt = controllers.GenerateStringRunes(16)
+	hash := sha512.Sum512([]byte(password + user.Salt))
+	user.EncryptedPassword = hex.EncodeToString(hash[:])
+
+	if _, err := database.InsertUser(&user); err != nil {
+		return err
+	}
+
+	fmt.Println("    * Unknown User Created")
 	return nil
 }
