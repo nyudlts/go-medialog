@@ -41,6 +41,10 @@ func GetUsers(c *gin.Context) {
 	})
 }
 
+func GetUser(c *gin.Context) {
+	c.JSON(200, "Hello User")
+}
+
 func NewUser(c *gin.Context) {
 	isLoggedIn := isLoggedIn(c)
 	if !isLoggedIn {
