@@ -60,6 +60,16 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
+	cookieId, err := getUserkey(c)
+	if err != nil {
+		throwError(http.StatusExpectationFailed, "User is not logged in / Unauthorized", c)
+	}
+
+	if userID != cookieId {
+		throwError(http.StatusUnauthorized, "Logged in as different user", c)
+		return
+	}
+
 	user, err := database.FindUser(uint(userID))
 	if err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
