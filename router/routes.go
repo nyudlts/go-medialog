@@ -75,6 +75,7 @@ func LoadRoutes(router *gin.Engine) {
 	userRoutes.GET(":id/reactivate", func(c *gin.Context) { controllers.ReactivateUser(c) })
 	userRoutes.GET(":id/make_admin", func(c *gin.Context) { controllers.MakeUserAdmin(c) })
 	userRoutes.GET(":id/remove_admin", func(c *gin.Context) { controllers.RemoveUserAdmin(c) })
+	userRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetUser(c) })
 
 	//Report Group
 	reportRoutes := router.Group("/reports")

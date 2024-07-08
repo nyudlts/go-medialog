@@ -42,7 +42,39 @@ func GetUsers(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	c.JSON(200, "Hello User")
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	isAdmin := getCookie("is-admin", c).(bool)
+	if !isAdmin {
+		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		return
+	}
+
+	userID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	user, err := database.FindUser(uint(userID))
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	user.Salt = "####"
+	user.EncryptedPassword = "####"
+
+	c.HTML(200, "users-show.html", gin.H{
+		"isLoggedIn": isLoggedIn,
+		"isAdmin":    isAdmin,
+		"userID":     userID,
+		"user":       user,
+	})
 }
 
 func NewUser(c *gin.Context) {
