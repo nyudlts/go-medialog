@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -71,8 +70,25 @@ type SessionCookies struct {
 	IsAdmin bool `json:"is_admin"`
 }
 
+func getSessionCookies(c *gin.Context) (SessionCookies, error) {
+	session := sessions.Default(c)
+	sessionCookies := SessionCookies{}
+	userID := session.Get(userkey)
+	if userID == nil {
+		return sessionCookies, fmt.Errorf("no user key")
+	}
+	sessionCookies.UserID = userID.(int)
+
+	adminCookie := session.Get(isAdmin)
+	if adminCookie == nil {
+		return sessionCookies, fmt.Errorf("user must be admin")
+	}
+	sessionCookies.IsAdmin = adminCookie.(bool)
+
+	return sessionCookies, nil
+}
+
 func DumpSession(c *gin.Context) {
-	log.Println("HI")
 	session := sessions.Default(c)
 	sessionCookies := SessionCookies{}
 	userID := session.Get(userkey)
@@ -83,4 +99,8 @@ func DumpSession(c *gin.Context) {
 	adminCookie := session.Get(isAdmin).(bool)
 	sessionCookies.IsAdmin = adminCookie
 	c.JSON(200, sessionCookies)
+}
+
+func TestSession(c *gin.Context) {
+	c.JSON(200, "TBD")
 }

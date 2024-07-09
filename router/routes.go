@@ -90,6 +90,11 @@ func LoadRoutes(router *gin.Engine) {
 	sessionRoutes := router.Group("/sessions")
 	sessionRoutes.GET("/dump", func(c *gin.Context) { controllers.DumpSession(c) })
 
+	//Migration Group
+	migrationRoutes := router.Group("/migrations")
+	migrationRoutes.GET("/", func(c *gin.Context) { controllers.MigrationsIndex(c) })
+	migrationRoutes.GET("/migrate", func(c *gin.Context) { controllers.MigrateDB(c) })
+
 	// general
 	router.NoRoute(func(c *gin.Context) {
 		session := sessions.Default(c)
