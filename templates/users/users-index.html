@@ -10,7 +10,7 @@
             <thead class="thead thead-dark">
                 <tr>
                     <th>id</th>
-                    <th>email</th>
+                    <th>user</th>
                     <th>is active</th>
                     <th>is admin</th>
                     <th>sign-in count</th>
@@ -23,7 +23,7 @@
             <tbody>
                 <tr>
                     <td>{{ $user.ID }}</td>
-                    <td>{{ $user.Email }}</td>
+                    <td>{{ $user.FirstName }} {{ $user.LastName }} ({{ $user.Email }})</td>
                     <td>{{ $user.IsActive }}</td>
                     <td>{{ $user.IsAdmin }}</td>
                     <td>{{ $user.SignInCount }}</td>

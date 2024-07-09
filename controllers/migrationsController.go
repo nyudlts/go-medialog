@@ -65,6 +65,11 @@ func MigrateDB(c *gin.Context) {
 		return
 	}
 
+	if err := database.MigrateDatabase(); err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
 	session := sessions.Default(c)
 	session.AddFlash("migrations successfully run", "INFO")
 

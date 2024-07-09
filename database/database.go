@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 
-	"github.com/glebarez/sqlite"
 	"github.com/nyudlts/go-medialog/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,21 +27,6 @@ func ConnectMySQL(dbconfig config.DatabaseConfig, gormDebug bool) error {
 	if gormDebug {
 		db.Debug()
 	}
-	return nil
-
-}
-
-func ConnectSQDatabase(env config.SQLiteEnv, gormDebug bool) error {
-	var err error
-	db, err = gorm.Open(sqlite.Open(env.DatabaseLocation), &gorm.Config{})
-	if err != nil {
-		return err
-	}
-
-	if gormDebug {
-		db.Debug()
-	}
-
 	return nil
 
 }
