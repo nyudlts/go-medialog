@@ -14,7 +14,6 @@ import (
 var (
 	environment   string
 	configuration string
-	sqlite        bool
 	gormDebug     bool
 	vers          bool
 	prod          bool
@@ -26,7 +25,6 @@ func init() {
 
 	flag.StringVar(&environment, "environment", "", "")
 	flag.StringVar(&configuration, "config", "", "")
-	flag.BoolVar(&sqlite, "sqlite", false, "")
 	flag.BoolVar(&gormDebug, "gorm-debug", false, "")
 	flag.BoolVar(&vers, "version", false, "")
 	flag.BoolVar(&prod, "prod", false, "")
@@ -42,39 +40,30 @@ func main() {
 	}
 
 	var r *gin.Engine
-	if sqlite {
-		env, err := config.GetSQlite(configuration, environment)
+
+	env, err := config.GetEnvironment(configuration, environment)
+	if err != nil {
+		panic(err)
+	}
+
+	if prod {
+		logFile, err := os.OpenFile(env.LogLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
 		if err != nil {
 			panic(err)
 		}
-		r, err = router.SetupSQRouter(env, gormDebug)
-		if err != nil {
-			panic(err)
-		}
-	} else {
+		defer logFile.Close()
 
-		env, err := config.GetEnvironment(configuration, environment)
-		if err != nil {
-			panic(err)
-		}
+		log.SetOutput(logFile)
 
-		if prod {
-			logFile, err := os.OpenFile(env.LogLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
-			if err != nil {
-				panic(err)
-			}
-			defer logFile.Close()
+		log.Println("[INFO] Medialog starting up")
+		log.Printf("[INFO] Logging to %s", env.LogLocation)
+		log.Println("Setting Up Router")
+	}
 
-			log.SetOutput(logFile)
+	r, err = router.SetupRouter(env, gormDebug, prod)
+	if err != nil {
+		panic(err)
 
-			log.Println("Medialog starting up")
-			log.Println("Setting Up Router")
-		}
-
-		r, err = router.SetupRouter(env, gormDebug, prod)
-		if err != nil {
-			panic(err)
-		}
 	}
 
 	//start the application
