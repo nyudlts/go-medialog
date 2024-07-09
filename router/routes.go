@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -76,6 +77,8 @@ func LoadRoutes(router *gin.Engine) {
 	userRoutes.GET(":id/make_admin", func(c *gin.Context) { controllers.MakeUserAdmin(c) })
 	userRoutes.GET(":id/remove_admin", func(c *gin.Context) { controllers.RemoveUserAdmin(c) })
 	userRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetUser(c) })
+	userRoutes.GET(":id/edit", func(c *gin.Context) { controllers.EditUser(c) })
+	userRoutes.POST("update", func(c *gin.Context) { controllers.UpdateUser(c) })
 
 	//Report Group
 	reportRoutes := router.Group("/reports")
@@ -99,7 +102,7 @@ func LoadRoutes(router *gin.Engine) {
 	router.NoRoute(func(c *gin.Context) {
 		session := sessions.Default(c)
 		log.Println("NO ROUTE", c.Request.RequestURI)
-		controllers.ThrowError(http.StatusNotFound, "This Page Does Not Exist", c)
+		controllers.ThrowError(http.StatusNotFound, fmt.Sprintf("The requested page, %s, does not exist", c.Request.RequestURI), c)
 		session.Save()
 	})
 

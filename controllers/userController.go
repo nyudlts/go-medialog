@@ -49,10 +49,6 @@ func GetUser(c *gin.Context) {
 	}
 
 	isAdmin := getCookie("is-admin", c).(bool)
-	if !isAdmin {
-		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
-		return
-	}
 
 	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -65,19 +61,16 @@ func GetUser(c *gin.Context) {
 		throwError(http.StatusExpectationFailed, "User is not logged in / Unauthorized", c)
 	}
 
-	if userID != cookieId {
+	if (userID != cookieId) && !isAdmin {
 		throwError(http.StatusUnauthorized, "Logged in as different user", c)
 		return
 	}
 
-	user, err := database.FindUser(uint(userID))
+	user, err := database.GetRedactedUser(userID)
 	if err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
-
-	user.Salt = "####"
-	user.EncryptedPassword = "####"
 
 	c.HTML(200, "users-show.html", gin.H{
 		"isLoggedIn": isLoggedIn,
@@ -108,6 +101,8 @@ type UserForm struct {
 	Password1 string `form:"password_1"`
 	Password2 string `form:"password_2"`
 	Email     string `form:"email"`
+	FirstName string `form:"first_name"`
+	LastName  string `form:"last_name"`
 }
 
 func CreateUser(c *gin.Context) {
@@ -131,6 +126,9 @@ func CreateUser(c *gin.Context) {
 
 	user := models.User{}
 	user.Email = createUser.Email
+	user.FirstName = createUser.FirstName
+	user.LastName = createUser.LastName
+	user.IsActive = true
 	user.Salt = GenerateStringRunes(16)
 	hash := sha512.Sum512([]byte(createUser.Password1 + user.Salt))
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
@@ -140,7 +138,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 }
 
 func AuthenticateUser(c *gin.Context) {
@@ -187,7 +185,7 @@ func AuthenticateUser(c *gin.Context) {
 		throwError(http.StatusInternalServerError, "failed to update user", c)
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/")
+	c.Redirect(http.StatusFound, "/")
 }
 
 func ResetUserPassword(c *gin.Context) {
@@ -252,7 +250,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 }
 
 func DeactivateUser(c *gin.Context) {
@@ -281,7 +279,7 @@ func DeactivateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 
 }
 
@@ -311,7 +309,7 @@ func ReactivateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 
 }
 
@@ -341,7 +339,7 @@ func MakeUserAdmin(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 }
 
 func RemoveUserAdmin(c *gin.Context) {
@@ -370,7 +368,7 @@ func RemoveUserAdmin(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 }
 
 func LoginUser(c *gin.Context) { c.HTML(http.StatusOK, "users-login.html", gin.H{}) }
@@ -416,4 +414,78 @@ func DeleteUser(id uint) error {
 		return err
 	}
 	return nil
+}
+
+func EditUser(c *gin.Context) {
+
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	isAdmin := sessionCookies.IsAdmin
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	userID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	updateUser, err := database.GetRedactedUser(userID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	c.HTML(http.StatusOK, "users-edit.html", gin.H{
+		"isLoggedIn": isLoggedIn,
+		"isAdmin":    isAdmin,
+		"user":       user,
+		"updateUser": updateUser,
+	})
+
+}
+
+func UpdateUser(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	var updateUser = UserForm{}
+	if err := c.Bind(&updateUser); err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	user, err := database.FindUser(uint(updateUser.ID))
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	user.Email = updateUser.Email
+	user.FirstName = updateUser.FirstName
+	user.LastName = updateUser.LastName
+
+	if err := database.UpdateUser(&user); err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/users/%d/show", user.ID))
 }

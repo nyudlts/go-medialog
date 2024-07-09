@@ -133,8 +133,8 @@ func (e *Entry) ValidateEntry() error {
 }
 
 type User struct {
-	ID                uint      `json:"id" gorm:"primaryKey"`
-	Email             string    `json:"email"`
+	ID                uint      `json:"id" gorm:"primaryKey" form:"id"`
+	Email             string    `json:"email" form:"email"`
 	Salt              string    `json:"salt"`
 	EncryptedPassword string    `json:"encrypted_password"`
 	SignInCount       int       `json:"sign_in_count"`
@@ -147,6 +147,6 @@ type User struct {
 	isLoggedIn        bool      `json:isLoggedIn`
 	CurrentIPAddress  string    `json:current_ip`
 	PreviousIPAddress string    `json:previous_ip`
-	FirstName         string    `json:"first_name"`
-	LastName          string    `json:"last_name"`
+	FirstName         string    `json:"first_name" form:"first_name"`
+	LastName          string    `json:"last_name" form:"last_name"`
 }

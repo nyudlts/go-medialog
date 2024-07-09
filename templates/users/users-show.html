@@ -8,11 +8,11 @@
 	</tr>
 	<tr>
 		<td>First Name</td>
-		<td></td>
+		<td>{{ .user.FirstName }}</td>
 	</tr>
 	<tr>
 		<td>Last Name</td>
-		<td></td>
+		<td>{{ .user.LastName }}</td>
 	</tr>
 	<tr>
 		<td>Email</td>
@@ -20,8 +20,8 @@
 	</tr>
 	<tr>
 		<td>
-			<a href="#" class="btn-sm btn-primary">Set Password</a>
-			<a href="#" class="btn-sm btn-secondary">Edit</a>
+			<a href="/users/{{ .user.ID }}/reset_password" class="btn-sm btn-primary">Set Password</a>
+			<a href="/users/{{ .user.ID }}/edit" class="btn-sm btn-secondary">Edit</a>
 		</td>
 	</tr>
 </table>
