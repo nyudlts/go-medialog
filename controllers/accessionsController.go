@@ -243,7 +243,7 @@ func CreateAccession(c *gin.Context) {
 	}
 
 	//redirect to show
-	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accessionID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accessionID))
 
 }
 
@@ -334,7 +334,7 @@ func UpdateAccession(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accession.ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accession.ID))
 }
 
 func DeleteAccession(c *gin.Context) {
@@ -359,7 +359,7 @@ func DeleteAccession(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/resources/%d/show", accession.ResourceID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/resources/%d/show", accession.ResourceID))
 }
 
 type Slew struct {
@@ -464,7 +464,7 @@ func CreateAccessionSlew(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accession.ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accession.ID))
 }
 
 func createSlewEntry(slew Slew, accession models.Accession) error {

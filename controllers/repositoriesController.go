@@ -18,12 +18,23 @@ func NewRepository(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	c.HTML(http.StatusOK, "repositories-new.html", gin.H{
-		"isAdmin":         isAdmin,
+		"isAdmin":         sessionCookies.IsAdmin,
 		"isAuthenticated": true,
 		"isLoggedIn":      loggedIn,
+		"user":            user,
 	})
 }
 
@@ -48,7 +59,7 @@ func CreateRepository(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	c.Redirect(302, fmt.Sprintf("/repositories/%d/show", repository_id))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/repositories/%d/show", repository_id))
 }
 
 func EditRepository(c *gin.Context) {
@@ -58,7 +69,17 @@ func EditRepository(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -73,9 +94,10 @@ func EditRepository(c *gin.Context) {
 	}
 
 	c.HTML(200, "repositories-edit.html", gin.H{
-		"isAdmin":    isAdmin,
+		"isAdmin":    sessionCookies.IsAdmin,
 		"repository": repository,
 		"isLoggedIn": loggedIn,
+		"user":       user,
 	})
 
 }
@@ -121,7 +143,7 @@ func UpdateRepository(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/repositories/%d/show", id))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/repositories/%d/show", id))
 }
 
 func DeleteRepository(c *gin.Context) {
@@ -142,7 +164,7 @@ func DeleteRepository(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, "/repositories")
+	c.Redirect(http.StatusFound, "/repositories")
 }
 
 func GetRepositories(c *gin.Context) {

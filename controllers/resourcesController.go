@@ -237,7 +237,7 @@ func CreateResource(c *gin.Context) {
 	}
 
 	//redirect to the new resource
-	c.Redirect(302, fmt.Sprintf("/resources/%d/show", resourceID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/resources/%d/show", resourceID))
 }
 
 func EditResource(c *gin.Context) {
@@ -320,7 +320,7 @@ func UpdateResource(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/resources/%d/show", resource.ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/resources/%d/show", resource.ID))
 }
 
 func DeleteResource(c *gin.Context) {
@@ -347,5 +347,5 @@ func DeleteResource(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/repositories/%d/show", resource.RepositoryID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/repositories/%d/show", resource.RepositoryID))
 }

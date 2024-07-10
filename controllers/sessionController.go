@@ -62,7 +62,7 @@ func logout(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
 	}
-	c.Redirect(302, "/")
+	c.Redirect(http.StatusFound, "/")
 }
 
 type SessionCookies struct {

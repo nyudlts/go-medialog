@@ -324,7 +324,7 @@ func CreateEntry(c *gin.Context) {
 	}
 
 	//redirect
-	c.Redirect(302, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
+	c.Redirect(http.StatusFound, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
 }
 
 func DeleteEntry(c *gin.Context) {
@@ -465,7 +465,7 @@ func UpdateEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
 }
 
 func CloneEntry(c *gin.Context) {
@@ -544,7 +544,7 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/entries/%s/show", newUUID.String()))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", newUUID.String()))
 
 }
 
@@ -571,6 +571,6 @@ func FindEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/entries/%s/show", id))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", id))
 
 }
