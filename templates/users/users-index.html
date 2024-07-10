@@ -15,7 +15,6 @@
                     <th>is admin</th>
                     <th>sign-in count</th>
                     <th>current IP</th>
-                    <th>previous IP</th>
                     <th>actions</th>
                 </tr>
             </thead>
@@ -23,24 +22,24 @@
             <tbody>
                 <tr>
                     <td>{{ $user.ID }}</td>
-                    <td>{{ $user.FirstName }} {{ $user.LastName }} ({{ $user.Email }})</td>
+                    <td><span style="font-weight: bold;">{{ $user.FirstName }} {{ $user.LastName }}</span><br>{{ $user.Email }}</td>
                     <td>{{ $user.IsActive }}</td>
                     <td>{{ $user.IsAdmin }}</td>
                     <td>{{ $user.SignInCount }}</td>
                     <td>{{ $user.CurrentIPAddress }}</td>
-                    <td>{{ $user.PreviousIPAddress }}</td>
                     <td>
                         <a href="/users/{{ $user.ID }}/reset_password" class="btn-sm btn-primary" type="button">Reset Password</a>
                         {{ if eq $user.IsActive true}}
-                        <a href="/users/{{ $user.ID }}/deactivate" class="btn-sm btn-danger" type="button"/>Deactivate</a>
+                            <a href="/users/{{ $user.ID }}/deactivate" class="btn-sm btn-danger" type="button"/>Deactivate</a>
                         {{ else }}
-                        <a href="/users/{{ $user.ID }}/reactivate" class="btn-sm btn-primary" type="button"/>Reactivate</a>
+                            <a href="/users/{{ $user.ID }}/reactivate" class="btn-sm btn-primary" type="button"/>Reactivate</a>
                         {{ end }}
                         {{ if eq $user.IsAdmin false}}
-                        <a href="/users/{{ $user.ID }}/make_admin" class="btn-sm btn-primary" type="button"/>Make Admin</a>
+                            <a href="/users/{{ $user.ID }}/make_admin" class="btn-sm btn-primary" type="button"/>Make Admin</a>
                         {{ else }}
-                        <a href="/users/{{ $user.ID }}/remove_admin" class="btn-sm btn-danger" type="button"/>Remove Admin</a>
+                            <a href="/users/{{ $user.ID }}/remove_admin" class="btn-sm btn-danger" type="button"/>Remove Admin</a>
                         {{ end }}
+                        <a href="/users/{{ $user.ID}}/edit" class="btn btn-secondary">Edit</a>
                     </td>
                 </tr>
             </tbody>

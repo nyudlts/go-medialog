@@ -17,7 +17,17 @@ func ReportsIndex(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	c.HTML(http.StatusOK, "reports-index.html", gin.H{
 		"months":        months,
@@ -25,7 +35,8 @@ func ReportsIndex(c *gin.Context) {
 		"years":         years,
 		"partner_codes": partnerCodes,
 		"isLoggedIn":    loggedIn,
-		"isAdmin":       isAdmin,
+		"isAdmin":       sessionCookies.IsAdmin,
+		"user":          user,
 	})
 }
 
@@ -37,7 +48,17 @@ func ReportRange(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	var dateRange = database.DateRange{}
 	if err := c.Bind(&dateRange); err != nil {
@@ -61,7 +82,8 @@ func ReportRange(c *gin.Context) {
 		"repository":    partnerCodes[dateRange.RepositoryID],
 		"partner_codes": partnerCodes,
 		"isLoggedIn":    loggedIn,
-		"isAdmin":       isAdmin,
+		"isAdmin":       sessionCookies.IsAdmin,
+		"user":          user,
 	})
 
 }
