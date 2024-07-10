@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	config "github.com/nyudlts/go-medialog/config"
+	"github.com/nyudlts/go-medialog/database"
 	router "github.com/nyudlts/go-medialog/router"
 )
 
@@ -17,9 +18,11 @@ var (
 	gormDebug     bool
 	vers          bool
 	prod          bool
+	migrate       bool
+	automigrate   bool
 )
 
-const version = "v1.0.1"
+const version = "v1.0.2"
 
 func init() {
 
@@ -28,7 +31,11 @@ func init() {
 	flag.BoolVar(&gormDebug, "gorm-debug", false, "")
 	flag.BoolVar(&vers, "version", false, "")
 	flag.BoolVar(&prod, "prod", false, "")
+	flag.BoolVar(&migrate, "migrate", false, "")
+	flag.BoolVar(&automigrate, "automigrate", false, "")
 }
+
+var r *gin.Engine
 
 func main() {
 	//parse cli flags
@@ -39,11 +46,34 @@ func main() {
 		os.Exit(0)
 	}
 
-	var r *gin.Engine
-
 	env, err := config.GetEnvironment(configuration, environment)
 	if err != nil {
 		panic(err)
+	}
+
+	if migrate {
+		fmt.Println("running migrations")
+		if err := database.ConnectMySQL(env.DatabaseConfig, true); err != nil {
+			panic(err)
+		}
+
+		if err := database.MigrateDatabase(); err != nil {
+			panic(err)
+		}
+
+		os.Exit(0)
+	}
+
+	if automigrate {
+		fmt.Println("auto-migrating database")
+		if err := database.ConnectMySQL(env.DatabaseConfig, true); err != nil {
+			panic(err)
+		}
+		if err := database.AutoMigrate(); err != nil {
+			panic(err)
+		}
+
+		os.Exit(0)
 	}
 
 	if prod {

@@ -12,10 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	r *gin.Engine
-)
-
 func TestAPI(t *testing.T) {
 
 	flag.Parse()

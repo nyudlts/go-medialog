@@ -95,8 +95,8 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Migration Group
 	migrationRoutes := router.Group("/migrations")
-	migrationRoutes.GET("/", func(c *gin.Context) { controllers.MigrationsIndex(c) })
-	migrationRoutes.GET("/migrate", func(c *gin.Context) { controllers.MigrateDB(c) })
+	//migrationRoutes.GET("/", func(c *gin.Context) { controllers.MigrationsIndex(c) })
+	//migrationRoutes.GET("/migrate", func(c *gin.Context) { controllers.MigrateDB(c) })
 
 	// general
 	router.NoRoute(func(c *gin.Context) {

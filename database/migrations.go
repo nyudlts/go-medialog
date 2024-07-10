@@ -8,6 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
+func AutoMigrate() error {
+	if err := db.AutoMigrate(&models.Repository{}, &models.Resource{}, &models.Accession{}, &models.Entry{}, &models.User{}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func MigrateDatabase() error {
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		{
@@ -42,7 +50,7 @@ func MigrateDatabase() error {
 	})
 
 	if err := m.Migrate(); err != nil {
-		log.Println("Migration did run successfully")
+		log.Println("Migration ran successfully")
 		return err
 	}
 
