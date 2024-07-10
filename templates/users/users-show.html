@@ -1,34 +1,62 @@
 {{ template "header.html" . }}
 
 <br>
-<table class="table table-striped">
-	<tr>
-		<th>property</th>
-		<th>value</th>
-	</tr>
-	<tr>
-		<td>First Name</td>
-		<td>{{ .user.FirstName }}</td>
-	</tr>
-	<tr>
-		<td>Last Name</td>
-		<td>{{ .user.LastName }}</td>
-	</tr>
-	<tr>
-		<td>Email</td>
-		<td>{{ .user.Email }}</td>
-	</tr>
-	<tr>
-		<td>sign in count</td>
-		<td>{{ .user.SignInCount }}</td>
-	</tr>
-	<tr>
-		<td>current IP</td>
-		<td>{{ .user.CurrentIPAddress }}</td>
-	</tr>
-</table>
-<div class="row">
-		<a href="/users/{{ .user.ID }}/reset_password" class="btn-sm btn-primary">Set Password</a>
-		<a href="/users/{{ .user.ID }}/edit" class="btn-sm btn-secondary">Edit User Account</a>
+<div class="card card-default">
+    <div class="card-header">
+		<h5 class="card-title">User Account: {{ .user.Email }}</h5>
+	</div>
+	<div class="card-body">
+		<table class="table table-striped table-bordered">
+			<thead  class="thead-light">
+			<tr>
+				<th scope="col"> </th>
+				<th scope="col">property</th>
+				<th scope="col">value</th>
+			</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th scope="row"></th>
+					<td>First Name</td>
+					<td>{{ .user.FirstName }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>Last Name</td>
+					<td>{{ .user.LastName }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>Email</td>
+					<td>{{ .user.Email }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>sign in count</td>
+					<td>{{ .user.SignInCount }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>current IP</td>
+					<td>{{ .user.CurrentIPAddress }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>Is Admin</td>
+					<td>{{ .user.IsAdmin }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>Is Active</td>
+					<td>{{ .user.IsActive }}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="row">
+				<a href="/users/{{ .user.ID }}/reset_password" class="btn-sm btn-primary">Set Password</a>
+				<a href="/users/{{ .user.ID }}/edit" class="btn-sm btn-secondary">Edit User Account</a>
+		</div>
+	</div>
 </div>
+<br>
 {{ template "footer.html" . }}
