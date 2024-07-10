@@ -174,7 +174,17 @@ func GetRepositories(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	repositories, err := database.FindRepositories()
 	if err != nil {
@@ -183,10 +193,10 @@ func GetRepositories(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "repositories-index.html", gin.H{
-		"repositories":    repositories,
-		"isAuthenticated": true,
-		"isAdmin":         isAdmin,
-		"isLoggedIn":      loggedIn,
+		"repositories": repositories,
+		"isAdmin":      sessionCookies.IsAdmin,
+		"isLoggedIn":   loggedIn,
+		"user":         user,
 	})
 
 }
@@ -198,7 +208,17 @@ func GetRepository(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -219,9 +239,10 @@ func GetRepository(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "repositories-show.html", gin.H{
-		"repository":      repository,
-		"resources":       resources,
-		"isAdmin":         isAdmin,
-		"isAuthenticated": loggedIn,
+		"repository": repository,
+		"resources":  resources,
+		"isAdmin":    sessionCookies.IsAdmin,
+		"isLoggedIn": isLoggedIn,
+		"user":       user,
 	})
 }
