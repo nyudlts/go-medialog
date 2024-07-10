@@ -27,8 +27,7 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	isAdmin := sessionCookies.IsAdmin
-	if !isAdmin {
+	if !sessionCookies.IsAdmin {
 		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
 		return
 	}
@@ -61,9 +60,24 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c).(bool)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
 
-	userID, err := strconv.Atoi(c.Param("id"))
+	if !sessionCookies.IsAdmin {
+		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	uuserID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
 		return
@@ -74,12 +88,12 @@ func GetUser(c *gin.Context) {
 		throwError(http.StatusExpectationFailed, "User is not logged in / Unauthorized", c)
 	}
 
-	if (userID != cookieId) && !isAdmin {
+	if (uuserID != cookieId) && !sessionCookies.IsAdmin {
 		throwError(http.StatusUnauthorized, "Logged in as different user", c)
 		return
 	}
 
-	user, err := database.GetRedactedUser(userID)
+	uuser, err := database.GetRedactedUser(uuserID)
 	if err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
 		return
@@ -88,7 +102,7 @@ func GetUser(c *gin.Context) {
 	c.HTML(200, "users-show.html", gin.H{
 		"isLoggedIn": isLoggedIn,
 		"isAdmin":    isAdmin,
-		"userID":     userID,
+		"uuser":      uuser,
 		"user":       user,
 	})
 }

@@ -18,43 +18,43 @@
 				<tr>
 					<th scope="row"></th>
 					<td>First Name</td>
-					<td>{{ .user.FirstName }}</td>
+					<td>{{ .uuser.FirstName }}</td>
 				</tr>
 				<tr>
 					<th scope="row"></th>
 					<td>Last Name</td>
-					<td>{{ .user.LastName }}</td>
+					<td>{{ .uuser.LastName }}</td>
 				</tr>
 				<tr>
 					<th scope="row"></th>
 					<td>Email</td>
-					<td>{{ .user.Email }}</td>
+					<td>{{ .uuser.Email }}</td>
 				</tr>
 				<tr>
 					<th scope="row"></th>
 					<td>sign in count</td>
-					<td>{{ .user.SignInCount }}</td>
+					<td>{{ .uuser.SignInCount }}</td>
 				</tr>
 				<tr>
 					<th scope="row"></th>
 					<td>current IP</td>
-					<td>{{ .user.CurrentIPAddress }}</td>
+					<td>{{ .uuser.CurrentIPAddress }}</td>
 				</tr>
 				<tr>
 					<th scope="row"></th>
 					<td>Is Admin</td>
-					<td>{{ .user.IsAdmin }}</td>
+					<td>{{ .uuser.IsAdmin }}</td>
 				</tr>
 				<tr>
 					<th scope="row"></th>
 					<td>Is Active</td>
-					<td>{{ .user.IsActive }}</td>
+					<td>{{ .uuser.IsActive }}</td>
 				</tr>
 			</tbody>
 		</table>
 		<div class="row">
-				<a href="/users/{{ .user.ID }}/reset_password" class="btn-sm btn-primary">Set Password</a>
-				<a href="/users/{{ .user.ID }}/edit" class="btn-sm btn-secondary">Edit User Account</a>
+				<a href="/users/{{ .uuser.ID }}/reset_password" class="btn-sm btn-primary">Set Password</a>
+				<a href="/users/{{ .uuser.ID }}/edit" class="btn-sm btn-secondary">Edit User Account</a>
 		</div>
 	</div>
 </div>
