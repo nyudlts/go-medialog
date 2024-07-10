@@ -94,7 +94,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 }
 
 func AuthenticateUser(c *gin.Context) {
@@ -141,7 +141,7 @@ func AuthenticateUser(c *gin.Context) {
 		throwError(http.StatusInternalServerError, "failed to update user", c)
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/")
+	c.Redirect(http.StatusFound, "/")
 }
 
 func ResetUserPassword(c *gin.Context) {
@@ -206,7 +206,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 }
 
 func DeactivateUser(c *gin.Context) {
@@ -235,7 +235,7 @@ func DeactivateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 
 }
 
@@ -265,7 +265,7 @@ func ReactivateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 
 }
 
@@ -295,7 +295,7 @@ func MakeUserAdmin(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 }
 
 func RemoveUserAdmin(c *gin.Context) {
@@ -324,7 +324,7 @@ func RemoveUserAdmin(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/users")
+	c.Redirect(http.StatusFound, "/users")
 }
 
 func LoginUser(c *gin.Context) { c.HTML(http.StatusOK, "users-login.html", gin.H{}) }

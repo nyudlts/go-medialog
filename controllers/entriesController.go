@@ -97,7 +97,7 @@ func GetPreviousEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/entries/%s/show", prevEntryID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", prevEntryID))
 }
 
 func GetNextEntry(c *gin.Context) {
@@ -124,7 +124,7 @@ func GetNextEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/entries/%s/show", prevEntryID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", prevEntryID))
 }
 
 func GetEntries(c *gin.Context) {
@@ -350,7 +350,7 @@ func DeleteEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("/accessions/%d/show", entry.AccessionID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", entry.AccessionID))
 
 }
 
