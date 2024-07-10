@@ -8,29 +8,34 @@ import (
 
 	"github.com/gin-gonic/gin"
 	config "github.com/nyudlts/go-medialog/config"
+	"github.com/nyudlts/go-medialog/database"
 	router "github.com/nyudlts/go-medialog/router"
 )
 
 var (
 	environment   string
 	configuration string
-	sqlite        bool
 	gormDebug     bool
 	vers          bool
 	prod          bool
+	migrate       bool
+	automigrate   bool
 )
 
-const version = "v1.0.1"
+const version = "v1.0.2"
 
 func init() {
 
 	flag.StringVar(&environment, "environment", "", "")
 	flag.StringVar(&configuration, "config", "", "")
-	flag.BoolVar(&sqlite, "sqlite", false, "")
 	flag.BoolVar(&gormDebug, "gorm-debug", false, "")
 	flag.BoolVar(&vers, "version", false, "")
 	flag.BoolVar(&prod, "prod", false, "")
+	flag.BoolVar(&migrate, "migrate", false, "")
+	flag.BoolVar(&automigrate, "automigrate", false, "")
 }
+
+var r *gin.Engine
 
 func main() {
 	//parse cli flags
@@ -41,40 +46,54 @@ func main() {
 		os.Exit(0)
 	}
 
-	var r *gin.Engine
-	if sqlite {
-		env, err := config.GetSQlite(configuration, environment)
-		if err != nil {
-			panic(err)
-		}
-		r, err = router.SetupSQRouter(env, gormDebug)
-		if err != nil {
-			panic(err)
-		}
-	} else {
+	env, err := config.GetEnvironment(configuration, environment)
+	if err != nil {
+		panic(err)
+	}
 
-		env, err := config.GetEnvironment(configuration, environment)
-		if err != nil {
+	if migrate {
+		fmt.Println("running migrations")
+		if err := database.ConnectMySQL(env.DatabaseConfig, true); err != nil {
 			panic(err)
 		}
 
-		if prod {
-			logFile, err := os.OpenFile(env.LogLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
-			if err != nil {
-				panic(err)
-			}
-			defer logFile.Close()
-
-			log.SetOutput(logFile)
-
-			log.Println("Medialog starting up")
-			log.Println("Setting Up Router")
+		if err := database.MigrateDatabase(); err != nil {
+			panic(err)
 		}
 
-		r, err = router.SetupRouter(env, gormDebug, prod)
+		os.Exit(0)
+	}
+
+	if automigrate {
+		fmt.Println("auto-migrating database")
+		if err := database.ConnectMySQL(env.DatabaseConfig, true); err != nil {
+			panic(err)
+		}
+		if err := database.AutoMigrate(); err != nil {
+			panic(err)
+		}
+
+		os.Exit(0)
+	}
+
+	if prod {
+		logFile, err := os.OpenFile(env.LogLocation, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0755)
 		if err != nil {
 			panic(err)
 		}
+		defer logFile.Close()
+
+		log.SetOutput(logFile)
+
+		log.Println("[INFO] Medialog starting up")
+		log.Printf("[INFO] Logging to %s", env.LogLocation)
+		log.Println("Setting Up Router")
+	}
+
+	r, err = router.SetupRouter(env, gormDebug, prod)
+	if err != nil {
+		panic(err)
+
 	}
 
 	//start the application

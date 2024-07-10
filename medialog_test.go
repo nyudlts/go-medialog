@@ -12,10 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	r *gin.Engine
-)
-
 func TestAPI(t *testing.T) {
 
 	flag.Parse()
@@ -26,26 +22,14 @@ func TestAPI(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 
-	if sqlite {
-		env, err := config.GetSQlite(configuration, environment)
-		if err != nil {
-			panic(err)
-		}
-		r, err = router.SetupSQRouter(env, gormDebug)
-		if err != nil {
-			panic(err)
-		}
-	} else {
+	env, err := config.GetEnvironment(configuration, environment)
+	if err != nil {
+		panic(err)
+	}
 
-		env, err := config.GetEnvironment(configuration, environment)
-		if err != nil {
-			panic(err)
-		}
-
-		r, err = router.SetupRouter(env, true, false)
-		if err != nil {
-			panic(err)
-		}
+	r, err = router.SetupRouter(env, true, false)
+	if err != nil {
+		panic(err)
 	}
 
 	t.Run("Test setup router", func(t *testing.T) {

@@ -1,0 +1,40 @@
+{{ template "header.html" . }}
+<br />
+<div class="card card-default">
+    <div class="card-header">
+        <h2 class="card-title">Edit User</h2>
+    </div>
+    <div class="card-body">
+        <form action="/users/update" method="post">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="first_name">first name</label>
+                        <input type="text" name="first_name" id="first_name" value="{{ .updateUser.FirstName }}">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="last_name">last name</label>
+                        <input type="text" name="last_name" id="last_name" value="{{ .updateUser.LastName }}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="email">email</label>
+                        <input type="text" name="email" id="email" value="{{ .updateUser.Email }}">
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="id" name="id" value="{{ .updateUser.ID }}"/>
+            <div class="form-row">
+                <div class="col">
+                    <input type="submit" class="btn btn-primary" value="Save" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{{ template "footer.html" . }}

@@ -21,9 +21,20 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c).(bool)
-	if !isAdmin {
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	if !sessionCookies.IsAdmin {
 		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
 		return
 	}
 
@@ -35,9 +46,64 @@ func GetUsers(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "users-index.html", gin.H{
 		"users":           users,
+		"user":            user,
 		"isAuthenticated": true,
 		"isAdmin":         isAdmin,
 		"isLoggedIn":      isLoggedIn,
+	})
+}
+
+func GetUser(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	if !sessionCookies.IsAdmin {
+		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	uuserID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	cookieId, err := getUserkey(c)
+	if err != nil {
+		throwError(http.StatusExpectationFailed, "User is not logged in / Unauthorized", c)
+	}
+
+	if (uuserID != cookieId) && !sessionCookies.IsAdmin {
+		throwError(http.StatusUnauthorized, "Logged in as different user", c)
+		return
+	}
+
+	uuser, err := database.GetRedactedUser(uuserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	c.HTML(200, "users-show.html", gin.H{
+		"isLoggedIn": isLoggedIn,
+		"isAdmin":    isAdmin,
+		"uuser":      uuser,
+		"user":       user,
 	})
 }
 
@@ -48,12 +114,28 @@ func NewUser(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	if !sessionCookies.IsAdmin {
+		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	c.HTML(http.StatusOK, "users-new.html", gin.H{
-		"isAdmin":         isAdmin,
+		"isAdmin":         sessionCookies.IsAdmin,
 		"isAuthenticated": true,
 		"isLoggedIn":      isLoggedIn,
+		"user":            user,
 	})
 }
 
@@ -62,6 +144,8 @@ type UserForm struct {
 	Password1 string `form:"password_1"`
 	Password2 string `form:"password_2"`
 	Email     string `form:"email"`
+	FirstName string `form:"first_name"`
+	LastName  string `form:"last_name"`
 }
 
 func CreateUser(c *gin.Context) {
@@ -85,6 +169,9 @@ func CreateUser(c *gin.Context) {
 
 	user := models.User{}
 	user.Email = createUser.Email
+	user.FirstName = createUser.FirstName
+	user.LastName = createUser.LastName
+	user.IsActive = true
 	user.Salt = GenerateStringRunes(16)
 	hash := sha512.Sum512([]byte(createUser.Password1 + user.Salt))
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
@@ -95,6 +182,78 @@ func CreateUser(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, "/users")
+}
+
+func EditUser(c *gin.Context) {
+
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	userID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	updateUser, err := database.GetRedactedUser(userID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	c.HTML(http.StatusOK, "users-edit.html", gin.H{
+		"isLoggedIn": isLoggedIn,
+		"isAdmin":    sessionCookies.IsAdmin,
+		"user":       user,
+		"updateUser": updateUser,
+	})
+
+}
+
+func UpdateUser(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	var updateUser = UserForm{}
+	if err := c.Bind(&updateUser); err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	user, err := database.FindUser(uint(updateUser.ID))
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	user.Email = updateUser.Email
+	user.FirstName = updateUser.FirstName
+	user.LastName = updateUser.LastName
+
+	if err := database.UpdateUser(&user); err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/users/%d/show", user.ID))
 }
 
 func AuthenticateUser(c *gin.Context) {

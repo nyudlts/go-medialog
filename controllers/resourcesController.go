@@ -19,7 +19,17 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -88,7 +98,7 @@ func GetResource(c *gin.Context) {
 		"resource":        resource,
 		"accessions":      accessions,
 		"entries":         entries,
-		"isAdmin":         isAdmin,
+		"isAdmin":         sessionCookies.IsAdmin,
 		"isAuthenticated": true,
 		"page":            p,
 		"summary":         summary,
@@ -97,6 +107,7 @@ func GetResource(c *gin.Context) {
 		"page_count":      pageCount,
 		"entryCount":      entryCount,
 		"isLoggedIn":      isLoggedIn,
+		"user":            user,
 	})
 }
 
@@ -107,7 +118,17 @@ func GetResources(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	resources, err := database.FindResources()
 	if err != nil {
@@ -124,9 +145,10 @@ func GetResources(c *gin.Context) {
 	c.HTML(http.StatusOK, "resources-index.html", gin.H{
 		"resources":       resources,
 		"isAuthenticated": true,
-		"isAdmin":         isAdmin,
+		"isAdmin":         sessionCookies.IsAdmin,
 		"repositoryMap":   repositoryMap,
 		"isLoggedIn":      isLoggedIn,
+		"user":            user,
 	})
 }
 
@@ -137,7 +159,17 @@ func NewResource(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	repoID, err := strconv.Atoi(c.Query("repository_id"))
 	if err != nil {
@@ -152,9 +184,10 @@ func NewResource(c *gin.Context) {
 	}
 
 	c.HTML(200, "resources-new.html", gin.H{
-		"isAdmin":    isAdmin,
+		"isAdmin":    sessionCookies.IsAdmin,
 		"repository": repository,
 		"isLoggedIn": isLoggedIn,
+		"user":       user,
 	})
 }
 
@@ -204,7 +237,7 @@ func CreateResource(c *gin.Context) {
 	}
 
 	//redirect to the new resource
-	c.Redirect(302, fmt.Sprintf("/resources/%d/show", resourceID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/resources/%d/show", resourceID))
 }
 
 func EditResource(c *gin.Context) {
@@ -214,7 +247,17 @@ func EditResource(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	resourceID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -229,9 +272,10 @@ func EditResource(c *gin.Context) {
 	}
 
 	c.HTML(200, "resources-edit.html", gin.H{
-		"isAdmin":    isAdmin,
+		"isAdmin":    sessionCookies.IsAdmin,
 		"resource":   resource,
 		"isLoggedIn": isLoggedIn,
+		"user":       user,
 	})
 }
 
@@ -276,7 +320,7 @@ func UpdateResource(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/resources/%d/show", resource.ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/resources/%d/show", resource.ID))
 }
 
 func DeleteResource(c *gin.Context) {
@@ -303,5 +347,5 @@ func DeleteResource(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/repositories/%d/show", resource.RepositoryID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/repositories/%d/show", resource.RepositoryID))
 }

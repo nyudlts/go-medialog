@@ -18,6 +18,18 @@ func FindUserEmailByID(id int) (string, error) {
 	return user.Email, nil
 }
 
+func GetRedactedUser(id int) (models.User, error) {
+	user := models.User{}
+	if err := db.Where("id = ?", id).First(&user).Error; err != nil {
+		return models.User{}, err
+	}
+
+	user.EncryptedPassword = "####"
+	user.Salt = "####"
+
+	return user, nil
+}
+
 func UpdateUser(user *models.User) error {
 	if err := db.Save(&user).Error; err != nil {
 		return err

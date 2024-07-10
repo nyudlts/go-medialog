@@ -19,7 +19,17 @@ func GetAccessions(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	accessions, err := database.FindAccessions()
 	if err != nil {
@@ -39,11 +49,11 @@ func GetAccessions(c *gin.Context) {
 	}
 
 	c.HTML(200, "accessions-index.html", gin.H{
-		"accessions":      accessions,
-		"isAuthenticated": true,
-		"isAdmin":         isAdmin,
-		"repositoryMap":   repositoryMap2,
-		"isLoggedIn":      isLoggedIn,
+		"accessions":    accessions,
+		"isAdmin":       sessionCookies.IsAdmin,
+		"repositoryMap": repositoryMap2,
+		"isLoggedIn":    isLoggedIn,
+		"user":          user,
 	})
 }
 
@@ -54,7 +64,17 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -117,13 +137,14 @@ func GetAccession(c *gin.Context) {
 		"repository":      repository,
 		"entries":         entries,
 		"isAuthenticated": true,
-		"isAdmin":         isAdmin,
+		"isAdmin":         sessionCookies.IsAdmin,
 		"page":            p,
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
 		"users":           users,
 		"entryCount":      entryCount,
 		"isLoggedIn":      isLoggedIn,
+		"user":            user,
 	})
 }
 
@@ -131,6 +152,18 @@ func NewAccession(c *gin.Context) {
 	isLoggedIn := isLoggedIn(c)
 	if !isLoggedIn {
 		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		return
+	}
+
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
 		return
 	}
 
@@ -156,6 +189,8 @@ func NewAccession(c *gin.Context) {
 		"resource":   resource,
 		"repository": repository,
 		"isLoggedIn": isLoggedIn,
+		"isAdmin":    sessionCookies.IsAdmin,
+		"user":       user,
 	})
 }
 
@@ -208,7 +243,7 @@ func CreateAccession(c *gin.Context) {
 	}
 
 	//redirect to show
-	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accessionID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accessionID))
 
 }
 
@@ -219,7 +254,17 @@ func EditAccession(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	accessionID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -240,10 +285,11 @@ func EditAccession(c *gin.Context) {
 	}
 
 	c.HTML(200, "accessions-edit.html", gin.H{
-		"isAdmin":    isAdmin,
+		"isAdmin":    sessionCookies.IsAdmin,
 		"accession":  accession,
 		"repository": repository,
 		"isLoggedIn": isLoggedIn,
+		"user":       user,
 	})
 
 }
@@ -288,7 +334,7 @@ func UpdateAccession(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accession.ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accession.ID))
 }
 
 func DeleteAccession(c *gin.Context) {
@@ -313,7 +359,7 @@ func DeleteAccession(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/resources/%d/show", accession.ResourceID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/resources/%d/show", accession.ResourceID))
 }
 
 type Slew struct {
@@ -333,7 +379,17 @@ func SlewAccession(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -362,7 +418,7 @@ func SlewAccession(c *gin.Context) {
 	}
 
 	c.HTML(200, "accessions-slew.html", gin.H{
-		"is_admin":    isAdmin,
+		"is_admin":    sessionCookies.IsAdmin,
 		"accession":   accession,
 		"repository":  repository,
 		"mediatypes":  getMediatypes(),
@@ -371,6 +427,7 @@ func SlewAccession(c *gin.Context) {
 		"page":        0,
 		"entries":     entries,
 		"isLoggedIn":  isLoggedIn,
+		"user":        user,
 	})
 }
 
@@ -407,7 +464,7 @@ func CreateAccessionSlew(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/accessions/%d/show", accession.ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accession.ID))
 }
 
 func createSlewEntry(slew Slew, accession models.Accession) error {

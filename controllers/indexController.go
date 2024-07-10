@@ -25,7 +25,17 @@ func GetIndex(c *gin.Context) {
 
 	entryCount := database.GetCountOfEntriesInDB()
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
@@ -35,10 +45,11 @@ func GetIndex(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"entries":       entries,
-		"isAdmin":       isAdmin,
+		"isAdmin":       sessionCookies.IsAdmin,
 		"page":          p,
 		"repositoryMap": repositoryMap,
 		"entryCount":    entryCount,
-		"isLoggedIn":    true,
+		"isLoggedIn":    isLoggedIn,
+		"user":          user,
 	})
 }

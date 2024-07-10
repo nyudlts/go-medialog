@@ -32,7 +32,7 @@
 
             {{ if .isLoggedIn }}
                 <li class="nav-item">
-                    <a class="nav-link" href="/users/logout">Logout</a>
+                  <li class="nav-item"></li>  <a class="nav-link" href="/users/logout">Logout</a>
                 </li>
             {{ else }}
                 <li class="nav-item">
@@ -40,5 +40,14 @@
                 </li>
             {{ end }}
         </ul>
+        {{ if .isLoggedIn }}
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item menu-separate">
+                <a class="nav-link circle-singleline" style="color: white;" href="/users/{{ .user.ID }}/show">
+                    {{ printf "%.*s" 1 .user.FirstName }}{{ printf "%.*s" 1 .user.LastName }}
+                </a>
+            </li>
+        </ul>
+        {{ end }}
     </div>
 </nav>

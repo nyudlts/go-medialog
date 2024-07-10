@@ -29,6 +29,8 @@ func TestUsers(t *testing.T) {
 		user.EncryptedPassword = hex.EncodeToString(hash[:])
 		user.IsActive = true
 		user.IsAdmin = false
+		user.FirstName = "Test"
+		user.LastName = "User"
 
 		var err error
 		userID, err = database.InsertUser(&user)

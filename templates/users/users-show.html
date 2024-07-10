@@ -1,0 +1,62 @@
+{{ template "header.html" . }}
+
+<br>
+<div class="card card-default">
+    <div class="card-header">
+		<h5 class="card-title">User Account: {{ .user.Email }}</h5>
+	</div>
+	<div class="card-body">
+		<table class="table table-striped table-bordered">
+			<thead  class="thead-light">
+			<tr>
+				<th scope="col"></th>
+				<th scope="col">property</th>
+				<th scope="col">value</th>
+			</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th scope="row"></th>
+					<td>First Name</td>
+					<td>{{ .uuser.FirstName }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>Last Name</td>
+					<td>{{ .uuser.LastName }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>Email</td>
+					<td>{{ .uuser.Email }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>sign in count</td>
+					<td>{{ .uuser.SignInCount }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>current IP</td>
+					<td>{{ .uuser.CurrentIPAddress }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>Is Admin</td>
+					<td>{{ .uuser.IsAdmin }}</td>
+				</tr>
+				<tr>
+					<th scope="row"></th>
+					<td>Is Active</td>
+					<td>{{ .uuser.IsActive }}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="row">
+				<a href="/users/{{ .uuser.ID }}/reset_password" class="btn-sm btn-primary">Set Password</a>
+				<a href="/users/{{ .uuser.ID }}/edit" class="btn-sm btn-secondary">Edit User Account</a>
+		</div>
+	</div>
+</div>
+<br>
+{{ template "footer.html" . }}

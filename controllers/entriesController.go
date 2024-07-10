@@ -20,7 +20,17 @@ func GetEntry(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -61,15 +71,15 @@ func GetEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-show.html", gin.H{
-		"entry":           entry,
-		"accession":       accession,
-		"resource":        resource,
-		"repository":      repository,
-		"isAuthenticated": true,
-		"isAdmin":         isAdmin,
-		"entryUsers":      entryUsers,
-		"isLoggedIn":      isLoggedIn,
-		"maxMediaID":      maxMediaID,
+		"entry":      entry,
+		"accession":  accession,
+		"resource":   resource,
+		"repository": repository,
+		"isAdmin":    sessionCookies.IsAdmin,
+		"entryUsers": entryUsers,
+		"isLoggedIn": isLoggedIn,
+		"maxMediaID": maxMediaID,
+		"user":       user,
 	})
 }
 
@@ -133,11 +143,20 @@ func GetEntries(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	//pagination
 	var p = 0
-	var err error
 	page := c.Request.URL.Query()["page"]
 
 	if len(page) > 0 {
@@ -170,13 +189,13 @@ func GetEntries(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-index.html", gin.H{
-		"entries":         entries,
-		"isAuthenticated": true,
-		"isAdmin":         isAdmin,
-		"page":            p,
-		"repositoryMap":   repositoryMap,
-		"entryCount":      entryCount,
-		"isLoggedIn":      true,
+		"entries":       entries,
+		"isAdmin":       sessionCookies.IsAdmin,
+		"page":          p,
+		"repositoryMap": repositoryMap,
+		"entryCount":    entryCount,
+		"isLoggedIn":    isLoggedIn,
+		"user":          user,
 	})
 }
 
@@ -187,7 +206,17 @@ func NewEntry(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	aID := c.Query("accession_id")
 	accessionID, err := strconv.Atoi(aID)
@@ -225,7 +254,7 @@ func NewEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-create.html", gin.H{
-		"isAdmin":                isAdmin,
+		"isAdmin":                sessionCookies.IsAdmin,
 		"accession":              accession,
 		"resource":               resource,
 		"repository":             repository,
@@ -241,6 +270,7 @@ func NewEntry(c *gin.Context) {
 		"media_id":               mediaID,
 		"is_refreshed":           is_refreshed,
 		"isLoggedIn":             isLoggedIn,
+		"user":                   user,
 	})
 
 }
@@ -324,7 +354,7 @@ func CreateEntry(c *gin.Context) {
 	}
 
 	//redirect
-	c.Redirect(302, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
+	c.Redirect(http.StatusFound, fmt.Sprintf("entries/%s/show", createEntry.ID.String()))
 }
 
 func DeleteEntry(c *gin.Context) {
@@ -361,7 +391,17 @@ func EditEntry(c *gin.Context) {
 		return
 	}
 
-	isAdmin := getCookie("is-admin", c)
+	sessionCookies, err := getSessionCookies(c)
+	if err != nil {
+		throwError(http.StatusInternalServerError, err.Error(), c)
+		return
+	}
+
+	user, err := database.GetRedactedUser(sessionCookies.UserID)
+	if err != nil {
+		throwError(http.StatusBadRequest, err.Error(), c)
+		return
+	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -394,7 +434,7 @@ func EditEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-edit.html", gin.H{
-		"isAdmin":                isAdmin,
+		"isAdmin":                sessionCookies.IsAdmin,
 		"entry":                  entry,
 		"accession":              accession,
 		"resource":               resource,
@@ -410,6 +450,7 @@ func EditEntry(c *gin.Context) {
 		"image_formats":          getImageFormats(),
 		"is_refreshed":           is_refreshed,
 		"isLoggedIn":             isLoggedIn,
+		"user":                   user,
 	})
 }
 
@@ -465,7 +506,7 @@ func UpdateEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
 }
 
 func CloneEntry(c *gin.Context) {
@@ -544,7 +585,7 @@ func CloneEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/entries/%s/show", newUUID.String()))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", newUUID.String()))
 
 }
 
@@ -571,6 +612,6 @@ func FindEntry(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/entries/%s/show", id))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", id))
 
 }
