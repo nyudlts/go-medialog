@@ -1,7 +1,7 @@
 {{ template "header.html" . }}
 
 <br>
-<table class="table">
+<table class="table table-striped">
 	<tr>
 		<th>property</th>
 		<th>value</th>
@@ -19,11 +19,16 @@
 		<td>{{ .user.Email }}</td>
 	</tr>
 	<tr>
-		<td>
-			<a href="/users/{{ .user.ID }}/reset_password" class="btn-sm btn-primary">Set Password</a>
-			<a href="/users/{{ .user.ID }}/edit" class="btn-sm btn-secondary">Edit</a>
-		</td>
+		<td>sign in count</td>
+		<td>{{ .user.SignInCount }}</td>
+	</tr>
+	<tr>
+		<td>current IP</td>
+		<td>{{ .user.CurrentIPAddress }}</td>
 	</tr>
 </table>
-
+<div class="row">
+		<a href="/users/{{ .user.ID }}/reset_password" class="btn-sm btn-primary">Set Password</a>
+		<a href="/users/{{ .user.ID }}/edit" class="btn-sm btn-secondary">Edit User Account</a>
+</div>
 {{ template "footer.html" . }}
