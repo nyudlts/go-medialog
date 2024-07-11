@@ -20,7 +20,8 @@ archive:
 	sudo mv $(MEDIALOG_HOME)/medialog $(MEDIALOG_HOME)/$(ver)
 	sudo mv $(MEDIALOG_HOME)/public $(MEDIALOG_HOME)/$(ver)
 	sudo mv $(MEDIALOG_HOME)/templates $(MEDIALOG_HOME)/$(ver)
-	sudo mv $(MEDIALOG_HOME)/$(ver) $(MEDIALOG_HOME)/previous-versions
+	sudo tar cvzf $(MEDIALOG_HOME)/$(ver).tgz $(MEDIALOG_HOME)/$(ver)
+	sudo mv $(MEDIALOG_HOME)/$(ver).tgz $(MEDIALOG_HOME)/previous-versions/
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
 
 install:
