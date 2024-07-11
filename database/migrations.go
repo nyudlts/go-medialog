@@ -24,22 +24,14 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 	}
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
 		{
-			ID: "20240710 - Adding First Name",
-			Migrate: func(tx *gorm.DB) error {
-				return tx.Migrator().AddColumn(&models.User{}, "FirstName")
-			},
-			Rollback: func(tx *gorm.DB) error {
-				return tx.Migrator().DropColumn(&models.User{}, "FirstName")
-			},
+			ID:       "20240710 - Adding First Name",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.User{}, "FirstName") },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.User{}, "FirstName") },
 		},
 		{
-			ID: "20240711 - Adding Last Name",
-			Migrate: func(tx *gorm.DB) error {
-				return tx.Migrator().AddColumn(&models.User{}, "LastName")
-			},
-			Rollback: func(tx *gorm.DB) error {
-				return tx.Migrator().DropColumn(&models.User{}, "LastName")
-			},
+			ID:       "20240711 - Adding Last Name",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.User{}, "LastName") },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.User{}, "LastName") },
 		},
 	})
 
