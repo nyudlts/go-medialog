@@ -144,9 +144,8 @@ type User struct {
 	UpdatedBy         int       `json:"updated_by"`
 	IsActive          bool      `json:"is_active"`
 	IsAdmin           bool      `json:"admin"`
-	isLoggedIn        bool      `json:isLoggedIn`
-	CurrentIPAddress  string    `json:current_ip`
-	PreviousIPAddress string    `json:previous_ip`
+	CurrentIPAddress  string    `json:current_ip_address`
+	PreviousIPAddress string    `json:previous_ip_address`
 	FirstName         string    `json:"first_name" form:"first_name"`
 	LastName          string    `json:"last_name" form:"last_name"`
 }

@@ -19,6 +19,7 @@ var (
 	vers          bool
 	prod          bool
 	migrate       bool
+	rollback      bool
 	automigrate   bool
 )
 
@@ -33,6 +34,7 @@ func init() {
 	flag.BoolVar(&prod, "prod", false, "")
 	flag.BoolVar(&migrate, "migrate", false, "")
 	flag.BoolVar(&automigrate, "automigrate", false, "")
+	flag.BoolVar(&rollback, "rollback", false, "")
 }
 
 var r *gin.Engine
@@ -51,13 +53,10 @@ func main() {
 		panic(err)
 	}
 
-	if migrate {
+	if migrate || rollback {
 		fmt.Println("running migrations")
-		if err := database.ConnectMySQL(env.DatabaseConfig, true); err != nil {
-			panic(err)
-		}
 
-		if err := database.MigrateDatabase(); err != nil {
+		if err := database.MigrateDatabase(rollback, env.DatabaseConfig); err != nil {
 			panic(err)
 		}
 
@@ -66,13 +65,9 @@ func main() {
 
 	if automigrate {
 		fmt.Println("auto-migrating database")
-		if err := database.ConnectMySQL(env.DatabaseConfig, true); err != nil {
+		if err := database.AutoMigrate(env.DatabaseConfig); err != nil {
 			panic(err)
 		}
-		if err := database.AutoMigrate(); err != nil {
-			panic(err)
-		}
-
 		os.Exit(0)
 	}
 
