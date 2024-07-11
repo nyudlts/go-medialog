@@ -22,6 +22,7 @@ archive:
 	sudo mv $(MEDIALOG_HOME)/templates $(MEDIALOG_HOME)/$(ver)
 	sudo tar cvzf $(MEDIALOG_HOME)/$(ver).tgz $(MEDIALOG_HOME)/$(ver)
 	sudo mv $(MEDIALOG_HOME)/$(ver).tgz $(MEDIALOG_HOME)/previous-versions/
+	sudo rm -r $(MEDIALOG_HOME)/$(ver)
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
 
 install:
@@ -36,4 +37,4 @@ update-templates:
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
 
 version:
-	@echo $(ver)
+	@echo $(v)
