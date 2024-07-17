@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/nyudlts/go-medialog/config"
 	"github.com/nyudlts/go-medialog/models"
@@ -22,7 +24,8 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 	if err := ConnectMySQL(dbc, true); err != nil {
 		return err
 	}
-	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
+
+	migrations := []*gormigrate.Migration{
 		{
 			ID:       "20240710 - Adding First Name",
 			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.User{}, "FirstName") },
@@ -33,7 +36,14 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.User{}, "LastName") },
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.User{}, "LastName") },
 		},
-	})
+		{
+			ID:       "20240717 - Adding location to entry",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.Entry{}, "Location") },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.Entry{}, "Location") },
+		},
+	}
+
+	m := gormigrate.New(db, gormigrate.DefaultOptions, migrations)
 
 	if rollback {
 		if err := m.RollbackLast(); err != nil {
@@ -43,6 +53,16 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 	} else {
 		if err := m.Migrate(); err != nil {
 			return err
+		}
+		dbMigrations := []string{}
+		if err := db.Table("migrations").Find(&dbMigrations).Error; err != nil {
+			fmt.Println(err.Error())
+		} else {
+			fmt.Println("DB Migration complete")
+			fmt.Println("Migrations currently applied")
+			for _, m := range dbMigrations {
+				fmt.Printf(" %s\n", m)
+			}
 		}
 		return nil
 	}
