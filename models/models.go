@@ -106,6 +106,7 @@ func (e *Entry) UpdateEntry(updatedEntry Entry) {
 	e.ImagingNote = updatedEntry.ImagingNote
 	e.ImagingSoftware = updatedEntry.ImagingSoftware
 	e.ImageFormat = updatedEntry.ImageFormat
+	e.Location = updatedEntry.Location
 }
 
 func (e *Entry) ValidateEntry() error {
