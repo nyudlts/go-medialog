@@ -421,7 +421,6 @@ func SlewAccession(c *gin.Context) {
 		"is_admin":    sessionCookies.IsAdmin,
 		"accession":   accession,
 		"repository":  repository,
-		"mediatypes":  getMediatypes(),
 		"stock_units": getStockUnits(),
 		"pagination":  pagination,
 		"page":        0,

@@ -23,7 +23,7 @@
             <div class="form-group col-md-3">
                 <label for="mediatype" class="control-label">Mediatype</label>
                 <select id="mediatype" name="mediatype" class="form-control">
-                    {{ range $key, $val := .mediatypes }}
+                    {{ range $key, $val := getMediatypes }}
                         <option value="{{ $key }}">{{ $val }}</option>
                     {{ end }}
                 </select>

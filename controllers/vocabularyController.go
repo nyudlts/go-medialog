@@ -16,19 +16,43 @@ var filename_partner_codes = map[string]string{
 	"ua": "nyuarchives",
 }
 
-func getMediatypes() map[string]string { return mediatypes }
+var storageLocations = map[string]string{
+	"sl_rsw_acm_born_digital": "RW ACM Born Digital",
+	"sl_rsw_spec_coll":        "RW Special Collections",
+	"sl_rsw_amatica_staging":  "RW Archivematica Staging",
+	"sl_rStar":                "R*",
+	"sl_cooper":               "806 Cooper FTK Workstation",
+	"sl_bobst":                "806 Bobst FTK Workstation",
+	"sl_fred":                 "ACM FRED FTK Workstation",
+	"sl_wilma":                "ACM WILMA FTK Workstation",
+	"sl_mac":                  "ACM Mac Workstation",
+	"":                        "unknown",
+}
 
-func GetMediaType(s string) string {
+func GetStorageLocations() map[string]string { return storageLocations }
 
-	for k, y := range mediatypes {
+func GetStorageLocation(s string) string {
+	for k, v := range storageLocations {
 		if k == s {
-			return y
+			return v
 		}
 	}
 	return "No Match"
 }
 
-var mediatypes = map[string]string{
+func GetMediatypes() map[string]string { return Mediatypes }
+
+func GetMediaType(s string) string {
+
+	for k, v := range Mediatypes {
+		if k == s {
+			return v
+		}
+	}
+	return "No Match"
+}
+
+var Mediatypes = map[string]string{
 	"":                          "",
 	"mediatype_transfer":        "Network Transfer",
 	"mediatype_floppy_3_5":      "3.5 in. Floppy Disk",

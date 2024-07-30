@@ -33,7 +33,7 @@
                         <td class="col-sm-2">Media Type <div style="color:red;"><em>required</em></div></td>
                         <td class="col-sm-10">
                             <select id="mediatype" name="mediatype">
-                                {{ range $key, $val := .mediatypes }}
+                                {{ range $key, $val := getMediatypes }}
                                     {{ if eq $key $.entry.Mediatype }}
                                         <option value="{{ $key }}" selected>{{ $val }}</option>
                                     {{ else }}
@@ -173,7 +173,15 @@
                     <tr>
                         <td class="col-sm-2"><strong>Storage Location</strong></td>
                         <td class="col-sm-10">
-                            <input type="text" id="location" name="location" value="{{ .entry.Location }}"/>
+                            <select id="location" name="location">
+                                {{ range $key, $val := storageLocations }}
+                                    {{ if eq $key $.entry.Location }}
+                                        <option value="{{ $key }}" selected>{{ $val }}</option>
+                                    {{ else }}
+                                        <option value="{{ $key }}">{{ $val }}</option>
+                                    {{ end }}
+                                {{ end }}
+                            </select>
                         </td>
                     </tr>
                     <tr>
