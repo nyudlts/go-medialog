@@ -91,7 +91,18 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Session Group
 	sessionRoutes := router.Group("/sessions")
+	//sessionRoutes.GET("/cookies", func(c *gin.Context) { controllers.GetCookies(c) })
 	sessionRoutes.GET("/dump", func(c *gin.Context) { controllers.DumpSession(c) })
+
+	//api v0
+	apiV0Routes := router.Group("/api/v0")
+	apiV0Routes.GET("", func(c *gin.Context) { controllers.GetV0Index(c) })
+	apiV0Routes.GET("resources", func(c *gin.Context) { controllers.GetResourcesV0(c) })
+	apiV0Routes.GET("resources/:id", func(c *gin.Context) { controllers.GetResourceV0(c) })
+	apiV0Routes.GET("repositories", func(c *gin.Context) { controllers.GetRepositoriesV0(c) })
+	apiV0Routes.GET("repositories/:id", func(c *gin.Context) { controllers.GetRepositoryV0(c) })
+	apiV0Routes.GET("accessions", func(c *gin.Context) { controllers.GetAccessionsV0(c) })
+	apiV0Routes.GET("accessions/:id", func(c *gin.Context) { controllers.GetAccessionV0(c) })
 
 	// general
 	router.NoRoute(func(c *gin.Context) {
