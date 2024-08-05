@@ -150,4 +150,13 @@ type User struct {
 	PreviousIPAddress string    `json:"previous_ip_address"`
 	FirstName         string    `json:"first_name" form:"first_name"`
 	LastName          string    `json:"last_name" form:"last_name"`
+	CanAccessAPI      bool      `json:"can_access_api" form:"can_access_api"`
+}
+
+type APIToken struct {
+	ID      uint      `json:"id" gorm:"primaryKey"`
+	UserID  uint      `json:"user_id"`
+	Token   string    `json:"token"`
+	IsValid bool      `json:"is_valid"`
+	Expires time.Time `json:"expires"`
 }

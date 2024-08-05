@@ -293,6 +293,12 @@ func AuthenticateUser(c *gin.Context) {
 		setCookie("is-admin", false, c)
 	}
 
+	if user.CanAccessAPI {
+		setCookie("can-access-api", true, c)
+	} else {
+		setCookie("can-access-api", false, c)
+	}
+
 	user.SignInCount = user.SignInCount + 1
 	user.PreviousIPAddress = user.CurrentIPAddress
 	user.CurrentIPAddress = c.ClientIP()

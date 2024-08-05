@@ -96,6 +96,8 @@ func LoadRoutes(router *gin.Engine) {
 
 	//api v0
 	apiV0Routes := router.Group("/api/v0")
+	apiV0Routes.POST("users/:user/login", func(c *gin.Context) { controllers.APILogin(c) })
+	apiV0Routes.GET("test", func(c *gin.Context) { controllers.TestAPI(c) })
 	apiV0Routes.GET("", func(c *gin.Context) { controllers.GetV0Index(c) })
 	apiV0Routes.GET("resources", func(c *gin.Context) { controllers.GetResourcesV0(c) })
 	apiV0Routes.GET("resources/:id", func(c *gin.Context) { controllers.GetResourceV0(c) })

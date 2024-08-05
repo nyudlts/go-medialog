@@ -10,6 +10,7 @@ import (
 
 var userkey = "user"
 var isAdmin = "is-admin"
+var canAccessAPI = "can-access-api"
 
 func isLoggedIn(c *gin.Context) bool {
 	session := sessions.Default(c)
@@ -66,8 +67,9 @@ func logout(c *gin.Context) {
 }
 
 type SessionCookies struct {
-	UserID  int  `json:"user_id"`
-	IsAdmin bool `json:"is_admin"`
+	UserID       int  `json:"user_id"`
+	IsAdmin      bool `json:"is_admin"`
+	CanAccessAPI bool `json:"can_access_api"`
 }
 
 func getSessionCookies(c *gin.Context) (SessionCookies, error) {
@@ -85,6 +87,12 @@ func getSessionCookies(c *gin.Context) (SessionCookies, error) {
 	}
 	sessionCookies.IsAdmin = adminCookie.(bool)
 
+	apiCookie := session.Get(canAccessAPI)
+	if apiCookie == nil {
+		return sessionCookies, fmt.Errorf("no api access cookie")
+	}
+	sessionCookies.CanAccessAPI = apiCookie.(bool)
+
 	return sessionCookies, nil
 }
 
@@ -98,6 +106,10 @@ func DumpSession(c *gin.Context) {
 
 	adminCookie := session.Get(isAdmin).(bool)
 	sessionCookies.IsAdmin = adminCookie
+
+	apiCookie := session.Get(canAccessAPI).(bool)
+	sessionCookies.CanAccessAPI = apiCookie
+
 	c.JSON(200, sessionCookies)
 }
 
