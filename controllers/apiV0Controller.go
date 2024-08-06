@@ -58,7 +58,7 @@ func APILogin(c *gin.Context) {
 		UserID:  user.ID,
 		Token:   token,
 		IsValid: true,
-		Expires: time.Now().Add(time.Minute * 10),
+		Expires: time.Now().Add(time.Hour * 2),
 	}
 
 	//add token to api db
@@ -89,13 +89,11 @@ func expireTokens() {
 	tokens := database.GetTokens()
 	log.Printf("[INFO] expiring api tokens")
 	for _, token := range tokens {
-		if token.IsValid == true && time.Now().After(token.Expires) {
+		if token.IsValid && time.Now().After(token.Expires) {
 			log.Printf("[INFO] Expiring token %d", token.ID)
 			if err := database.ExpireToken(token.ID); err != nil {
 				log.Printf("[ERROR] %s", err.Error())
 			}
-		} else {
-			log.Printf("[INFO] Token %d is valid", token.ID)
 		}
 	}
 }
@@ -129,6 +127,12 @@ func GetResourcesV0(c *gin.Context) {
 }
 
 func GetResourceV0(c *gin.Context) {
+
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error)
@@ -144,6 +148,12 @@ func GetResourceV0(c *gin.Context) {
 }
 
 func GetRepositoriesV0(c *gin.Context) {
+
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	repositories, err := database.FindRepositories()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error)
@@ -154,6 +164,12 @@ func GetRepositoriesV0(c *gin.Context) {
 }
 
 func GetRepositoryV0(c *gin.Context) {
+
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error)
@@ -169,6 +185,12 @@ func GetRepositoryV0(c *gin.Context) {
 }
 
 func GetAccessionsV0(c *gin.Context) {
+
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	accessions, err := database.FindAccessions()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error)
@@ -179,6 +201,12 @@ func GetAccessionsV0(c *gin.Context) {
 }
 
 func GetAccessionV0(c *gin.Context) {
+
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error)
