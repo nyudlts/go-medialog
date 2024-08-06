@@ -54,7 +54,7 @@ func APILogin(c *gin.Context) {
 
 	token := GenerateStringRunes(24)
 
-	apiToken := models.APIToken{
+	apiToken := models.Token{
 		UserID:  user.ID,
 		Token:   token,
 		IsValid: true,
@@ -62,7 +62,7 @@ func APILogin(c *gin.Context) {
 	}
 
 	//add token to api db
-	if err := database.InsertAPIToken(&apiToken); err != nil {
+	if err := database.InsertToken(&apiToken); err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 	}
 

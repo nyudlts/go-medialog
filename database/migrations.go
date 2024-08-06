@@ -47,14 +47,9 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.User{}, "CanAccessAPI") },
 		},
 		{
-			ID:       "20240805 - adding API token table",
-			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().CreateTable(&models.APIToken{}) },
-			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropTable(&models.APIToken{}) },
-		},
-		{
-			ID:       "20240806 - adding Session token table",
-			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().CreateTable(&models.SessionToken{}) },
-			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropTable(&models.SessionToken{}) },
+			ID:       "20240806 - Adding Token table",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().CreateTable(&models.Token{}) },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropTable(&models.Token{}) },
 		},
 	}
 

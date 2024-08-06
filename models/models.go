@@ -153,15 +153,7 @@ type User struct {
 	CanAccessAPI      bool      `json:"can_access_api" form:"can_access_api"`
 }
 
-type APIToken struct {
-	ID      uint      `json:"id" gorm:"primaryKey"`
-	UserID  uint      `json:"user_id"`
-	Token   string    `json:"token"`
-	IsValid bool      `json:"is_valid"`
-	Expires time.Time `json:"expires"`
-}
-
-type SessionToken struct {
+type Token struct {
 	ID      uint      `json:"id" gorm:"primaryKey"`
 	UserID  uint      `json:"user_id"`
 	Token   string    `json:"token"`

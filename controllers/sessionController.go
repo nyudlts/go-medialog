@@ -30,13 +30,12 @@ func isLoggedIn(c *gin.Context) bool {
 
 	token := tokenCookie.(string)
 
-	sessionToken, err := database.FindSessionToken(token)
+	sessionToken, err := database.FindToken(token)
 	if err != nil {
 		return false
 	}
 
-	uid := uint(userID)
-	if sessionToken.UserID != uid {
+	if !sessionToken.IsValid && sessionToken.UserID == uint(userID) {
 		return false
 	}
 	return true
@@ -114,6 +113,9 @@ func getSessionCookies(c *gin.Context) (SessionCookies, error) {
 		return sessionCookies, fmt.Errorf("no api access cookie")
 	}
 	sessionCookies.CanAccessAPI = apiCookie.(bool)
+
+	sessionToken := session.Get(sessionToken).(string)
+	sessionCookies.SessionToken = sessionToken
 
 	return sessionCookies, nil
 }

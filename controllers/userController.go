@@ -100,11 +100,14 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
+	cookies, _ := getSessionCookies(c)
+
 	c.HTML(200, "users-show.html", gin.H{
 		"isLoggedIn": isLoggedIn,
 		"isAdmin":    isAdmin,
 		"uuser":      uuser,
 		"user":       user,
+		"cookies":    cookies,
 	})
 }
 
@@ -303,14 +306,14 @@ func AuthenticateUser(c *gin.Context) {
 	sessionToken := GenerateStringRunes(24)
 	setCookie("token", sessionToken, c)
 
-	token := models.SessionToken{
+	token := models.Token{
 		Token:   sessionToken,
 		UserID:  user.ID,
 		Expires: time.Now().Add(time.Hour * 3),
 		IsValid: true,
 	}
 
-	if err := database.InsertSessionToken(&token); err != nil {
+	if err := database.InsertToken(&token); err != nil {
 		throwError(http.StatusInternalServerError, "could not save session token", c)
 	}
 
