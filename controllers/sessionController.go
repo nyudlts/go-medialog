@@ -6,16 +6,37 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/nyudlts/go-medialog/database"
 )
 
 var userkey = "user"
 var isAdmin = "is-admin"
 var canAccessAPI = "can-access-api"
+var sessionToken = "token"
 
 func isLoggedIn(c *gin.Context) bool {
 	session := sessions.Default(c)
-	sessionKey := session.Get(userkey)
-	if sessionKey == nil {
+	userIDCookie := session.Get(userkey)
+	if userIDCookie == nil {
+		return false
+	}
+
+	userID := userIDCookie.(int)
+
+	tokenCookie := session.Get(sessionToken)
+	if tokenCookie == nil {
+		return false
+	}
+
+	token := tokenCookie.(string)
+
+	sessionToken, err := database.FindSessionToken(token)
+	if err != nil {
+		return false
+	}
+
+	uid := uint(userID)
+	if sessionToken.UserID != uid {
 		return false
 	}
 	return true
@@ -67,9 +88,10 @@ func logout(c *gin.Context) {
 }
 
 type SessionCookies struct {
-	UserID       int  `json:"user_id"`
-	IsAdmin      bool `json:"is_admin"`
-	CanAccessAPI bool `json:"can_access_api"`
+	UserID       int    `json:"user_id"`
+	IsAdmin      bool   `json:"is_admin"`
+	CanAccessAPI bool   `json:"can_access_api"`
+	SessionToken string `json:"session_token"`
 }
 
 func getSessionCookies(c *gin.Context) (SessionCookies, error) {
@@ -109,6 +131,9 @@ func DumpSession(c *gin.Context) {
 
 	apiCookie := session.Get(canAccessAPI).(bool)
 	sessionCookies.CanAccessAPI = apiCookie
+
+	sessionToken := session.Get(sessionToken).(string)
+	sessionCookies.SessionToken = sessionToken
 
 	c.JSON(200, sessionCookies)
 }

@@ -160,3 +160,11 @@ type APIToken struct {
 	IsValid bool      `json:"is_valid"`
 	Expires time.Time `json:"expires"`
 }
+
+type SessionToken struct {
+	ID      uint      `json:"id" gorm:"primaryKey"`
+	UserID  uint      `json:"user_id"`
+	Token   string    `json:"token"`
+	IsValid bool      `json:"is_valid"`
+	Expires time.Time `json:"expires"`
+}

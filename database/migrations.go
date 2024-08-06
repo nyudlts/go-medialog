@@ -51,6 +51,11 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().CreateTable(&models.APIToken{}) },
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropTable(&models.APIToken{}) },
 		},
+		{
+			ID:       "20240806 - adding Session token table",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().CreateTable(&models.SessionToken{}) },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropTable(&models.SessionToken{}) },
+		},
 	}
 
 	m := gormigrate.New(db, gormigrate.DefaultOptions, migrations)

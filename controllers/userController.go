@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
@@ -297,6 +298,20 @@ func AuthenticateUser(c *gin.Context) {
 		setCookie("can-access-api", true, c)
 	} else {
 		setCookie("can-access-api", false, c)
+	}
+
+	sessionToken := GenerateStringRunes(24)
+	setCookie("token", sessionToken, c)
+
+	token := models.SessionToken{
+		Token:   sessionToken,
+		UserID:  user.ID,
+		Expires: time.Now().Add(time.Hour * 3),
+		IsValid: true,
+	}
+
+	if err := database.InsertSessionToken(&token); err != nil {
+		throwError(http.StatusInternalServerError, "could not save session token", c)
 	}
 
 	user.SignInCount = user.SignInCount + 1
