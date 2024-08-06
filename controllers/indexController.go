@@ -9,10 +9,12 @@ import (
 
 func GetIndex(c *gin.Context) {
 
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	p := 0
 	pagination := database.Pagination{Limit: 10, Offset: 0, Sort: "updated_at desc"}

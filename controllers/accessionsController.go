@@ -13,11 +13,13 @@ import (
 )
 
 func GetAccessions(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -58,11 +60,12 @@ func GetAccessions(c *gin.Context) {
 }
 
 func GetAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -149,11 +152,12 @@ func GetAccession(c *gin.Context) {
 }
 
 func NewAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -196,9 +200,8 @@ func NewAccession(c *gin.Context) {
 
 func CreateAccession(c *gin.Context) {
 	//check the user is logged in
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -248,11 +251,12 @@ func CreateAccession(c *gin.Context) {
 }
 
 func EditAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -295,9 +299,8 @@ func EditAccession(c *gin.Context) {
 }
 
 func UpdateAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -338,7 +341,8 @@ func UpdateAccession(c *gin.Context) {
 }
 
 func DeleteAccession(c *gin.Context) {
-	if err := checkLogin(c); err != nil {
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -373,11 +377,12 @@ type Slew struct {
 }
 
 func SlewAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -431,9 +436,8 @@ func SlewAccession(c *gin.Context) {
 }
 
 func CreateAccessionSlew(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 

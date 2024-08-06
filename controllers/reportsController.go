@@ -11,11 +11,12 @@ var partnerCodes = map[int]string{0: "", 2: "tamwag", 3: "fales", 6: "nyu archiv
 
 func ReportsIndex(c *gin.Context) {
 
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -34,7 +35,7 @@ func ReportsIndex(c *gin.Context) {
 		"days":          days,
 		"years":         years,
 		"partner_codes": partnerCodes,
-		"isLoggedIn":    loggedIn,
+		"isLoggedIn":    isLoggedIn,
 		"isAdmin":       sessionCookies.IsAdmin,
 		"user":          user,
 	})
@@ -42,11 +43,12 @@ func ReportsIndex(c *gin.Context) {
 
 func ReportRange(c *gin.Context) {
 
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -81,7 +83,7 @@ func ReportRange(c *gin.Context) {
 		"days":          days,
 		"repository":    partnerCodes[dateRange.RepositoryID],
 		"partner_codes": partnerCodes,
-		"isLoggedIn":    loggedIn,
+		"isLoggedIn":    isLoggedIn,
 		"isAdmin":       sessionCookies.IsAdmin,
 		"user":          user,
 	})

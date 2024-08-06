@@ -13,11 +13,12 @@ import (
 )
 
 func GetResource(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -112,11 +113,12 @@ func GetResource(c *gin.Context) {
 }
 
 func GetResources(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -153,11 +155,12 @@ func GetResources(c *gin.Context) {
 }
 
 func NewResource(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -193,12 +196,10 @@ func NewResource(c *gin.Context) {
 
 func CreateResource(c *gin.Context) {
 	//ensure user is logged in
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
-
 	//bind the form to a resource
 	var resource = models.Resource{}
 	if err := c.Bind(&resource); err != nil {
@@ -241,11 +242,12 @@ func CreateResource(c *gin.Context) {
 }
 
 func EditResource(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -280,9 +282,8 @@ func EditResource(c *gin.Context) {
 }
 
 func UpdateResource(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -324,9 +325,8 @@ func UpdateResource(c *gin.Context) {
 }
 
 func DeleteResource(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 

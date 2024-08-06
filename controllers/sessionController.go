@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -14,31 +16,52 @@ var isAdmin = "is-admin"
 var canAccessAPI = "can-access-api"
 var sessionToken = "token"
 
-func isLoggedIn(c *gin.Context) bool {
+func expireTokens() {
+	tokens := database.GetTokens()
+	log.Printf("[INFO] expiring api tokens")
+	for _, token := range tokens {
+		if token.IsValid && time.Now().After(token.Expires) {
+			//log.Printf("[INFO] Expiring token %d", token.ID)
+			if err := database.ExpireToken(token.ID); err != nil {
+				log.Printf("[ERROR] %s", err.Error())
+			}
+		}
+	}
+}
+
+func isLoggedIn(c *gin.Context) error {
+
+	expireTokens()
+
 	session := sessions.Default(c)
 	userIDCookie := session.Get(userkey)
 	if userIDCookie == nil {
-		return false
+		return fmt.Errorf("please reauthenticate (no user key)")
 	}
 
 	userID := userIDCookie.(int)
 
 	tokenCookie := session.Get(sessionToken)
 	if tokenCookie == nil {
-		return false
+		return fmt.Errorf("please reauthenticate (no token)")
 	}
 
 	token := tokenCookie.(string)
 
 	sessionToken, err := database.FindToken(token)
 	if err != nil {
-		return false
+		return fmt.Errorf("please reauthenticate (token not found)")
 	}
 
-	if !sessionToken.IsValid && sessionToken.UserID == uint(userID) {
-		return false
+	if !sessionToken.IsValid {
+		return fmt.Errorf("please reauthenticate (token not valid)")
 	}
-	return true
+
+	if sessionToken.UserID == uint(userID) {
+		return fmt.Errorf("Please reauthenticate (session key not set for user)")
+	}
+
+	return nil
 }
 
 func getUserkey(c *gin.Context) (int, error) {

@@ -4,7 +4,6 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -85,25 +84,12 @@ func checkToken(c *gin.Context) error {
 
 }
 
-func expireTokens() {
-	tokens := database.GetTokens()
-	log.Printf("[INFO] expiring api tokens")
-	for _, token := range tokens {
-		if token.IsValid && time.Now().After(token.Expires) {
-			log.Printf("[INFO] Expiring token %d", token.ID)
-			if err := database.ExpireToken(token.ID); err != nil {
-				log.Printf("[ERROR] %s", err.Error())
-			}
-		}
-	}
-}
-
 func GetV0Index(c *gin.Context) {
 	medialogInfo := MedialogInfo{
-		Version:       "1.0.3",
+		Version:       "v1.0.4",
 		GolangVersion: runtime.Version(),
 		GinVersion:    gin.Version,
-		APIVersion:    "0.1.0",
+		APIVersion:    "0.1.1",
 	}
 
 	c.JSON(http.StatusOK, medialogInfo)

@@ -16,11 +16,12 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -55,11 +56,12 @@ func GetUsers(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -112,11 +114,12 @@ func GetUser(c *gin.Context) {
 }
 
 func NewUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -153,9 +156,8 @@ type UserForm struct {
 }
 
 func CreateUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -190,11 +192,12 @@ func CreateUser(c *gin.Context) {
 
 func EditUser(c *gin.Context) {
 
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -230,9 +233,8 @@ func EditUser(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -328,11 +330,12 @@ func AuthenticateUser(c *gin.Context) {
 }
 
 func ResetUserPassword(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	isAdmin := getCookie("is-admin", c)
 
@@ -358,11 +361,11 @@ func ResetUserPassword(c *gin.Context) {
 }
 
 func ResetPassword(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
 	var resetUser = UserForm{}
 	if err := c.Bind(&resetUser); err != nil {
 		throwError(http.StatusBadRequest, err.Error(), c)
@@ -393,9 +396,8 @@ func ResetPassword(c *gin.Context) {
 }
 
 func DeactivateUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -423,9 +425,8 @@ func DeactivateUser(c *gin.Context) {
 }
 
 func ReactivateUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -453,9 +454,8 @@ func ReactivateUser(c *gin.Context) {
 }
 
 func MakeUserAdmin(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -482,9 +482,8 @@ func MakeUserAdmin(c *gin.Context) {
 }
 
 func RemoveUserAdmin(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -513,8 +512,8 @@ func RemoveUserAdmin(c *gin.Context) {
 func LoginUser(c *gin.Context) { c.HTML(http.StatusOK, "users-login.html", gin.H{}) }
 
 func LogoutUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
+
+	if err := isLoggedIn(c); err != nil {
 		throwError(http.StatusInternalServerError, "not currently logged in -- cannot log out", c)
 		return
 	}
@@ -549,6 +548,7 @@ func getUserEmailMap(ids []int) (map[int]string, error) {
 }
 
 func DeleteUser(id uint) error {
+
 	if err := database.DeleteUser(id); err != nil {
 		return err
 	}

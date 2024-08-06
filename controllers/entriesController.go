@@ -14,11 +14,12 @@ import (
 )
 
 func GetEntry(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -84,8 +85,8 @@ func GetEntry(c *gin.Context) {
 }
 
 func GetPreviousEntry(c *gin.Context) {
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -111,8 +112,8 @@ func GetPreviousEntry(c *gin.Context) {
 }
 
 func GetNextEntry(c *gin.Context) {
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -138,10 +139,12 @@ func GetNextEntry(c *gin.Context) {
 }
 
 func GetEntries(c *gin.Context) {
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -200,11 +203,12 @@ func GetEntries(c *gin.Context) {
 }
 
 func NewEntry(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -276,8 +280,8 @@ func NewEntry(c *gin.Context) {
 
 func CreateEntry(c *gin.Context) {
 	//check user is logged in
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -357,8 +361,8 @@ func CreateEntry(c *gin.Context) {
 }
 
 func DeleteEntry(c *gin.Context) {
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -384,11 +388,12 @@ func DeleteEntry(c *gin.Context) {
 }
 
 func EditEntry(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
+
+	isLoggedIn := true
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -454,8 +459,8 @@ func EditEntry(c *gin.Context) {
 
 func UpdateEntry(c *gin.Context) {
 	//check for login
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -510,8 +515,8 @@ func UpdateEntry(c *gin.Context) {
 func CloneEntry(c *gin.Context) {
 
 	//check login
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
@@ -593,8 +598,8 @@ type FindEntryInResource struct {
 }
 
 func FindEntry(c *gin.Context) {
-	if !isLoggedIn(c) {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		throwError(http.StatusUnauthorized, err.Error(), c)
 		return
 	}
 
