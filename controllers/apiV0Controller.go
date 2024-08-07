@@ -21,6 +21,8 @@ type MedialogInfo struct {
 	APIVersion    string
 }
 
+const UNAUTHORIZED = "Please authenticate to access this service"
+
 func TestAPI(c *gin.Context) {
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
