@@ -10,7 +10,12 @@ import (
 func throwError(code int, msg string, c *gin.Context) {
 	session := sessions.Default(c)
 	session.AddFlash(msg, "WARNING")
-	ila := isLoggedIn(c)
+	var ila bool
+	if err := isLoggedIn(c); err != nil {
+		ila = false
+	} else {
+		ila = true
+	}
 	log.Printf("[ERROR] %d %s", code, msg)
 	c.HTML(code, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": code, "isLoggedIn": ila})
 	session.Save()
