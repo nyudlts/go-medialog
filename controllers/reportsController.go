@@ -12,7 +12,7 @@ var partnerCodes = map[int]string{0: "", 2: "tamwag", 3: "fales", 6: "nyu archiv
 func ReportsIndex(c *gin.Context) {
 
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
@@ -20,13 +20,13 @@ func ReportsIndex(c *gin.Context) {
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -44,7 +44,7 @@ func ReportsIndex(c *gin.Context) {
 func ReportRange(c *gin.Context) {
 
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
@@ -52,25 +52,25 @@ func ReportRange(c *gin.Context) {
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	var dateRange = database.DateRange{}
 	if err := c.Bind(&dateRange); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	summary, err := database.GetSummaryByDateRange(dateRange)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 

@@ -13,9 +13,11 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
+const EntriesShow = "/entries/%s/show"
+
 func GetEntry(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
@@ -23,25 +25,25 @@ func GetEntry(c *gin.Context) {
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	entry, err := database.FindEntry(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -49,25 +51,25 @@ func GetEntry(c *gin.Context) {
 
 	accession, err := database.FindAccession(uint(entry.AccessionID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	resource, err := database.FindResource(accession.ResourceID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(resource.RepositoryID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	entryUsers, err := database.FindEntryUsers(entry.CreatedBy, entry.UpdatedBy)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -86,61 +88,64 @@ func GetEntry(c *gin.Context) {
 
 func GetPreviousEntry(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	entry, err := database.FindEntry(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(entry.MediaID-1, entry.ResourceID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", prevEntryID))
+	c.Redirect(http.StatusFound, fmt.Sprintf(EntriesShow, prevEntryID))
 }
 
 func GetNextEntry(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	entry, err := database.FindEntry(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	prevEntryID, err := database.FindEntryByMediaIDAndCollectionID(entry.MediaID+1, entry.ResourceID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", prevEntryID))
+	c.Redirect(http.StatusFound, fmt.Sprintf(EntriesShow, prevEntryID))
 }
 
 func GetEntries(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
@@ -148,13 +153,13 @@ func GetEntries(c *gin.Context) {
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -165,7 +170,7 @@ func GetEntries(c *gin.Context) {
 	if len(page) > 0 {
 		p, err = strconv.Atoi(page[0])
 		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
+			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 			return
 		}
 
@@ -179,7 +184,7 @@ func GetEntries(c *gin.Context) {
 
 	entries, err := database.FindPaginatedEntries(pagination)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -187,7 +192,7 @@ func GetEntries(c *gin.Context) {
 
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -204,7 +209,7 @@ func GetEntries(c *gin.Context) {
 
 func NewEntry(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
@@ -212,20 +217,20 @@ func NewEntry(c *gin.Context) {
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	aID := c.Query("accession_id")
 	accessionID, err := strconv.Atoi(aID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -233,27 +238,28 @@ func NewEntry(c *gin.Context) {
 
 	accession, err := database.FindAccession(uint(accessionID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
 	}
 
 	resource, err := database.FindResource(accession.ResourceID)
 	if err != nil {
 		fmt.Println("RESOURCE")
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(resource.RepositoryID)
 	if err != nil {
 		fmt.Println("REPOSITORY")
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	mediaID, err := database.FindNextMediaCollectionInResource(resource.ID)
 	if err != nil {
 		fmt.Println("MEDIA")
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -281,39 +287,41 @@ func NewEntry(c *gin.Context) {
 func CreateEntry(c *gin.Context) {
 	//check user is logged in
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
+
+	isLoggedIn := true
 
 	//bind form to entry
 	var createEntry = models.Entry{}
 	if err := c.Bind(&createEntry); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	//validate the form
 	if err := createEntry.ValidateEntry(); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	//check if media id is unique
 	b, err := database.IsMediaIDUniqueInResource(createEntry.MediaID, createEntry.ResourceID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if !b {
-		c.JSON(http.StatusBadRequest, fmt.Errorf("%d is not a unique ID in resource %d", createEntry.MediaID, createEntry.ResourceID))
+		ThrowError(http.StatusBadRequest, fmt.Sprintf("%d is not a unique ID in resource %d", createEntry.MediaID, createEntry.ResourceID), c, isLoggedIn)
 		return
 	}
 
 	//get the user's id
 	userID, err := getUserkey(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -326,7 +334,7 @@ func CreateEntry(c *gin.Context) {
 	//get the accession
 	accession, err := database.FindAccession(uint(createEntry.AccessionID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -335,7 +343,7 @@ func CreateEntry(c *gin.Context) {
 	//get the resource
 	resource, err := database.FindResource(accession.ResourceID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -344,7 +352,7 @@ func CreateEntry(c *gin.Context) {
 	//get the repository
 	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -352,7 +360,7 @@ func CreateEntry(c *gin.Context) {
 
 	//insert the entry
 	if _, err := database.InsertEntry(&createEntry); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -362,24 +370,26 @@ func CreateEntry(c *gin.Context) {
 
 func DeleteEntry(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	entry, err := database.FindEntry(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if err := database.DeleteEntry(id); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -389,7 +399,7 @@ func DeleteEntry(c *gin.Context) {
 
 func EditEntry(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
@@ -397,43 +407,43 @@ func EditEntry(c *gin.Context) {
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	entry, err := database.FindEntry(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	accession, err := database.FindAccession(entry.AccessionID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	resource, err := database.FindResource(uint(accession.ResourceID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(uint(resource.RepositoryID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -460,14 +470,16 @@ func EditEntry(c *gin.Context) {
 func UpdateEntry(c *gin.Context) {
 	//check for login
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
+
+	isLoggedIn := true
 
 	//parse the id
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -481,21 +493,22 @@ func UpdateEntry(c *gin.Context) {
 
 	//validate the form
 	if err := editedEntry.ValidateEntry(); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	//find the original entry
 	entry, err := database.FindEntry(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "find entry", err.Error()))
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	// get the user id
 	userID, err := getUserkey(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
 	}
 
 	//updated user and timestamp
@@ -505,67 +518,69 @@ func UpdateEntry(c *gin.Context) {
 
 	//update the entry
 	if err := database.UpdateEntry(&entry); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", entry.ID.String()))
+	c.Redirect(http.StatusFound, fmt.Sprintf(EntriesShow, entry.ID.String()))
 }
 
 func CloneEntry(c *gin.Context) {
 
 	//check login
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	entry, err := database.FindEntry(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	nextID, err := database.FindNextMediaCollectionInResource(uint(entry.ResourceID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	//generate a new uuid
 	newUUID, err := uuid.NewUUID()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	userID, err := getUserkey(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	accession, err := database.FindAccession(entry.AccessionID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	resource, err := database.FindResource(accession.ResourceID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(resource.RepositoryID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -584,11 +599,11 @@ func CloneEntry(c *gin.Context) {
 	entry.Repository = repository
 
 	if _, err := database.InsertEntry(&entry); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", newUUID.String()))
+	c.Redirect(http.StatusFound, fmt.Sprintf(EntriesShow, newUUID.String()))
 
 }
 
@@ -599,22 +614,23 @@ type FindEntryInResource struct {
 
 func FindEntry(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
 	findEntry := FindEntryInResource{}
 	if err := c.Bind(&findEntry); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	id, err := database.FindEntryInResource(findEntry.ResourceID, findEntry.MediaID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/entries/%s/show", id))
+	c.Redirect(http.StatusFound, fmt.Sprintf(EntriesShow, id))
 
 }
