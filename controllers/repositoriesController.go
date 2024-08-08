@@ -12,28 +12,29 @@ import (
 )
 
 func NewRepository(c *gin.Context) {
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	c.HTML(http.StatusOK, "repositories-new.html", gin.H{
 		"isAdmin":         sessionCookies.IsAdmin,
 		"isAuthenticated": true,
-		"isLoggedIn":      loggedIn,
+		"isLoggedIn":      isLoggedIn,
 		"user":            user,
 	})
 }
@@ -41,12 +42,14 @@ func NewRepository(c *gin.Context) {
 func CreateRepository(c *gin.Context) {
 	var repo = models.Repository{}
 	if err := c.Bind(&repo); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, false)
 	}
+
+	isLoggedIn := true
 
 	userID, err := getUserkey(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 	}
 
 	repo.CreatedAt = time.Now()
@@ -56,79 +59,81 @@ func CreateRepository(c *gin.Context) {
 
 	repository_id, err := database.CreateRepository(&repo)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 	}
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/repositories/%d/show", repository_id))
 }
 
 func EditRepository(c *gin.Context) {
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(uint(id))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	c.HTML(200, "repositories-edit.html", gin.H{
 		"isAdmin":    sessionCookies.IsAdmin,
 		"repository": repository,
-		"isLoggedIn": loggedIn,
+		"isLoggedIn": isLoggedIn,
 		"user":       user,
 	})
 
 }
 
 func UpdateRepository(c *gin.Context) {
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(uint(id))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	var updatedRepository = models.Repository{}
 	if err := c.Bind(&updatedRepository); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 	}
 
 	userID, err := getUserkey(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -139,7 +144,7 @@ func UpdateRepository(c *gin.Context) {
 	repository.UpdatedBy = userID
 
 	if err := database.UpdateRepository(&repository); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -147,20 +152,20 @@ func UpdateRepository(c *gin.Context) {
 }
 
 func DeleteRepository(c *gin.Context) {
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if err := database.DeleteRepository(uint(id)); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -168,55 +173,57 @@ func DeleteRepository(c *gin.Context) {
 }
 
 func GetRepositories(c *gin.Context) {
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repositories, err := database.FindRepositories()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	c.HTML(http.StatusOK, "repositories-index.html", gin.H{
 		"repositories": repositories,
 		"isAdmin":      sessionCookies.IsAdmin,
-		"isLoggedIn":   loggedIn,
+		"isLoggedIn":   isLoggedIn,
 		"user":         user,
 	})
 
 }
 
 func GetRepository(c *gin.Context) {
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 

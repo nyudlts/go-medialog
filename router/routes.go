@@ -1,8 +1,6 @@
 package router
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -96,6 +94,8 @@ func LoadRoutes(router *gin.Engine) {
 
 	//api v0
 	apiV0Routes := router.Group("/api/v0")
+	apiV0Routes.POST("users/:user/login", func(c *gin.Context) { controllers.APILogin(c) })
+	apiV0Routes.GET("test", func(c *gin.Context) { controllers.TestAPI(c) })
 	apiV0Routes.GET("", func(c *gin.Context) { controllers.GetV0Index(c) })
 	apiV0Routes.GET("resources", func(c *gin.Context) { controllers.GetResourcesV0(c) })
 	apiV0Routes.GET("resources/:id", func(c *gin.Context) { controllers.GetResourceV0(c) })
@@ -105,12 +105,7 @@ func LoadRoutes(router *gin.Engine) {
 	apiV0Routes.GET("accessions/:id", func(c *gin.Context) { controllers.GetAccessionV0(c) })
 
 	// general
-	router.NoRoute(func(c *gin.Context) {
-		session := sessions.Default(c)
-		log.Println("NO ROUTE", c.Request.RequestURI)
-		controllers.ThrowError(http.StatusNotFound, fmt.Sprintf("The requested page, %s, does not exist", c.Request.RequestURI), c)
-		session.Save()
-	})
+	router.NoRoute(func(c *gin.Context) { controllers.NoRoute(c) })
 
 	router.NoMethod(func(c *gin.Context) { c.JSON(405, "NO METHOD") })
 

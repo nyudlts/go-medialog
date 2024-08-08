@@ -12,34 +12,38 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
+const AccessionsShow = "/accessions/%d/show"
+
 func GetAccessions(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, true)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	accessions, err := database.FindAccessions()
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -58,33 +62,34 @@ func GetAccessions(c *gin.Context) {
 }
 
 func GetAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	accession, err := database.FindAccession(uint(id))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -95,7 +100,7 @@ func GetAccession(c *gin.Context) {
 	if len(page) > 0 {
 		p, err = strconv.Atoi(page[0])
 		if err != nil {
-			throwError(http.StatusBadRequest, err.Error(), c)
+			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 			return
 		}
 	}
@@ -108,7 +113,7 @@ func GetAccession(c *gin.Context) {
 
 	entries, err := database.FindEntriesByAccessionID(accession.ID, pagination)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -116,19 +121,19 @@ func GetAccession(c *gin.Context) {
 
 	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	summary, err := database.GetSummaryByAccession(accession.ID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	users, err := getUserEmailMap([]int{accession.CreatedBy, accession.UpdatedBy})
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -149,39 +154,40 @@ func GetAccession(c *gin.Context) {
 }
 
 func NewAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	resourceID, err := strconv.Atoi(c.Query("resource_id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	resource, err := database.FindResource(uint(resourceID))
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(uint(resource.RepositoryID))
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -196,28 +202,29 @@ func NewAccession(c *gin.Context) {
 
 func CreateAccession(c *gin.Context) {
 	//check the user is logged in
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
+
+	isLoggedIn := true
 
 	//bind the form to an accession
 	accession := models.Accession{}
 	if err := c.Bind(&accession); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	//get the parent resource from the database
 	resource, err := database.FindResource(uint(accession.ResourceID))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if err := c.Bind(&accession); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 	accession.Resource = resource
@@ -225,7 +232,7 @@ func CreateAccession(c *gin.Context) {
 	//get the current user's id
 	userID, err := getUserkey(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -238,31 +245,32 @@ func CreateAccession(c *gin.Context) {
 	//insert the accession Record
 	accessionID, err := database.InsertAccession(&accession)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	//redirect to show
-	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accessionID))
+	c.Redirect(http.StatusFound, fmt.Sprintf(AccessionsShow, accessionID))
 
 }
 
 func EditAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -274,13 +282,13 @@ func EditAccession(c *gin.Context) {
 
 	accession, err := database.FindAccession(uint(accessionID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(accession.Resource.RepositoryID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -295,33 +303,34 @@ func EditAccession(c *gin.Context) {
 }
 
 func UpdateAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	accessionID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	accession, err := database.FindAccession(uint(accessionID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	updatedAccession := models.Accession{}
 	if err := c.Bind(&updatedAccession); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	userId, err := getUserkey(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -330,32 +339,35 @@ func UpdateAccession(c *gin.Context) {
 	accession.AccessionNum = updatedAccession.AccessionNum
 
 	if err := database.UpdateAccession(&accession); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accession.ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf(AccessionsShow, accession.ID))
 }
 
 func DeleteAccession(c *gin.Context) {
-	if err := checkLogin(c); err != nil {
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	accession, err := database.FindAccession(uint(id))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if err := database.DeleteAccession(uint(id)); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -373,39 +385,40 @@ type Slew struct {
 }
 
 func SlewAccession(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	accession, err := database.FindAccession(uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	repository, err := database.FindRepository(accession.Resource.RepositoryID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -413,7 +426,7 @@ func SlewAccession(c *gin.Context) {
 
 	entries, err := database.FindEntriesByAccessionID(accession.ID, pagination)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -431,39 +444,39 @@ func SlewAccession(c *gin.Context) {
 }
 
 func CreateAccessionSlew(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
+	isLoggedIn := true
 
 	var slew = Slew{}
 
 	if err := c.Bind(&slew); err != nil {
-		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	accession, err := database.FindAccession(uint(slew.AccessionID))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	userId, err := getUserkey(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	slew.userID = userId
 
 	if err := createSlewEntry(slew, accession); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/accessions/%d/show", accession.ID))
+	c.Redirect(http.StatusFound, fmt.Sprintf(AccessionsShow, accession.ID))
 }
 
 func createSlewEntry(slew Slew, accession models.Accession) error {

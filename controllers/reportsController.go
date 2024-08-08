@@ -11,21 +11,22 @@ var partnerCodes = map[int]string{0: "", 2: "tamwag", 3: "fales", 6: "nyu archiv
 
 func ReportsIndex(c *gin.Context) {
 
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -34,7 +35,7 @@ func ReportsIndex(c *gin.Context) {
 		"days":          days,
 		"years":         years,
 		"partner_codes": partnerCodes,
-		"isLoggedIn":    loggedIn,
+		"isLoggedIn":    isLoggedIn,
 		"isAdmin":       sessionCookies.IsAdmin,
 		"user":          user,
 	})
@@ -42,33 +43,34 @@ func ReportsIndex(c *gin.Context) {
 
 func ReportRange(c *gin.Context) {
 
-	loggedIn := isLoggedIn(c)
-	if !loggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	var dateRange = database.DateRange{}
 	if err := c.Bind(&dateRange); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	summary, err := database.GetSummaryByDateRange(dateRange)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -81,7 +83,7 @@ func ReportRange(c *gin.Context) {
 		"days":          days,
 		"repository":    partnerCodes[dateRange.RepositoryID],
 		"partner_codes": partnerCodes,
-		"isLoggedIn":    loggedIn,
+		"isLoggedIn":    isLoggedIn,
 		"isAdmin":       sessionCookies.IsAdmin,
 		"user":          user,
 	})

@@ -41,6 +41,16 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.Entry{}, "Location") },
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.Entry{}, "Location") },
 		},
+		{
+			ID:       "20240805 - Adding API Access to User",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.User{}, "CanAccessAPI") },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.User{}, "CanAccessAPI") },
+		},
+		{
+			ID:       "20240806 - Adding Token table",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().CreateTable(&models.Token{}) },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropTable(&models.Token{}) },
+		},
 	}
 
 	m := gormigrate.New(db, gormigrate.DefaultOptions, migrations)

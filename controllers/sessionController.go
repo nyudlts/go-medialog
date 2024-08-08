@@ -2,22 +2,66 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/nyudlts/go-medialog/database"
 )
 
 var userkey = "user"
 var isAdmin = "is-admin"
+var canAccessAPI = "can-access-api"
+var sessionToken = "token"
 
-func isLoggedIn(c *gin.Context) bool {
-	session := sessions.Default(c)
-	sessionKey := session.Get(userkey)
-	if sessionKey == nil {
-		return false
+func expireTokens() {
+	tokens := database.GetTokens()
+	log.Printf("[INFO] expiring api tokens")
+	for _, token := range tokens {
+		if token.IsValid && time.Now().After(token.Expires) {
+			//log.Printf("[INFO] Expiring token %d", token.ID)
+			if err := database.ExpireToken(token.ID); err != nil {
+				log.Printf("[ERROR] %s", err.Error())
+			}
+		}
 	}
-	return true
+}
+
+func isLoggedIn(c *gin.Context) error {
+
+	expireTokens()
+
+	session := sessions.Default(c)
+	userIDCookie := session.Get(userkey)
+	if userIDCookie == nil {
+		return fmt.Errorf("please reauthenticate (no user key)")
+	}
+
+	userID := userIDCookie.(int)
+
+	tokenCookie := session.Get(sessionToken)
+	if tokenCookie == nil {
+		return fmt.Errorf("please reauthenticate (no token)")
+	}
+
+	token := tokenCookie.(string)
+
+	sessionToken, err := database.FindToken(token)
+	if err != nil {
+		return fmt.Errorf("please reauthenticate (token not found)")
+	}
+
+	if !sessionToken.IsValid {
+		return fmt.Errorf("please reauthenticate (token not valid)")
+	}
+
+	if sessionToken.UserID != uint(userID) {
+		return fmt.Errorf("Please reauthenticate (session key not set for user)")
+	}
+
+	return nil
 }
 
 func getUserkey(c *gin.Context) (int, error) {
@@ -66,8 +110,10 @@ func logout(c *gin.Context) {
 }
 
 type SessionCookies struct {
-	UserID  int  `json:"user_id"`
-	IsAdmin bool `json:"is_admin"`
+	UserID       int    `json:"user_id"`
+	IsAdmin      bool   `json:"is_admin"`
+	CanAccessAPI bool   `json:"can_access_api"`
+	SessionToken string `json:"session_token"`
 }
 
 func getSessionCookies(c *gin.Context) (SessionCookies, error) {
@@ -85,6 +131,15 @@ func getSessionCookies(c *gin.Context) (SessionCookies, error) {
 	}
 	sessionCookies.IsAdmin = adminCookie.(bool)
 
+	apiCookie := session.Get(canAccessAPI)
+	if apiCookie == nil {
+		return sessionCookies, fmt.Errorf("no api access cookie")
+	}
+	sessionCookies.CanAccessAPI = apiCookie.(bool)
+
+	sessionToken := session.Get(sessionToken).(string)
+	sessionCookies.SessionToken = sessionToken
+
 	return sessionCookies, nil
 }
 
@@ -98,6 +153,13 @@ func DumpSession(c *gin.Context) {
 
 	adminCookie := session.Get(isAdmin).(bool)
 	sessionCookies.IsAdmin = adminCookie
+
+	apiCookie := session.Get(canAccessAPI).(bool)
+	sessionCookies.CanAccessAPI = apiCookie
+
+	sessionToken := session.Get(sessionToken).(string)
+	sessionCookies.SessionToken = sessionToken
+
 	c.JSON(200, sessionCookies)
 }
 

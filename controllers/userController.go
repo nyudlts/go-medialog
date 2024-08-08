@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
@@ -15,32 +16,33 @@ import (
 )
 
 func GetUsers(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if !sessionCookies.IsAdmin {
-		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		ThrowError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	users, err := database.FindUsers()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -54,48 +56,49 @@ func GetUsers(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if !sessionCookies.IsAdmin {
-		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		ThrowError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	uuserID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	cookieId, err := getUserkey(c)
 	if err != nil {
-		throwError(http.StatusExpectationFailed, "User is not logged in / Unauthorized", c)
+		ThrowError(http.StatusExpectationFailed, "User is not logged in / Unauthorized", c, isLoggedIn)
 	}
 
 	if (uuserID != cookieId) && !sessionCookies.IsAdmin {
-		throwError(http.StatusUnauthorized, "Logged in as different user", c)
+		ThrowError(http.StatusUnauthorized, "Logged in as different user", c, isLoggedIn)
 		return
 	}
 
 	uuser, err := database.GetRedactedUser(uuserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -108,26 +111,27 @@ func GetUser(c *gin.Context) {
 }
 
 func NewUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if !sessionCookies.IsAdmin {
-		throwError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c)
+		ThrowError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c, isLoggedIn)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -149,16 +153,17 @@ type UserForm struct {
 }
 
 func CreateUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
+
+	isLoggedIn := true
 
 	var createUser = UserForm{}
 	if err := c.Bind(&createUser); err != nil {
 		log.Printf("\t[ERROR]\t[MEDIALOG] %s", err.Error())
-		c.JSON(http.StatusBadRequest, err.Error())
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -177,7 +182,7 @@ func CreateUser(c *gin.Context) {
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
 
 	if _, err := database.InsertUser(&user); err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -186,33 +191,34 @@ func CreateUser(c *gin.Context) {
 
 func EditUser(c *gin.Context) {
 
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
-		throwError(http.StatusInternalServerError, err.Error(), c)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, false)
 		return
 	}
 
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	userID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	updateUser, err := database.GetRedactedUser(userID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -226,21 +232,22 @@ func EditUser(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	var updateUser = UserForm{}
 	if err := c.Bind(&updateUser); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.FindUser(uint(updateUser.ID))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -249,7 +256,7 @@ func UpdateUser(c *gin.Context) {
 	user.LastName = updateUser.LastName
 
 	if err := database.UpdateUser(&user); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -260,30 +267,30 @@ func AuthenticateUser(c *gin.Context) {
 
 	var authUser = UserForm{}
 	if err := c.Bind(&authUser); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, false)
 		return
 	}
 
 	user, err := database.FindUserByEmail(authUser.Email)
 	if err != nil {
-		throwError(http.StatusUnauthorized, err.Error(), c)
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
 	if !user.IsActive {
-		throwError(http.StatusUnauthorized, fmt.Sprintf("User %s is not active, contact a system administrator", user.Email), c)
+		ThrowError(http.StatusUnauthorized, fmt.Sprintf("User %s is not active, contact a system administrator", user.Email), c, false)
 	}
 
 	hash := sha512.Sum512([]byte(authUser.Password1 + user.Salt))
 	userSHA512 := hex.EncodeToString(hash[:])
 
 	if userSHA512 != user.EncryptedPassword {
-		throwError(http.StatusBadRequest, "password was incorrect", c)
+		ThrowError(http.StatusBadRequest, "password was incorrect", c, false)
 		return
 	}
 
 	if err := login(int(user.ID), c); err != nil {
-		throwError(http.StatusInternalServerError, "Failed to save session", c)
+		ThrowError(http.StatusInternalServerError, "Failed to save session", c, false)
 		return
 	}
 
@@ -293,34 +300,55 @@ func AuthenticateUser(c *gin.Context) {
 		setCookie("is-admin", false, c)
 	}
 
+	if user.CanAccessAPI {
+		setCookie("can-access-api", true, c)
+	} else {
+		setCookie("can-access-api", false, c)
+	}
+
+	sessionToken := GenerateStringRunes(24)
+	setCookie("token", sessionToken, c)
+
+	token := models.Token{
+		Token:   sessionToken,
+		UserID:  user.ID,
+		Expires: time.Now().Add(time.Hour * 3),
+		IsValid: true,
+	}
+
+	if err := database.InsertToken(&token); err != nil {
+		ThrowError(http.StatusInternalServerError, "could not save session token", c, false)
+	}
+
 	user.SignInCount = user.SignInCount + 1
 	user.PreviousIPAddress = user.CurrentIPAddress
 	user.CurrentIPAddress = c.ClientIP()
 	if err := database.UpdateUser(&user); err != nil {
-		throwError(http.StatusInternalServerError, "failed to update user", c)
+		ThrowError(http.StatusInternalServerError, "failed to update user", c, false)
 	}
 
 	c.Redirect(http.StatusFound, "/")
 }
 
 func ResetUserPassword(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
+
+	isLoggedIn := true
 
 	isAdmin := getCookie("is-admin", c)
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -334,25 +362,27 @@ func ResetUserPassword(c *gin.Context) {
 }
 
 func ResetPassword(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
+
+	isLoggedIn := true
+
 	var resetUser = UserForm{}
 	if err := c.Bind(&resetUser); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	if resetUser.Password1 != resetUser.Password2 {
-		throwError(http.StatusBadRequest, "passwords do not match", c)
+		ThrowError(http.StatusBadRequest, "passwords do not match", c, isLoggedIn)
 		return
 	}
 
 	user, err := database.FindUserByID(resetUser.ID)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -361,7 +391,7 @@ func ResetPassword(c *gin.Context) {
 	user.EncryptedPassword = hex.EncodeToString(hash[:])
 
 	if err := database.UpdateUser(&user); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -369,28 +399,29 @@ func ResetPassword(c *gin.Context) {
 }
 
 func DeactivateUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user.IsActive = false
 
 	if err := database.UpdateUser(&user); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -399,28 +430,29 @@ func DeactivateUser(c *gin.Context) {
 }
 
 func ReactivateUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user.IsActive = true
 
 	if err := database.UpdateUser(&user); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -429,28 +461,29 @@ func ReactivateUser(c *gin.Context) {
 }
 
 func MakeUserAdmin(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user.IsAdmin = true
 
 	if err := database.UpdateUser(&user); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -458,28 +491,29 @@ func MakeUserAdmin(c *gin.Context) {
 }
 
 func RemoveUserAdmin(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusUnauthorized, UNAUTHORIZED, c)
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
 
+	isLoggedIn := true
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user, err := database.FindUserByID(id)
 	if err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
 	user.IsAdmin = false
 
 	if err := database.UpdateUser(&user); err != nil {
-		throwError(http.StatusBadRequest, err.Error(), c)
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -489,9 +523,9 @@ func RemoveUserAdmin(c *gin.Context) {
 func LoginUser(c *gin.Context) { c.HTML(http.StatusOK, "users-login.html", gin.H{}) }
 
 func LogoutUser(c *gin.Context) {
-	isLoggedIn := isLoggedIn(c)
-	if !isLoggedIn {
-		throwError(http.StatusInternalServerError, "not currently logged in -- cannot log out", c)
+
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusInternalServerError, "not currently logged in -- cannot log out", c, true)
 		return
 	}
 
@@ -525,6 +559,7 @@ func getUserEmailMap(ids []int) (map[int]string, error) {
 }
 
 func DeleteUser(id uint) error {
+
 	if err := database.DeleteUser(id); err != nil {
 		return err
 	}
