@@ -28,18 +28,33 @@
                     <td>{{ $user.SignInCount }}</td>
                     <td>{{ $user.CurrentIPAddress }}</td>
                     <td>
-                        <a href="/users/{{ $user.ID }}/reset_password" class="btn-sm btn-primary" type="button">Reset Password</a>
-                        {{ if eq $user.IsActive true}}
-                            <a href="/users/{{ $user.ID }}/deactivate" class="btn-sm btn-danger" type="button"/>Deactivate</a>
-                        {{ else }}
-                            <a href="/users/{{ $user.ID }}/reactivate" class="btn-sm btn-primary" type="button"/>Reactivate</a>
-                        {{ end }}
-                        {{ if eq $user.IsAdmin false}}
-                            <a href="/users/{{ $user.ID }}/make_admin" class="btn-sm btn-primary" type="button"/>Make Admin</a>
-                        {{ else }}
-                            <a href="/users/{{ $user.ID }}/remove_admin" class="btn-sm btn-danger" type="button"/>Remove Admin</a>
-                        {{ end }}
-                        <a href="/users/{{ $user.ID}}/edit" class="btn-sm btn-secondary">Edit</a>
+                        <div class="row" style="padding-bottom: 0.5em;">
+                            <div style="padding-right: 0.5em;">
+                                <a href="/users/{{ $user.ID }}/reset_password" class="btn-sm btn-primary" type="button">Reset Password</a>
+                            </div>
+                            {{ if eq $user.IsActive true}}
+                                <a href="/users/{{ $user.ID }}/deactivate" class="btn-sm btn-danger" type="button"/>Deactivate</a>
+                            {{ else }}
+                                <a href="/users/{{ $user.ID }}/reactivate" class="btn-sm btn-primary" type="button"/>Reactivate</a>
+                            {{ end }}
+                        </div>
+                        <div class="row">
+                            <div style="padding-right: 0.5em;">
+                                {{ if eq $user.IsAdmin false}}
+                                    <a href="/users/{{ $user.ID }}/make_admin" class="btn-sm btn-primary" type="button"/>Make Admin</a>
+                                {{ else }}
+                                    <a href="/users/{{ $user.ID }}/remove_admin" class="btn-sm btn-danger" type="button"/>Remove Admin</a>
+                                {{ end }}
+                            </div>
+                            <div style="padding-right: 0.5em;">
+                                {{ if $user.CanAccessAPI }}
+                                    <a href="/users/{{ $user.ID }}/revoke_api" class="btn-sm btn-danger" type="button"/>Revoke API Access</a>
+                                {{ else }}
+                                    <a href="/users/{{ $user.ID }}/allow_api" class="btn-sm btn-primary" type="button"/>Allow API Access</a>
+                                {{ end}}
+                            </div>
+                            <a href="/users/{{ $user.ID}}/edit" class="btn-sm btn-secondary">Edit</a>
+                        </div>
                     </td>
                 </tr>
             </tbody>

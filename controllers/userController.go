@@ -398,6 +398,67 @@ func ResetPassword(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/users")
 }
 
+func AllowAPI(c *gin.Context) {
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
+		return
+	}
+
+	isLoggedIn := true
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	user, err := database.FindUserByID(id)
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	user.CanAccessAPI = true
+
+	if err := database.UpdateUser(&user); err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/users")
+}
+
+func RevokeAPI(c *gin.Context) {
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
+		return
+	}
+
+	isLoggedIn := true
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	user, err := database.FindUserByID(id)
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	user.CanAccessAPI = false
+
+	if err := database.UpdateUser(&user); err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/users")
+
+}
+
 func DeactivateUser(c *gin.Context) {
 	if err := isLoggedIn(c); err != nil {
 		ThrowError(http.StatusUnauthorized, err.Error(), c, false)

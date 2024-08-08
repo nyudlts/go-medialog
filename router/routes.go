@@ -77,6 +77,8 @@ func LoadRoutes(router *gin.Engine) {
 	userRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetUser(c) })
 	userRoutes.GET(":id/edit", func(c *gin.Context) { controllers.EditUser(c) })
 	userRoutes.POST("update", func(c *gin.Context) { controllers.UpdateUser(c) })
+	userRoutes.GET(":id/allow_api", func(c *gin.Context) { controllers.AllowAPI(c) })
+	userRoutes.GET(":id/revoke_api", func(c *gin.Context) { controllers.RevokeAPI(c) })
 
 	//Report Group
 	reportRoutes := router.Group("/reports")
