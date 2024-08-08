@@ -57,7 +57,7 @@ func isLoggedIn(c *gin.Context) error {
 		return fmt.Errorf("please reauthenticate (token not valid)")
 	}
 
-	if sessionToken.UserID == uint(userID) {
+	if sessionToken.UserID != uint(userID) {
 		return fmt.Errorf("Please reauthenticate (session key not set for user)")
 	}
 
