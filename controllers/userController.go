@@ -102,14 +102,11 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	cookies, _ := getSessionCookies(c)
-
 	c.HTML(200, "users-show.html", gin.H{
 		"isLoggedIn": isLoggedIn,
 		"isAdmin":    isAdmin,
 		"uuser":      uuser,
 		"user":       user,
-		"cookies":    cookies,
 	})
 }
 
