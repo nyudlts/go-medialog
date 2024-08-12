@@ -3,7 +3,6 @@ package router
 import (
 	"net/http"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/controllers"
 )
@@ -97,7 +96,6 @@ func LoadRoutes(router *gin.Engine) {
 	//api v0
 	apiV0Routes := router.Group("/api/v0")
 	apiV0Routes.POST("users/:user/login", func(c *gin.Context) { controllers.APILogin(c) })
-	apiV0Routes.GET("test", func(c *gin.Context) { controllers.TestAPI(c) })
 	apiV0Routes.GET("", func(c *gin.Context) { controllers.GetV0Index(c) })
 	apiV0Routes.GET("resources", func(c *gin.Context) { controllers.GetResourcesV0(c) })
 	apiV0Routes.GET("resources/:id", func(c *gin.Context) { controllers.GetResourceV0(c) })
@@ -105,22 +103,17 @@ func LoadRoutes(router *gin.Engine) {
 	apiV0Routes.GET("repositories/:id", func(c *gin.Context) { controllers.GetRepositoryV0(c) })
 	apiV0Routes.GET("accessions", func(c *gin.Context) { controllers.GetAccessionsV0(c) })
 	apiV0Routes.GET("accessions/:id", func(c *gin.Context) { controllers.GetAccessionV0(c) })
+	apiV0Routes.GET("entries", func(c *gin.Context) { controllers.GetEntriesV0(c) })
+	apiV0Routes.GET("entries/:id", func(c *gin.Context) { controllers.GetEntryV0(c) })
+	apiV0Routes.GET("test", func(c *gin.Context) { controllers.TestAPI(c) })
 
 	// general
 	router.NoRoute(func(c *gin.Context) { controllers.NoRoute(c) })
-
-	router.NoMethod(func(c *gin.Context) { c.JSON(405, "NO METHOD") })
+	router.NoMethod(func(c *gin.Context) { c.JSON(http.StatusMethodNotAllowed, "NO METHOD") })
 
 	//error group
 	errorRoutes := router.Group("errors")
 	errorRoutes.GET("/test", func(c *gin.Context) { controllers.TestError(c) })
-
-	router.GET("/error", func(c *gin.Context) {
-		session := sessions.Default(c)
-		session.AddFlash("Please authenticate to access this service", "WARNING")
-		c.HTML(401, "error.html", gin.H{"flash": session.Flashes("WARNING"), "code": 401})
-		session.Save()
-	})
 
 }
 

@@ -57,7 +57,7 @@ func FindEntriesByAccessionID(id uint, pagination Pagination) ([]models.Entry, e
 
 func FindEntry(id uuid.UUID) (models.Entry, error) {
 	entry := models.Entry{}
-	if err := db.Where("id = ?", id).First(&entry).Error; err != nil {
+	if err := db.Preload(clause.Associations).Where("id = ?", id).First(&entry).Error; err != nil {
 		return entry, err
 	}
 	return entry, nil
@@ -277,4 +277,28 @@ func FindEntryInResource(resourceID int, mediaID int) (string, error) {
 		return "", err
 	}
 	return entry.ID.String(), nil
+}
+
+func GetEntryIDs() ([]string, error) {
+	ids := []string{}
+	if err := db.Table("entries").Select("id").Find(&ids).Error; err != nil {
+		return []string{}, err
+	}
+	return ids, nil
+}
+
+func GetEntryIDsPaginated(pagination Pagination) ([]string, error) {
+	ids := []string{}
+	if err := db.Table("entries").Select("id").Limit(pagination.Limit).Offset(pagination.Offset).Find(&ids).Error; err != nil {
+		return []string{}, err
+	}
+	return ids, nil
+}
+
+func FindEntriesPaginated(pagination Pagination) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Preload(clause.Associations).Limit(pagination.Limit).Offset(pagination.Offset).Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
 }

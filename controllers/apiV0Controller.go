@@ -4,12 +4,14 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"net/http"
 	"runtime"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
@@ -213,11 +215,131 @@ func GetAccessionV0(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error)
 	}
+
 	accession, err := database.FindAccession(uint(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error)
 		return
 	}
 
+	repository, err := database.FindRepository(accession.Resource.RepositoryID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error)
+		return
+	}
+
+	accession.Resource.Repository = repository
+
 	c.JSON(http.StatusOK, accession)
+}
+
+func GetEntryV0(c *gin.Context) {
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	id := c.Param("id")
+
+	uId, err := uuid.Parse(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry, err := database.FindEntry(uId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, entry)
+}
+
+func GetEntriesV0(c *gin.Context) {
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	allIDsParam := c.Query("all_ids")
+	log.Println(allIDsParam)
+	var allIds bool
+	if allIDsParam != "" {
+		var err error
+		allIds, err = strconv.ParseBool(allIDsParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	if allIds {
+		ids, err := database.GetEntryIDs()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		} else {
+			c.JSON(http.StatusOK, ids)
+			return
+		}
+	} else {
+
+		pageSizeParam := c.Query("page_size")
+		var pageSize int
+		if pageSizeParam != "" {
+			var err error
+			pageSize, err = strconv.Atoi(pageSizeParam)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+		} else {
+			pageSize = 25
+		}
+
+		pageParam := c.Query("page")
+		var entries []models.Entry
+		var page int
+		if pageParam != "" {
+			var err error
+			page, err = strconv.Atoi(pageParam)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+
+			pagination := database.Pagination{Offset: page, Limit: pageSize}
+			fmt.Println(pagination)
+			entries, err = database.FindEntriesPaginated(pagination)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, err.Error())
+				return
+			}
+		}
+
+		results := EntryResultSet{}
+		results.Total = database.GetCountOfEntriesInDB()
+		r := int(results.Total / int64(pageSize))
+		m := int(results.Total % int64(pageSize))
+		var t int
+		if m > 0 {
+			t = r + 1
+		}
+		results.Results = entries
+		results.FirstPage = 1
+		results.ThisPage = page
+		results.LastPage = t
+
+		c.JSON(http.StatusOK, results)
+		return
+	}
+}
+
+type EntryResultSet struct {
+	FirstPage int            `json:"first_page"`
+	LastPage  int            `json:"last_page"`
+	ThisPage  int            `json:"this_page"`
+	Total     int64          `json:"total"`
+	Results   []models.Entry `json:"results"`
 }
