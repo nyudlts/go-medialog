@@ -33,6 +33,7 @@ func TestAPI(c *gin.Context) {
 }
 
 func APILogin(c *gin.Context) {
+	expireTokens()
 	email := c.Param("user")
 	passwd := c.Query("password")
 
@@ -50,21 +51,34 @@ func APILogin(c *gin.Context) {
 	}
 
 	if !user.CanAccessAPI {
-		c.JSON(http.StatusUnauthorized, UNAUTHORIZED)
+		c.JSON(http.StatusUnauthorized, "not authorized to access api")
 	}
 
 	token := GenerateStringRunes(24)
+	tkHash := sha512.Sum512([]byte(token))
+	token = hex.EncodeToString(tkHash[:])
+
+	user.EncryptedPassword = "####"
+	user.Salt = "####"
 
 	apiToken := models.Token{
-		UserID:  user.ID,
 		Token:   token,
+		UserID:  user.ID,
 		IsValid: true,
 		Expires: time.Now().Add(time.Hour * 2),
+		User:    user,
+	}
+
+	//expire users other tokens
+	if err := database.ExpireTokensByUserID(user.ID); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	//add token to api db
 	if err := database.InsertToken(&apiToken); err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	c.JSON(200, apiToken)
@@ -72,10 +86,10 @@ func APILogin(c *gin.Context) {
 
 func checkToken(c *gin.Context) error {
 	expireTokens()
-	token := c.Request.Header.Get("X-Medialog-Session")
+	token := c.Request.Header.Get("X-Medialog-Token")
 	apiToken, err := database.FindToken(token)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not find supplied token: %s", token)
 	}
 
 	if !apiToken.IsValid {

@@ -145,7 +145,7 @@ type User struct {
 	CreatedBy         int       `json:"created_by"`
 	UpdatedBy         int       `json:"updated_by"`
 	IsActive          bool      `json:"is_active"`
-	IsAdmin           bool      `json:"admin"`
+	IsAdmin           bool      `json:"is_admin"`
 	CurrentIPAddress  string    `json:"current_ip_address"`
 	PreviousIPAddress string    `json:"previous_ip_address"`
 	FirstName         string    `json:"first_name" form:"first_name"`
@@ -154,9 +154,10 @@ type User struct {
 }
 
 type Token struct {
-	ID      uint      `json:"id" gorm:"primaryKey"`
-	UserID  uint      `json:"user_id"`
 	Token   string    `json:"token"`
+	ID      uint      `json:"id" gorm:"primaryKey"`
 	IsValid bool      `json:"is_valid"`
 	Expires time.Time `json:"expires"`
+	UserID  uint      `json:"user_id"`
+	User    User      `json:"user"`
 }
