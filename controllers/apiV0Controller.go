@@ -239,6 +239,8 @@ func GetAccessionEntriesV0(c *gin.Context) {
 	}
 
 	allIDsParam := c.Query("all_ids")
+	pageParam := c.Query("page")
+	pageSizeParam := c.Query("page_size")
 	var allIds bool
 
 	if allIDsParam != "" {
@@ -258,7 +260,41 @@ func GetAccessionEntriesV0(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, entries)
 	} else {
-		c.JSON(http.StatusOK, "pagination")
+		page, err := strconv.Atoi(pageParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+		pagination := database.Pagination{}
+		pagination.Offset = page
+
+		pageSize, err := strconv.Atoi(pageSizeParam)
+		if err != nil {
+			pagination.Limit = 25
+		} else {
+			pagination.Limit = pageSize
+		}
+
+		entries, err := database.FindEntriesByAccessionID(uint(accessionID), pagination)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		e := EntryResultSet{}
+		e.Total = database.GetCountOfEntriesInAccession(uint(accessionID))
+		e.FirstPage = 1
+		e.ThisPage = page
+		e.Results = entries
+		r := int(e.Total / int64(pagination.Limit))
+		m := int(e.Total % int64(pagination.Limit))
+		var t int
+		if m > 0 {
+			t = r + 1
+		}
+		e.LastPage = t
+
+		c.JSON(http.StatusOK, e)
 	}
 
 }
