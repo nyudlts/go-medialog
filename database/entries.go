@@ -39,12 +39,28 @@ func FindEntries() ([]models.Entry, error) {
 	return entries, nil
 }
 
-func FindEntriesByResourceID(id uint, pagination Pagination) ([]models.Entry, error) {
+func FindEntryIDsByResourceID(id uint) ([]string, error) {
+	entries := []string{}
+	if err := db.Table("entries").Where("resource_id = ?", id).Select("id").Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
+}
+
+func FindEntriesByResourceIDPaginated(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Preload(clause.Associations).Where("resource_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil
+}
+
+func FindEntryIDsByAccessionID(id uint) ([]string, error) {
+	ids := []string{}
+	if err := db.Table("entries").Where("accession_id = ?", id).Select("id").Find(&ids).Error; err != nil {
+		return []string{}, err
+	}
+	return ids, nil
 }
 
 func FindEntriesByAccessionID(id uint, pagination Pagination) ([]models.Entry, error) {
@@ -151,6 +167,14 @@ type Totals struct {
 }
 
 type Summaries map[string]Summary
+
+func (s Summaries) GetSlice() []Summary {
+	summarySlice := []Summary{}
+	for _, v := range s {
+		summarySlice = append(summarySlice, v)
+	}
+	return summarySlice
+}
 
 func (s Summaries) GetTotals() Totals {
 	totals := Totals{}

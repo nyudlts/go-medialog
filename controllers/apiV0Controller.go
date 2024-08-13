@@ -226,6 +226,78 @@ func GetRepositoryEntriesV0(c *gin.Context) {
 	}
 }
 
+func GetAccessionEntriesV0(c *gin.Context) {
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	accessionIDParam := c.Param("id")
+	accessionID, err := strconv.Atoi(accessionIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	allIDsParam := c.Query("all_ids")
+	var allIds bool
+
+	if allIDsParam != "" {
+		var err error
+		allIds, err = strconv.ParseBool(allIDsParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	if allIds {
+		entries, err := database.FindEntryIDsByAccessionID(uint(accessionID))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+		c.JSON(http.StatusOK, entries)
+	} else {
+		c.JSON(http.StatusOK, "pagination")
+	}
+
+}
+
+func GetResourceEntriesV0(c *gin.Context) {
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	resourceIDParam := c.Param("id")
+	resourceID, err := strconv.Atoi(resourceIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	allIDsParam := c.Query("all_ids")
+	var allIds bool
+	if allIDsParam != "" {
+		var err error
+		allIds, err = strconv.ParseBool(allIDsParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	if allIds {
+		entries, err := database.FindEntryIDsByResourceID(uint(resourceID))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+		c.JSON(http.StatusOK, entries)
+	} else {
+		c.JSON(http.StatusOK, "pagination")
+	}
+}
+
 func GetAccessionsV0(c *gin.Context) {
 
 	if err := checkToken(c); err != nil {
@@ -382,11 +454,122 @@ type EntryResultSet struct {
 	Results   []models.Entry `json:"results"`
 }
 
+type SummaryTotalsRepo struct {
+	Repository string             `json:"repository"`
+	Totals     database.Totals    `json:"totals"`
+	Summaries  []database.Summary `json:"summaries"`
+}
+
 func GetRepositorySummaryV0(c *gin.Context) {
-	summaries, err := database.GetSummaryByRepository(3)
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	repository, err := database.FindRepository(uint(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, summaries)
+
+	summaryMap, err := database.GetSummaryByRepository(uint(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	summaryTotals := SummaryTotalsRepo{
+		Repository: repository.Title,
+		Totals:     summaryMap.GetTotals(),
+		Summaries:  summaryMap.GetSlice(),
+	}
+
+	c.JSON(http.StatusOK, summaryTotals)
+}
+
+type SummaryTotalsResource struct {
+	ResourceIdentifier string             `json:"resource_identifier"`
+	ResourceTitle      string             `json:"resource_title"`
+	Totals             database.Totals    `json:"totals"`
+	Summaries          []database.Summary `json:"summaries"`
+}
+
+func GetResourceSummaryV0(c *gin.Context) {
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	resource, err := database.FindResource(uint(id))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	summaries, err := database.GetSummaryByResource(uint(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resourceSummary := SummaryTotalsResource{}
+	resourceSummary.ResourceIdentifier = resource.CollectionCode
+	resourceSummary.ResourceTitle = resource.Title
+	resourceSummary.Totals = summaries.GetTotals()
+	resourceSummary.Summaries = summaries.GetSlice()
+
+	c.JSON(http.StatusOK, resourceSummary)
+}
+
+type SummaryTotalsAccession struct {
+	AccessionIdentifier string             `json:"accession_identifier"`
+	Totals              database.Totals    `json:"totals"`
+	Summaries           []database.Summary `json:"summaries"`
+}
+
+func GetAccessionSummaryV0(c *gin.Context) {
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	idParam := c.Param("id")
+	accessionID, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accession, err := database.FindAccession(uint(accessionID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	summaries, err := database.GetSummaryByAccession(uint(accessionID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	summaryAccession := SummaryTotalsAccession{}
+	summaryAccession.AccessionIdentifier = accession.AccessionNum
+	summaryAccession.Totals = summaries.GetTotals()
+	summaryAccession.Summaries = summaries.GetSlice()
+
+	c.JSON(http.StatusOK, summaryAccession)
+
 }

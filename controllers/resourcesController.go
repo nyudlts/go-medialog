@@ -81,7 +81,7 @@ func GetResource(c *gin.Context) {
 
 	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
 
-	entries, err := database.FindEntriesByResourceID(resource.ID, pagination)
+	entries, err := database.FindEntriesByResourceIDPaginated(resource.ID, pagination)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
