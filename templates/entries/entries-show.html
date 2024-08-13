@@ -14,14 +14,12 @@
 <br>
 {{ template "entries-toolbar.html" .}}
 <br>
-
-
-<div class="card card-default">
-    <div class="card-header">
-        <h5 class="card-title">Physical Data</h5>
-    </div>
-
-    <div class="card-body">
+<div id="tabs">
+    <ul>
+      <li><a href="#tabs-1">Physical Data</a></li>
+      <li><a href="#tabs-2">Image Data</a></li>
+    </ul>
+    <div id="tabs-1">
         <table class="table table-striped table-bordered table-sm">
             <tbody class="tbody">
                 <tr>
@@ -91,13 +89,7 @@
             </tbody>
         </table>
     </div>
-</div>
-<br>
-<div class="card card-default">
-    <div class="card-header">
-        <h5 class="card-title">Image Data</h5>
-    </div>
-    <div class="card-body">
+    <div id="tabs-2">
         <table class="table table-striped table-bordered table-sm">
             <tbody>
                 <tr>
@@ -139,7 +131,6 @@
             </tbody>
         </table>
     </div>
-</div>
+  </div>
 <br>
-{{ template "entries-toolbar.html" .}}
 {{ template "footer.html" .}}

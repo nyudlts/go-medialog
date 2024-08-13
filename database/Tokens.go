@@ -78,3 +78,16 @@ func FindTokensByUserID(id uint) ([]models.Token, error) {
 	}
 	return tokens, nil
 }
+
+func ExpireAllTokens() error {
+	tokens := []uint{}
+	if err := db.Table("tokens").Select("id").Find(&tokens).Error; err != nil {
+		return err
+	}
+	for _, id := range tokens {
+		if err := ExpireToken(id); err != nil {
+			return err
+		}
+	}
+	return nil
+}

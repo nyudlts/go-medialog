@@ -1,29 +1,26 @@
 <div class="card card-default">
     <div class="card-body">
         <div class="row">
-            <div class="col-sm-2">
+            <div class="col-sm-1">
                 <a class="btn btn-primary" href="/entries/{{ .entry.ID}}/edit">Edit</a> 
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-1">
                 <a  href="/entries/{{ .entry.ID}}/clone" class="btn btn-warning">Clone</a> 
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-1">
                 <a href="/entries/{{ .entry.ID }}/delete" class="btn btn-danger">Delete</a>
             </div>
             {{ if (gt .entry.MediaID 1) }}
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <a href="/entries/{{ .entry.ID }}/previous" class="btn btn-secondary"><-- prev</a>
             </div>
             {{ end }}
 
             {{if  ne .entry.MediaID .maxMediaID }}
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <a href="/entries/{{ .entry.ID }}/next" class="btn btn-secondary">next --></a>
             </div>
             {{ end }}
-        </div>
-        <br />
-        <div class="row">
             <div class="form-inline">
                 <form action="/entries/find" method="post">
                     <div class="form-group">

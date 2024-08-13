@@ -23,7 +23,7 @@ var (
 	automigrate   bool
 )
 
-const version = "v1.0.4"
+const version = "v1.0.5"
 
 func init() {
 
@@ -54,7 +54,7 @@ func main() {
 	}
 
 	if migrate || rollback {
-		fmt.Println("running migrations")
+		fmt.Println("[]running migrations")
 
 		if err := database.MigrateDatabase(rollback, env.DatabaseConfig); err != nil {
 			panic(err)
@@ -79,23 +79,22 @@ func main() {
 		defer logFile.Close()
 
 		log.SetOutput(logFile)
-
 		log.Println("[INFO] Medialog starting up")
 		log.Printf("[INFO] Logging to %s", env.LogLocation)
-		log.Println("Setting Up Router")
+		log.Println("[INFO] Setting Up Router")
 	}
 
 	r, err = router.SetupRouter(env, gormDebug, prod)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 
 	}
 
 	//start the application
-	log.Printf("Running Go-Medialog %s", version)
+	log.Printf("[INFO] Running Go-Medialog %s", version)
 
 	if err := r.Run(":8080"); err != nil {
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 }

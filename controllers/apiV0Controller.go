@@ -107,7 +107,7 @@ func GetV0Index(c *gin.Context) {
 		Version:       "v1.0.4",
 		GolangVersion: runtime.Version(),
 		GinVersion:    gin.Version,
-		APIVersion:    "0.1.1",
+		APIVersion:    "0.1.2",
 	}
 
 	c.JSON(http.StatusOK, medialogInfo)
