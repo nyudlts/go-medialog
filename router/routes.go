@@ -100,6 +100,8 @@ func LoadRoutes(router *gin.Engine) {
 	apiV0Routes.GET("resources", func(c *gin.Context) { controllers.GetResourcesV0(c) })
 	apiV0Routes.GET("resources/:id", func(c *gin.Context) { controllers.GetResourceV0(c) })
 	apiV0Routes.GET("repositories", func(c *gin.Context) { controllers.GetRepositoriesV0(c) })
+	apiV0Routes.GET("repositories/:id/entries", func(c *gin.Context) { controllers.GetRepositoryEntriesV0(c) })
+	apiV0Routes.GET("repositories/:id/summary", func(c *gin.Context) { controllers.GetRepositorySummaryV0(c) })
 	apiV0Routes.GET("repositories/:id", func(c *gin.Context) { controllers.GetRepositoryV0(c) })
 	apiV0Routes.GET("accessions", func(c *gin.Context) { controllers.GetAccessionsV0(c) })
 	apiV0Routes.GET("accessions/:id", func(c *gin.Context) { controllers.GetAccessionV0(c) })

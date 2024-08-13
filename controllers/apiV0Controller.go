@@ -188,6 +188,44 @@ func GetRepositoryV0(c *gin.Context) {
 	c.JSON(http.StatusOK, repository)
 }
 
+func GetRepositoryEntriesV0(c *gin.Context) {
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	repositoryIDParam := c.Param("id")
+	repositoryID, err := strconv.Atoi(repositoryIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	allIDsParam := c.Query("all_ids")
+	log.Println(allIDsParam)
+	var allIds bool
+	if allIDsParam != "" {
+		var err error
+		allIds, err = strconv.ParseBool(allIDsParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+	}
+
+	if allIds {
+		entries, err := database.FindEntryIDsByRepositoryID(uint(repositoryID))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+		c.JSON(http.StatusOK, entries)
+		return
+	} else {
+		c.JSON(200, "paginated")
+		return
+	}
+}
+
 func GetAccessionsV0(c *gin.Context) {
 
 	if err := checkToken(c); err != nil {
@@ -342,4 +380,13 @@ type EntryResultSet struct {
 	ThisPage  int            `json:"this_page"`
 	Total     int64          `json:"total"`
 	Results   []models.Entry `json:"results"`
+}
+
+func GetRepositorySummaryV0(c *gin.Context) {
+	summaries, err := database.GetSummaryByRepository(3)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, summaries)
 }
