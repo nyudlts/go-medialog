@@ -61,26 +61,40 @@ func TestAPI(c *gin.Context) {
 	c.JSON(200, sessionCookies)
 }
 
+type APIError struct {
+	Message map[string][]string `json:"error"`
+}
+
 func APILogin(c *gin.Context) {
 	expireTokens()
 	email := c.Param("user")
 	passwd := c.Query("password")
 
+	if passwd == "" {
+		apiError := APIError{}
+		e := map[string][]string{"password": []string{"Parameter required but no value provided"}}
+		apiError.Message = e
+		c.JSON(http.StatusBadRequest, apiError)
+		return
+	}
+
 	user, err := database.FindUserByEmail(email)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusUnauthorized, map[string]string{"error": "login failed - user not found"})
+		return
 	}
 
 	hash := sha512.Sum512([]byte(passwd + user.Salt))
 	userSHA512 := hex.EncodeToString(hash[:])
 
 	if userSHA512 != user.EncryptedPassword {
-		c.JSON(http.StatusBadRequest, "password was incorrect")
+		c.JSON(http.StatusUnauthorized, map[string]string{"error": "login failed -- password incorrect"})
 		return
 	}
 
 	if !user.CanAccessAPI {
-		c.JSON(http.StatusUnauthorized, "not authorized to access api")
+		c.JSON(http.StatusUnauthorized, "login failed -- user not authorized to access api")
+		return
 	}
 
 	token := GenerateStringRunes(24)

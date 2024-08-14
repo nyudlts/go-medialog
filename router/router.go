@@ -1,6 +1,8 @@
 package router
 
 import (
+	"crypto/sha512"
+	"encoding/hex"
 	"io"
 	"log"
 	"os"
@@ -57,12 +59,16 @@ func SetupRouter(env config.Environment, gormDebug bool, prod bool) (*gin.Engine
 	log.Println("[INFO] Configuring sessions")
 	//configure session parameters
 
-	store := gormsessions.NewStore(database.GetDB(), true, []byte("secret"))
+	runes := controllers.GenerateStringRunes(24)
+	hash := sha512.Sum512([]byte(runes))
+	secret := hex.EncodeToString(hash[:])
+
+	store := gormsessions.NewStore(database.GetDB(), true, []byte(secret))
 	options := sessions.Options{}
 	options.HttpOnly = true
 	options.Domain = "127.0.0.1"
 	options.MaxAge = 3600
-	r.Use(sessions.Sessions("mysession", store))
+	r.Use(sessions.Sessions("medialog-sessions", store))
 
 	//load application routes
 	log.Println("[INFO] Loading routes")
