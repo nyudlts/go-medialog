@@ -52,6 +52,8 @@ type SummaryTotalsAccession struct {
 
 const UNAUTHORIZED = "Please authenticate to access this service"
 
+var ACCESS_DENIED = map[string]string{"error": "access denied"}
+
 func TestAPI(c *gin.Context) {
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -143,7 +145,7 @@ func GetV0Index(c *gin.Context) {
 func GetRepositoriesV0(c *gin.Context) {
 
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -159,7 +161,7 @@ func GetRepositoriesV0(c *gin.Context) {
 func GetRepositoryV0(c *gin.Context) {
 
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -179,7 +181,7 @@ func GetRepositoryV0(c *gin.Context) {
 
 func GetRepositoryEntriesV0(c *gin.Context) {
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -190,6 +192,8 @@ func GetRepositoryEntriesV0(c *gin.Context) {
 	}
 
 	allIDsParam := c.Query("all_ids")
+	pageParam := c.Query("page")
+	pageSizeParam := c.Query("page_size")
 	log.Println(allIDsParam)
 	var allIds bool
 	if allIDsParam != "" {
@@ -210,14 +214,46 @@ func GetRepositoryEntriesV0(c *gin.Context) {
 		c.JSON(http.StatusOK, entries)
 		return
 	} else {
-		c.JSON(200, "paginated")
-		return
+		page, err := strconv.Atoi(pageParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+		pagination := database.Pagination{}
+		pagination.Offset = page
+
+		pageSize, err := strconv.Atoi(pageSizeParam)
+		if err != nil {
+			pagination.Limit = 25
+		} else {
+			pagination.Limit = pageSize
+		}
+
+		entries, err := database.FindEntriesByRepositoryIDPaginated(uint(repositoryID), pagination)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		e := EntryResultSet{}
+		e.Total = database.GetCountOfEntriesInRepository(uint(repositoryID))
+		e.FirstPage = 1
+		e.ThisPage = page
+		e.Results = entries
+		r := int(e.Total / int64(pagination.Limit))
+		m := int(e.Total % int64(pagination.Limit))
+		var t int
+		if m > 0 {
+			t = r + 1
+		}
+		e.LastPage = t
+		c.JSON(http.StatusOK, e)
 	}
 }
 
 func GetRepositorySummaryV0(c *gin.Context) {
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -252,9 +288,8 @@ func GetRepositorySummaryV0(c *gin.Context) {
 
 func GetResourcesV0(c *gin.Context) {
 
-	err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -270,7 +305,7 @@ func GetResourcesV0(c *gin.Context) {
 func GetResourceV0(c *gin.Context) {
 
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -289,8 +324,9 @@ func GetResourceV0(c *gin.Context) {
 }
 
 func GetResourceEntriesV0(c *gin.Context) {
+
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -301,6 +337,9 @@ func GetResourceEntriesV0(c *gin.Context) {
 	}
 
 	allIDsParam := c.Query("all_ids")
+	pageParam := c.Query("page")
+	pageSizeParam := c.Query("page_size")
+
 	var allIds bool
 	if allIDsParam != "" {
 		var err error
@@ -319,13 +358,47 @@ func GetResourceEntriesV0(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, entries)
 	} else {
-		c.JSON(http.StatusOK, "pagination")
+		page, err := strconv.Atoi(pageParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+		pagination := database.Pagination{}
+		pagination.Offset = page
+
+		pageSize, err := strconv.Atoi(pageSizeParam)
+		if err != nil {
+			pagination.Limit = 25
+		} else {
+			pagination.Limit = pageSize
+		}
+
+		entries, err := database.FindEntriesByResourceIDPaginated(uint(resourceID), pagination)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		e := EntryResultSet{}
+		e.Total = database.GetCountOfEntriesInResource(uint(resourceID))
+		e.FirstPage = 1
+		e.ThisPage = page
+		e.Results = entries
+		r := int(e.Total / int64(pagination.Limit))
+		m := int(e.Total % int64(pagination.Limit))
+		var t int
+		if m > 0 {
+			t = r + 1
+		}
+		e.LastPage = t
+		c.JSON(http.StatusOK, e)
 	}
 }
 
 func GetResourceSummaryV0(c *gin.Context) {
+
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -362,7 +435,7 @@ func GetResourceSummaryV0(c *gin.Context) {
 func GetAccessionsV0(c *gin.Context) {
 
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -406,7 +479,7 @@ func GetAccessionV0(c *gin.Context) {
 
 func GetAccessionEntriesV0(c *gin.Context) {
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -478,8 +551,9 @@ func GetAccessionEntriesV0(c *gin.Context) {
 }
 
 func GetAccessionSummaryV0(c *gin.Context) {
+
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
@@ -514,6 +588,7 @@ func GetAccessionSummaryV0(c *gin.Context) {
 /* Entry Functions */
 
 func GetEntryV0(c *gin.Context) {
+
 	if err := checkToken(c); err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())
 		return
@@ -537,8 +612,9 @@ func GetEntryV0(c *gin.Context) {
 }
 
 func GetEntriesV0(c *gin.Context) {
+
 	if err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 

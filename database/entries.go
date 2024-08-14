@@ -79,6 +79,14 @@ func FindEntriesByRepositoryID(repositoryID uint) ([]models.Entry, error) {
 	return entries, nil
 }
 
+func FindEntriesByRepositoryIDPaginated(repositoryID uint, pagination Pagination) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Where("repository_id = ?", repositoryID).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
+}
+
 func FindEntryIDsByRepositoryID(repositoryID uint) ([]string, error) {
 	ids := []string{}
 	if err := db.Table("entries").Where("repository_id = ?", repositoryID).Select("id").Find(&ids).Error; err != nil {
