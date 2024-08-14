@@ -1,13 +1,12 @@
 package database
 
 import (
-	"log"
-
 	"github.com/nyudlts/go-medialog/models"
+	"gorm.io/gorm/clause"
 )
 
 func InsertToken(apiToken *models.Token) error {
-	if err := db.Create(apiToken).Error; err != nil {
+	if err := db.Preload(clause.Associations).Create(apiToken).Error; err != nil {
 		return err
 	}
 	return nil
@@ -22,7 +21,7 @@ func UpdateToken(apiToken *models.Token) error {
 
 func FindToken(token string) (models.Token, error) {
 	apiToken := models.Token{}
-	if err := db.Table("tokens").Where("token = ?", token).First(&apiToken).Error; err != nil {
+	if err := db.Preload(clause.Associations).Table("tokens").Where("token = ?", token).First(&apiToken).Error; err != nil {
 		return apiToken, err
 	}
 	return apiToken, nil
@@ -30,7 +29,7 @@ func FindToken(token string) (models.Token, error) {
 
 func FindTokenByID(id uint) (models.Token, error) {
 	apiToken := models.Token{}
-	if err := db.Table("tokens").Where("id = ?", id).First(&apiToken).Error; err != nil {
+	if err := db.Table("tokens").Preload(clause.Associations).Where("id = ?", id).First(&apiToken).Error; err != nil {
 		return models.Token{}, err
 	}
 	return apiToken, nil
@@ -48,8 +47,6 @@ func ExpireToken(id uint) error {
 		return err
 	}
 
-	log.Printf("[INFO] %v", token)
-
 	token.IsValid = false
 
 	if err := UpdateToken(&token); err != nil {
@@ -57,4 +54,40 @@ func ExpireToken(id uint) error {
 	}
 	return nil
 
+}
+
+func ExpireTokensByUserID(userID uint) error {
+	tokens, err := FindTokensByUserID(userID)
+	if err != nil {
+		return err
+	}
+
+	for _, token := range tokens {
+		if err := ExpireToken(token.ID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func FindTokensByUserID(id uint) ([]models.Token, error) {
+	tokens := []models.Token{}
+	if err := db.Where("user_id = ?", id).Find(&tokens).Error; err != nil {
+		return []models.Token{}, err
+	}
+	return tokens, nil
+}
+
+func ExpireAllTokens() error {
+	tokens := []uint{}
+	if err := db.Table("tokens").Select("id").Find(&tokens).Error; err != nil {
+		return err
+	}
+	for _, id := range tokens {
+		if err := ExpireToken(id); err != nil {
+			return err
+		}
+	}
+	return nil
 }

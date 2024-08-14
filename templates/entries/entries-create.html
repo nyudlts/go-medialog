@@ -9,16 +9,14 @@
       <li class="breadcrumb-item active" aria-current="page">{{ .entry.ID }}</li>
     </ol>
 </nav>
-
 <br>
 <form action="/entries" method="post">
-    <div class="card card-default">
-        <div class="card-header">
-            <h5 class="card-title">Physical Data</h5>
-            <input type="submit" class="btn btn-primary" value="Create"/>
-            <a href="/accessions/{{ .accession.ID }}/show" class="btn btn-danger">Cancel</a>
-        </div>
-        <div class="card-body">     
+    <div id="tabs">
+        <ul>
+          <li><a href="#tabs-1">Physical Data</a></li>
+          <li><a href="#tabs-2">Image Data</a></li>
+        </ul>
+        <div id="tabs-1">
             <table class="table table-striped table-bordered table-sm">
                 <tbody class="tbody">
                     <tr>
@@ -122,21 +120,10 @@
                             </select>
                         </td>
                     </tr>
-                
                 </tbody>
             </table>
-
         </div>
-    </div>
-    <br>
-    <div class="card card-default">
-        <div class="card-header">
-            <h5 class="card-title">Image Data</h5>
-            <input type="submit" class="btn btn-primary" value="Save"/>
-            <a href="/accessions/{{ .accession.ID }}/show" class="btn btn-danger">Cancel</a>
-            Cancel
-        </div>
-        <div class="card-body">
+        <div id="tabs-2">
             <table class="table table-striped table-bordered table-sm">
                 <tbody>
                     <tr>
@@ -232,8 +219,9 @@
                         </td>
                     </tr>
                 </tbody>
-
             </table>
+            <input type="submit" class="btn btn-primary" value="Create"/>
+            <a href="/accessions/{{ .accession.ID }}/show" class="btn btn-danger">Cancel</a>
         </div>
    </div>
     <!-- hidden fields -->
@@ -241,5 +229,7 @@
     <input type="hidden" id="resource_id" name="resource_id" value="{{ .resource.ID }}"/>
     <input type="hidden" id="repository_id" name="repository_id" value="{{ .repository.ID }}" />
     <br>
+
 </form>
+
 {{ template "footer.html" .}}

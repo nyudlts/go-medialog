@@ -307,6 +307,8 @@ func AuthenticateUser(c *gin.Context) {
 	}
 
 	sessionToken := GenerateStringRunes(24)
+	hash = sha512.Sum512([]byte(sessionToken))
+	sessionToken = hex.EncodeToString(hash[:])
 	setCookie("token", sessionToken, c)
 
 	token := models.Token{
@@ -314,6 +316,12 @@ func AuthenticateUser(c *gin.Context) {
 		UserID:  user.ID,
 		Expires: time.Now().Add(time.Hour * 3),
 		IsValid: true,
+	}
+
+	expireTokens()
+
+	if err := database.ExpireTokensByUserID(user.ID); err != nil {
+		ThrowError(http.StatusInternalServerError, "could not expire tokens for users", c, false)
 	}
 
 	if err := database.InsertToken(&token); err != nil {

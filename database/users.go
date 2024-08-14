@@ -61,6 +61,17 @@ func FindUserByEmail(email string) (models.User, error) {
 	return user, nil
 }
 
+func FindRedactedUserByEmail(email string) (models.User, error) {
+	user := models.User{}
+	if err := db.Where("email = ?", email).First(&user).Error; err != nil {
+		return user, err
+	}
+	user.EncryptedPassword = "####"
+	user.Salt = "####"
+
+	return user, nil
+}
+
 func InsertUser(user *models.User) (uint, error) {
 	if err := db.Create(&user).Error; err != nil {
 		return 0, err

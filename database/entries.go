@@ -39,12 +39,28 @@ func FindEntries() ([]models.Entry, error) {
 	return entries, nil
 }
 
-func FindEntriesByResourceID(id uint, pagination Pagination) ([]models.Entry, error) {
+func FindEntryIDsByResourceID(id uint) ([]string, error) {
+	entries := []string{}
+	if err := db.Table("entries").Where("resource_id = ?", id).Select("id").Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
+}
+
+func FindEntriesByResourceIDPaginated(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Preload(clause.Associations).Where("resource_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil
+}
+
+func FindEntryIDsByAccessionID(id uint) ([]string, error) {
+	ids := []string{}
+	if err := db.Table("entries").Where("accession_id = ?", id).Select("id").Find(&ids).Error; err != nil {
+		return []string{}, err
+	}
+	return ids, nil
 }
 
 func FindEntriesByAccessionID(id uint, pagination Pagination) ([]models.Entry, error) {
@@ -55,9 +71,33 @@ func FindEntriesByAccessionID(id uint, pagination Pagination) ([]models.Entry, e
 	return entries, nil
 }
 
+func FindEntriesByRepositoryID(repositoryID uint) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Preload(clause.Associations).Where("repository_id = ?", repositoryID).Find(&entries).Error; err != nil {
+		return []models.Entry{}, err
+	}
+	return entries, nil
+}
+
+func FindEntriesByRepositoryIDPaginated(repositoryID uint, pagination Pagination) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Where("repository_id = ?", repositoryID).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
+}
+
+func FindEntryIDsByRepositoryID(repositoryID uint) ([]string, error) {
+	ids := []string{}
+	if err := db.Table("entries").Where("repository_id = ?", repositoryID).Select("id").Find(&ids).Error; err != nil {
+		return []string{}, err
+	}
+	return ids, nil
+}
+
 func FindEntry(id uuid.UUID) (models.Entry, error) {
 	entry := models.Entry{}
-	if err := db.Where("id = ?", id).First(&entry).Error; err != nil {
+	if err := db.Preload(clause.Associations).Where("id = ?", id).First(&entry).Error; err != nil {
 		return entry, err
 	}
 	return entry, nil
@@ -115,6 +155,12 @@ func GetCountOfEntriesInResource(resourceID uint) int64 {
 	return count
 }
 
+func GetCountOfEntriesInRepository(repositoryID uint) int64 {
+	var count int64
+	db.Model(&models.Entry{}).Where("repository_id = ?", repositoryID).Count(&count)
+	return count
+}
+
 type Summary struct {
 	Mediatype string
 	Count     int
@@ -130,6 +176,14 @@ type Totals struct {
 
 type Summaries map[string]Summary
 
+func (s Summaries) GetSlice() []Summary {
+	summarySlice := []Summary{}
+	for _, v := range s {
+		summarySlice = append(summarySlice, v)
+	}
+	return summarySlice
+}
+
 func (s Summaries) GetTotals() Totals {
 	totals := Totals{}
 	for _, summary := range s {
@@ -138,6 +192,14 @@ func (s Summaries) GetTotals() Totals {
 	}
 	totals.HumanSize = bytemath.ConvertBytesToHumanReadable(int64(totals.Size))
 	return totals
+}
+
+func GetSummaryByRepository(repositoryID uint) (Summaries, error) {
+	entries := []models.Entry{}
+	if err := db.Where("repository_id = ?", repositoryID).Find(&entries).Error; err != nil {
+		return Summaries{}, err
+	}
+	return getSummary(entries), nil
 }
 
 func GetSummaryByResource(id uint) (Summaries, error) {
@@ -277,4 +339,28 @@ func FindEntryInResource(resourceID int, mediaID int) (string, error) {
 		return "", err
 	}
 	return entry.ID.String(), nil
+}
+
+func GetEntryIDs() ([]string, error) {
+	ids := []string{}
+	if err := db.Table("entries").Select("id").Find(&ids).Error; err != nil {
+		return []string{}, err
+	}
+	return ids, nil
+}
+
+func GetEntryIDsPaginated(pagination Pagination) ([]string, error) {
+	ids := []string{}
+	if err := db.Table("entries").Select("id").Limit(pagination.Limit).Offset(pagination.Offset).Find(&ids).Error; err != nil {
+		return []string{}, err
+	}
+	return ids, nil
+}
+
+func FindEntriesPaginated(pagination Pagination) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Preload(clause.Associations).Limit(pagination.Limit).Offset(pagination.Offset).Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
 }

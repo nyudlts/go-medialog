@@ -47,6 +47,7 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.User{}, "CanAccessAPI") },
 		},
 		{
+
 			ID:       "20240806 - Adding Token table",
 			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().CreateTable(&models.Token{}) },
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropTable(&models.Token{}) },
