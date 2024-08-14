@@ -131,7 +131,7 @@ func APILogin(c *gin.Context) {
 
 func GetV0Index(c *gin.Context) {
 	medialogInfo := MedialogInfo{
-		Version:       "v1.0.4",
+		Version:       "v1.0.5",
 		GolangVersion: runtime.Version(),
 		GinVersion:    gin.Version,
 		APIVersion:    "0.1.2",
