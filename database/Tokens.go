@@ -71,6 +71,40 @@ func ExpireTokensByUserID(userID uint) error {
 	return nil
 }
 
+func ExpireAPITokensByUserID(userID uint) error {
+	tokens, err := FindTokensByUserID(userID)
+	if err != nil {
+		return err
+	}
+
+	for _, token := range tokens {
+		if token.Type == "api" {
+			if err := ExpireToken(token.ID); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func ExpireAppTokensByUserID(userID uint) error {
+	tokens, err := FindTokensByUserID(userID)
+	if err != nil {
+		return err
+	}
+
+	for _, token := range tokens {
+		if token.Type == "application" {
+			if err := ExpireToken(token.ID); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func FindTokensByUserID(id uint) ([]models.Token, error) {
 	tokens := []models.Token{}
 	if err := db.Where("user_id = ?", id).Find(&tokens).Error; err != nil {

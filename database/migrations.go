@@ -52,6 +52,11 @@ func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
 			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().CreateTable(&models.Token{}) },
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropTable(&models.Token{}) },
 		},
+		{
+			ID:       "20240816 - Adding Token Type to Tokens",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.Token{}, "Type") },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.Token{}, "Type") },
+		},
 	}
 
 	m := gormigrate.New(db, gormigrate.DefaultOptions, migrations)

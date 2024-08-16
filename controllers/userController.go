@@ -316,11 +316,12 @@ func AuthenticateUser(c *gin.Context) {
 		UserID:  user.ID,
 		Expires: time.Now().Add(time.Hour * 3),
 		IsValid: true,
+		Type:    "application",
 	}
 
 	expireTokens()
 
-	if err := database.ExpireTokensByUserID(user.ID); err != nil {
+	if err := database.ExpireAppTokensByUserID(user.ID); err != nil {
 		ThrowError(http.StatusInternalServerError, "could not expire tokens for users", c, false)
 	}
 

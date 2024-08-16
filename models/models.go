@@ -160,4 +160,5 @@ type Token struct {
 	Expires time.Time `json:"expires"`
 	UserID  uint      `json:"user_id"`
 	User    User      `json:"user"`
+	Type    string    `json:"type"`
 }

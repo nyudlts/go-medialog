@@ -110,12 +110,13 @@ func APILogin(c *gin.Context) {
 		Token:   token,
 		UserID:  user.ID,
 		IsValid: true,
-		Expires: time.Now().Add(time.Hour * 2),
+		Expires: time.Now().Add(time.Hour * 3),
 		User:    user,
+		Type:    "api",
 	}
 
 	//expire users other tokens
-	if err := database.ExpireTokensByUserID(user.ID); err != nil {
+	if err := database.ExpireAPITokensByUserID(user.ID); err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
