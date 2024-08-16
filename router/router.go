@@ -51,18 +51,18 @@ func SetupRouter(env config.Environment, gormDebug bool, prod bool) (*gin.Engine
 		os.Exit(2)
 	}
 
-	log.Println("[INFO] Expiring session tokens")
-	if err := database.ExpireAllTokens(); err != nil {
-		os.Exit(3)
+	if prod {
+		log.Println("[INFO] Expiring session tokens")
+		if err := database.ExpireAllTokens(); err != nil {
+			os.Exit(3)
+		}
 	}
 
-	log.Println("[INFO] Configuring sessions")
 	//configure session parameters
-
+	log.Println("[INFO] Configuring sessions")
 	runes := controllers.GenerateStringRunes(24)
 	hash := sha512.Sum512([]byte(runes))
 	secret := hex.EncodeToString(hash[:])
-
 	store := gormsessions.NewStore(database.GetDB(), true, []byte(secret))
 	options := sessions.Options{}
 	options.HttpOnly = true
