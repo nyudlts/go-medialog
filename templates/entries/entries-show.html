@@ -98,7 +98,7 @@
                 </tr>
                 <tr>
                     <td class="col-sm-2"><strong>Image Format</strong></td>
-                    <td class="col-sm-10">{{ .entry.ImageFormat }}</td>
+                    <td class="col-sm-10">{{ index .imageFormats .entry.ImageFormat }}</td>
                 </tr>
                 <tr>
                     <td class="col-sm-2"><strong>Storage Location</strong></td>
@@ -106,19 +106,19 @@
                 </tr>
                 <tr>
                     <td class="col-sm-2"><strong>Interface</strong></td>
-                    <td class="col-sm-10">{{ .entry.Interface }}</td>
+                    <td class="col-sm-10">{{ index .interfaces .entry.Interface }}</td>
                 </tr>
                 <tr>
                     <td class="col-sm-2"><strong>Hard Drive Interface</strong></td>
-                    <td class="col-sm-10">{{ .entry.HDDInterface }}</td>
+                    <td class="col-sm-10">{{ index .hddInterfaces .entry.HDDInterface }}</td>
                 </tr>
                 <tr>
                     <td class="col-sm-2"><strong>Imaging Success</strong></td>
-                    <td class="col-sm-10">{{ .entry.ImagingSuccess }}</td>
+                    <td class="col-sm-10">{{ index .imagingSuccess .entry.ImagingSuccess }}</td>
                 </tr>
                 <tr>
                     <td class="col-sm-2"><strong>Interpretation Success</strong></td>
-                    <td class="col-sm-10">{{ .entry.InterpretationSuccess }}</td>
+                    <td class="col-sm-10">{{ index .interpretSuccess .entry.InterpretationSuccess }}</td>
                 </tr>
                 <tr>
                     <td class="col-sm-2"><strong>Imaged By</strong></td>

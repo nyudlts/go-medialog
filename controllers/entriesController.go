@@ -74,15 +74,20 @@ func GetEntry(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "entries-show.html", gin.H{
-		"entry":      entry,
-		"accession":  accession,
-		"resource":   resource,
-		"repository": repository,
-		"isAdmin":    sessionCookies.IsAdmin,
-		"entryUsers": entryUsers,
-		"isLoggedIn": isLoggedIn,
-		"maxMediaID": maxMediaID,
-		"user":       user,
+		"entry":            entry,
+		"accession":        accession,
+		"resource":         resource,
+		"repository":       repository,
+		"isAdmin":          sessionCookies.IsAdmin,
+		"entryUsers":       entryUsers,
+		"isLoggedIn":       isLoggedIn,
+		"maxMediaID":       maxMediaID,
+		"interfaces":       getInterfaces(),
+		"hddInterfaces":    getHDDInterfaces(),
+		"imageFormats":     getImageFormats(),
+		"imagingSuccess":   getImageSuccess(),
+		"interpretSuccess": getInterpretSuccess(),
+		"user":             user,
 	})
 }
 
