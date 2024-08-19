@@ -69,11 +69,6 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	if !sessionCookies.IsAdmin {
-		ThrowError(http.StatusUnauthorized, "Must be logged in as an admin to access users management", c, isLoggedIn)
-		return
-	}
-
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
 		ThrowError(http.StatusUnauthorized, err.Error(), c, isLoggedIn)
