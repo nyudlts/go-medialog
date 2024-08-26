@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	config "github.com/nyudlts/go-medialog/config"
 	"github.com/nyudlts/go-medialog/database"
 	router "github.com/nyudlts/go-medialog/router"
 )
@@ -48,7 +47,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	env, err := config.GetEnvironment(configuration, environment)
+	env, err := router.GetEnvironment(configuration, environment)
 	if err != nil {
 		panic(err)
 	}

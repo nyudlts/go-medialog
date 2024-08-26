@@ -162,3 +162,17 @@ type Token struct {
 	User    User      `json:"user"`
 	Type    string    `json:"type"`
 }
+
+// config functions
+type Environment struct {
+	LogLocation    string         `yaml:"log"`
+	DatabaseConfig DatabaseConfig `yaml:"database"`
+}
+
+type DatabaseConfig struct {
+	Username     string `yaml:"username"`
+	Password     string `yaml:"password"`
+	URL          string `yaml:"url"`
+	Port         string `yaml:"port"`
+	DatabaseName string `yaml:"database_name"`
+}

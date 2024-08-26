@@ -3,6 +3,7 @@ package router
 import (
 	"crypto/sha512"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -12,12 +13,13 @@ import (
 	"github.com/gin-contrib/sessions"
 	gormsessions "github.com/gin-contrib/sessions/gorm"
 	"github.com/gin-gonic/gin"
-	"github.com/nyudlts/go-medialog/config"
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
+	"gopkg.in/yaml.v2"
 )
 
-func SetupRouter(env config.Environment, gormDebug bool, prod bool) (*gin.Engine, error) {
+func SetupRouter(env models.Environment, gormDebug bool, prod bool) (*gin.Engine, error) {
 
 	log.Println("Medialog starting up")
 
@@ -102,4 +104,31 @@ func SetGlobalFuncs(router *gin.Engine) {
 		"storageLocations":   controllers.GetStorageLocations,
 		"getStorageLocation": controllers.GetStorageLocation,
 	})
+}
+
+func GetEnvironment(config string, environment string) (models.Environment, error) {
+
+	//check that the config exists
+	if _, err := os.Stat(config); os.IsNotExist(err) {
+		panic(err)
+	}
+
+	//read the config
+	configBytes, err := os.ReadFile(config)
+	if err != nil {
+		return models.Environment{}, err
+	}
+
+	envMap := map[string]models.Environment{}
+	if err := yaml.Unmarshal(configBytes, &envMap); err != nil {
+		return models.Environment{}, err
+	}
+
+	for k, v := range envMap {
+		if environment == k {
+			return v, nil
+		}
+	}
+
+	return models.Environment{}, fmt.Errorf("environment %s does not exist in configuration", environment)
 }

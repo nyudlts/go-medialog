@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/nyudlts/go-medialog/config"
+	"github.com/nyudlts/go-medialog/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -16,7 +16,7 @@ type Pagination struct {
 	Sort   string `json:"sort"`
 }
 
-func ConnectMySQL(dbconfig config.DatabaseConfig, gormDebug bool) error {
+func ConnectMySQL(dbconfig models.DatabaseConfig, gormDebug bool) error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbconfig.Username, dbconfig.Password, dbconfig.URL, dbconfig.Port, dbconfig.DatabaseName)
 	var err error
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
