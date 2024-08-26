@@ -13,7 +13,7 @@ func AutoMigrate(dbc models.DatabaseConfig) error {
 		return err
 	}
 
-	if err := db.AutoMigrate(&models.Repository{}, &models.Resource{}, &models.Accession{}, &models.Entry{}, &models.User{}); err != nil {
+	if err := db.AutoMigrate(&models.Repository{}, &models.Resource{}, &models.Accession{}, &models.Entry{}, &models.User{}, &models.Token{}); err != nil {
 		return err
 	}
 	return nil

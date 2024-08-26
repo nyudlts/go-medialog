@@ -184,6 +184,24 @@ func CreateUser(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/users")
 }
 
+func CreateAdminUser() (string, error) {
+	user := models.User{}
+	user.Email = "admin@medialog.dlib.nyu.edu" //this will come from a config
+	user.FirstName = "admin"
+	user.LastName = "user"
+	user.IsActive = true
+	user.CanAccessAPI = true
+	user.IsAdmin = true
+	user.Salt = GenerateStringRunes(16)
+	password := GenerateStringRunes(16)
+	hash := sha512.Sum512([]byte(password + user.Salt))
+	user.EncryptedPassword = hex.EncodeToString(hash[:])
+	if _, err := database.InsertUser(&user); err != nil {
+		return "", err
+	}
+	return password, nil
+}
+
 func EditUser(c *gin.Context) {
 
 	if err := isLoggedIn(c); err != nil {

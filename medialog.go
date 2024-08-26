@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	router "github.com/nyudlts/go-medialog/router"
 )
@@ -20,6 +21,7 @@ var (
 	migrate       bool
 	rollback      bool
 	automigrate   bool
+	createAdmin   bool
 )
 
 const version = "v1.0.6"
@@ -34,6 +36,7 @@ func init() {
 	flag.BoolVar(&migrate, "migrate", false, "")
 	flag.BoolVar(&automigrate, "automigrate", false, "")
 	flag.BoolVar(&rollback, "rollback", false, "")
+	flag.BoolVar(&createAdmin, "create-admin", false, "")
 }
 
 var r *gin.Engine
@@ -87,6 +90,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 
+	}
+
+	if createAdmin {
+		password, err := controllers.CreateAdminUser()
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("admin user create with password `%s`", password)
+		os.Exit(0)
 	}
 
 	//start the application
