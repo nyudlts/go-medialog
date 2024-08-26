@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -29,7 +30,7 @@ func TestAPI(t *testing.T) {
 		t.Error(err)
 	}
 
-	t.Run("Test get API Root", func(t *testing.T) {
+	t.Run("test get API root", func(t *testing.T) {
 		req, err := http.NewRequestWithContext(c, "GET", APIROOT, nil)
 		if err != nil {
 			t.Error(err)
@@ -37,6 +38,8 @@ func TestAPI(t *testing.T) {
 		r.ServeHTTP(recorder, req)
 		assert.Equal(t, 200, recorder.Code)
 		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+		body, _ := io.ReadAll(recorder.Body)
+		t.Log(string(body))
 	})
 
 }
