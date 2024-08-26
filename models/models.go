@@ -47,8 +47,8 @@ type Entry struct {
 	ID                    uuid.UUID  `json:"id" gorm:"primaryKey" form:"id"`
 	CreatedAt             time.Time  `json:"created_at"`
 	UpdatedAt             time.Time  `json:"updated_at"`
-	CreatedBy             int        `json:"created_by"`
-	UpdatedBy             int        `json:"updated_by"`
+	CreatedBy             int        `json:"created_by"` //this should be converted to a uint
+	UpdatedBy             int        `json:"updated_by"` //this should be converted to a uint
 	MediaID               uint       `json:"media_id" form:"media_id"`
 	Mediatype             string     `json:"mediatype" form:"mediatype"`
 	Manufacturer          string     `json:"manufacturer" form:"manufacturer"`

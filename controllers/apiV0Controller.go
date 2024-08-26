@@ -132,10 +132,10 @@ func APILogin(c *gin.Context) {
 
 func GetV0Index(c *gin.Context) {
 	medialogInfo := MedialogInfo{
-		Version:       "v1.0.5",
+		Version:       "v1.0.6",
 		GolangVersion: runtime.Version(),
 		GinVersion:    gin.Version,
-		APIVersion:    "0.1.2",
+		APIVersion:    "0.1.3",
 	}
 
 	c.JSON(http.StatusOK, medialogInfo)
@@ -691,6 +691,68 @@ func GetEntriesV0(c *gin.Context) {
 		c.JSON(http.StatusOK, results)
 		return
 	}
+}
+
+func UpdateEntryLocationV0(c *gin.Context) {
+	if err := checkToken(c); err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	token := c.Request.Header.Get("X-Medialog-Token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, "no token provided")
+		return
+	}
+
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, "no id provided")
+		return
+	}
+
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "provided id is not a valid uuid")
+		return
+	}
+
+	location := c.Query("location")
+	if location == "" {
+		c.JSON(http.StatusBadRequest, "no location provided")
+		return
+	}
+
+	storageLocation := GetStorageLocation(location)
+
+	if storageLocation == "No Match" {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("`%s` is not a valid location", location))
+		return
+	}
+
+	entry, err := database.FindEntry(uid)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	userID, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	entry.Location = location
+	entry.UpdatedAt = time.Now()
+	entry.UpdatedBy = int(userID)
+
+	if err := database.UpdateEntry(&entry); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("id: %s, location: %s, storage location: %s", id, location, storageLocation))
+
 }
 
 func checkToken(c *gin.Context) error {
