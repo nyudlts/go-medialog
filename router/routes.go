@@ -112,7 +112,6 @@ func LoadRoutes(router *gin.Engine) {
 	apiV0Routes.GET("entries", func(c *gin.Context) { controllers.GetEntriesV0(c) })
 	apiV0Routes.GET("entries/:id", func(c *gin.Context) { controllers.GetEntryV0(c) })
 	apiV0Routes.PATCH("entries/:id/update_location", func(c *gin.Context) { controllers.UpdateEntryLocationV0(c) })
-	apiV0Routes.GET("test", func(c *gin.Context) { controllers.TestAPI(c) })
 
 	// general
 	router.NoRoute(func(c *gin.Context) { controllers.NoRoute(c) })

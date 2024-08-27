@@ -54,21 +54,13 @@ const UNAUTHORIZED = "Please authenticate to access this service"
 
 var ACCESS_DENIED = map[string]string{"error": "access denied"}
 
-func TestAPI(c *gin.Context) {
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		c.JSON(403, UNAUTHORIZED)
-		return
-	}
-	c.JSON(200, sessionCookies)
-}
-
 type APIError struct {
 	Message map[string][]string `json:"error"`
 }
 
 func APILogin(c *gin.Context) {
 	expireTokens()
+	log.Println(c)
 	email := c.Param("user")
 	passwd := c.Query("password")
 

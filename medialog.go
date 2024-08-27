@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
 	router "github.com/nyudlts/go-medialog/router"
 )
 
@@ -40,6 +41,7 @@ func init() {
 }
 
 var r *gin.Engine
+var env models.Environment
 
 func main() {
 	//parse cli flags
@@ -50,7 +52,8 @@ func main() {
 		os.Exit(0)
 	}
 
-	env, err := router.GetEnvironment(configuration, environment)
+	var err error
+	env, err = router.GetEnvironment(configuration, environment)
 	if err != nil {
 		panic(err)
 	}

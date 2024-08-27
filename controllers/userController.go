@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"crypto/md5"
 	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
@@ -192,10 +193,15 @@ func CreateAdminUser() (string, error) {
 	user.IsActive = true
 	user.CanAccessAPI = true
 	user.IsAdmin = true
-	user.Salt = GenerateStringRunes(16)
+	salt := GenerateStringRunes(16)
+	md5Hash := md5.Sum([]byte(salt))
+	salt = hex.EncodeToString(md5Hash[:])
+	user.Salt = salt
 	password := GenerateStringRunes(16)
-	hash := sha512.Sum512([]byte(password + user.Salt))
-	user.EncryptedPassword = hex.EncodeToString(hash[:])
+	md5hash := md5.Sum([]byte(password))
+	password = hex.EncodeToString(md5hash[:])
+	sha512hash := sha512.Sum512([]byte(password + user.Salt))
+	user.EncryptedPassword = hex.EncodeToString(sha512hash[:])
 	if _, err := database.InsertUser(&user); err != nil {
 		return "", err
 	}

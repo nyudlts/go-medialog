@@ -167,6 +167,7 @@ type Token struct {
 type Environment struct {
 	LogLocation    string         `yaml:"log"`
 	DatabaseConfig DatabaseConfig `yaml:"database"`
+	TestCreds      TestCreds      `yaml:"test_creds"`
 }
 
 type DatabaseConfig struct {
@@ -175,4 +176,9 @@ type DatabaseConfig struct {
 	URL          string `yaml:"url"`
 	Port         string `yaml:"port"`
 	DatabaseName string `yaml:"database_name"`
+}
+
+type TestCreds struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
