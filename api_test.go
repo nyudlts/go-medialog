@@ -33,6 +33,7 @@ func TestAPI(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	t.Logf("[INFO] Running Go-Medialog %s", version)
 
 	t.Run("test get API root", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
@@ -44,6 +45,15 @@ func TestAPI(t *testing.T) {
 		r.ServeHTTP(recorder, req)
 		assert.Equal(t, 200, recorder.Code)
 		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+		body, err := io.ReadAll(recorder.Body)
+		if err != nil {
+			t.Error(err)
+		}
+		mlInfo := models.MedialogInfo{}
+		if err := json.Unmarshal(body, &mlInfo); err != nil {
+			t.Error(token)
+		}
+		t.Logf("[INFO] %v", mlInfo)
 	})
 
 	t.Run("test login to API", func(t *testing.T) {
@@ -88,16 +98,16 @@ func TestAPI(t *testing.T) {
 	t.Run("test get repositories", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(recorder)
-		c.Header("X-Medialog-Session", token)
 		url := fmt.Sprintf("%s/repositories", APIROOT)
 		req, err := http.NewRequestWithContext(c, "GET", url, nil)
 		if err != nil {
 			t.Error(err)
 		}
-
+		req.Header.Add("X-Medialog-Token", token)
 		r.ServeHTTP(recorder, req)
 		assert.Equal(t, 200, recorder.Code)
 		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
 	})
 
 }

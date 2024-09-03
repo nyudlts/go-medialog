@@ -16,13 +16,6 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
-type MedialogInfo struct {
-	Version       string
-	GinVersion    string
-	GolangVersion string
-	APIVersion    string
-}
-
 type EntryResultSet struct {
 	FirstPage int            `json:"first_page"`
 	LastPage  int            `json:"last_page"`
@@ -51,6 +44,8 @@ type SummaryTotalsAccession struct {
 }
 
 const UNAUTHORIZED = "Please authenticate to access this service"
+const apiVersion = "v0.1.3"
+const medialogVersion = "v1.0.6"
 
 var ACCESS_DENIED = map[string]string{"error": "access denied"}
 
@@ -60,11 +55,10 @@ type APIError struct {
 
 func APILogin(c *gin.Context) {
 	expireTokens()
-	log.Println(c)
 	email := c.Param("user")
-	passwd := c.Query("password")
+	password := c.Query("password")
 
-	if passwd == "" {
+	if password == "" {
 		apiError := APIError{}
 		e := map[string][]string{"password": []string{"Parameter required but no value provided"}}
 		apiError.Message = e
@@ -78,11 +72,11 @@ func APILogin(c *gin.Context) {
 		return
 	}
 
-	hash := sha512.Sum512([]byte(passwd + user.Salt))
+	hash := sha512.Sum512([]byte(password + user.Salt))
 	userSHA512 := hex.EncodeToString(hash[:])
 
 	if userSHA512 != user.EncryptedPassword {
-		c.JSON(http.StatusUnauthorized, map[string]string{"error": "login failed -- password incorrect"})
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("storedChecksum: %s, calculatedChecksum: %s", user.EncryptedPassword, userSHA512))
 		return
 	}
 
@@ -123,11 +117,11 @@ func APILogin(c *gin.Context) {
 }
 
 func GetV0Index(c *gin.Context) {
-	medialogInfo := MedialogInfo{
-		Version:       "v1.0.6",
+	medialogInfo := models.MedialogInfo{
+		Version:       medialogVersion,
 		GolangVersion: runtime.Version(),
 		GinVersion:    gin.Version,
-		APIVersion:    "0.1.3",
+		APIVersion:    apiVersion,
 	}
 
 	c.JSON(http.StatusOK, medialogInfo)
@@ -750,6 +744,11 @@ func UpdateEntryLocationV0(c *gin.Context) {
 func checkToken(c *gin.Context) error {
 	expireTokens()
 	token := c.Request.Header.Get("X-Medialog-Token")
+
+	if token == "" {
+		return fmt.Errorf("no `X-Medialog-Token` set in request header")
+	}
+
 	apiToken, err := database.FindToken(token)
 	if err != nil {
 		return fmt.Errorf("could not find supplied token: %s", token)

@@ -182,3 +182,14 @@ type TestCreds struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 }
+
+type MedialogInfo struct {
+	Version       string
+	GinVersion    string
+	GolangVersion string
+	APIVersion    string
+}
+
+func (mli MedialogInfo) String() string {
+	return fmt.Sprintf("Medialog Version: %s, API Version: %s, Golang Version: %s, Gin Version: %s", mli.Version, mli.APIVersion, mli.GolangVersion, mli.GinVersion)
+}

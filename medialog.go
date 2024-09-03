@@ -92,7 +92,6 @@ func main() {
 	r, err = router.SetupRouter(env, gormDebug, prod)
 	if err != nil {
 		log.Fatal(err)
-
 	}
 
 	if createAdmin {
