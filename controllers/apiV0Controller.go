@@ -116,6 +116,21 @@ func APILogin(c *gin.Context) {
 	c.JSON(200, apiToken)
 }
 
+func APILogout(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	if err := database.DeleteToken(token); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Logged Out"))
+}
+
 func GetV0Index(c *gin.Context) {
 	medialogInfo := models.MedialogInfo{
 		Version:       medialogVersion,
@@ -353,10 +368,17 @@ func CreateResourceV0(c *gin.Context) {
 		return
 	}
 
+	repository, err := database.FindRepository(resource.RepositoryID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
 	resource.CreatedBy = int(userID)
 	resource.UpdatedBy = int(userID)
 	resource.CreatedAt = time.Now()
 	resource.UpdatedAt = time.Now()
+	resource.Repository = repository
 
 	_, err = database.InsertResource(&resource)
 	if err != nil {
@@ -540,6 +562,47 @@ func GetResourceSummaryV0(c *gin.Context) {
 
 /* Accession Functions */
 
+func CreateAccessionV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	accession := models.Accession{}
+	if err := c.Bind(&accession); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	userId, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	resource, err := database.FindResource(accession.ResourceID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	accession.CreatedBy = int(userId)
+	accession.UpdatedBy = int(userId)
+	accession.CreatedAt = time.Now()
+	accession.UpdatedAt = time.Now()
+	accession.Resource = resource
+
+	_, err = database.InsertAccession(&accession)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, accession)
+
+}
+
 func GetAccessionsV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -585,6 +648,29 @@ func GetAccessionV0(c *gin.Context) {
 	accession.Resource.Repository = repository
 
 	c.JSON(http.StatusOK, accession)
+}
+
+func DeleteAccessionV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	accessionIDParam := c.Param("id")
+	accessionID, err := strconv.Atoi(accessionIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := database.DeleteAccession(uint(accessionID)); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Resource %d deleted", accessionID))
+
 }
 
 func GetAccessionEntriesV0(c *gin.Context) {
@@ -733,7 +819,7 @@ func GetEntriesV0(c *gin.Context) {
 	}
 
 	allIDsParam := c.Query("all_ids")
-	log.Println(allIDsParam)
+
 	var allIds bool
 	if allIDsParam != "" {
 		var err error

@@ -121,17 +121,16 @@ func TestAPI(t *testing.T) {
 			t.Error(err)
 		}
 
-		t.Log(string(body))
 		repo := models.Repository{}
 		if err := json.Unmarshal(body, &repo); err != nil {
 			t.Error(err)
 		}
 
 		repoID = repo.ID
-		t.Log(repoID)
+
 	})
 
-	t.Run("test get repositories", func(t *testing.T) {
+	t.Run("test get all repositories", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(recorder)
 		url := fmt.Sprintf("%s/repositories", APIROOT)
@@ -178,8 +177,6 @@ func TestAPI(t *testing.T) {
 		if err := json.Unmarshal(body, &repository); err != nil {
 			t.Error(err)
 		}
-
-		t.Log(repository)
 	})
 
 	//resource functions
@@ -212,9 +209,10 @@ func TestAPI(t *testing.T) {
 		if err := json.Unmarshal(body, &resource); err != nil {
 			t.Error(err)
 		}
+
 	})
 
-	t.Run("test get all resource", func(t *testing.T) {
+	t.Run("test get all resources", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(recorder)
 		requestURL := fmt.Sprintf("%s/resources", APIROOT)
@@ -268,7 +266,102 @@ func TestAPI(t *testing.T) {
 
 	})
 
+	//accession functions
+	var accession = models.Accession{}
+	t.Run("test create an accession", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		requestURL := fmt.Sprintf("%s/accessions", APIROOT)
+		form := url.Values{}
+		form.Add("accession_num", "testAccession001")
+		form.Add("resource_id", fmt.Sprintf("%d", resource.ID))
+		req, err := http.NewRequestWithContext(c, "POST", requestURL, strings.NewReader(form.Encode()))
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+		body, err := io.ReadAll(recorder.Body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if err := json.Unmarshal(body, &accession); err != nil {
+			t.Error(err)
+		}
+	})
+
+	t.Run("test get all accessions", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		url := fmt.Sprintf("%s/accessions", APIROOT)
+		req, err := http.NewRequestWithContext(c, "GET", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+		body, err := io.ReadAll(recorder.Body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		accessions := []models.Accession{}
+		if err := json.Unmarshal(body, &accessions); err != nil {
+			t.Error(err)
+		}
+
+		assert.GreaterOrEqual(t, len(accessions), 1)
+	})
+
+	t.Run("test get an accession", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		url := fmt.Sprintf("%s/accessions/%d", APIROOT, accession.ID)
+		req, err := http.NewRequestWithContext(c, "GET", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+		body, err := io.ReadAll(recorder.Body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if err := json.Unmarshal(body, &accession); err != nil {
+			t.Error(err)
+		}
+	})
+
 	//delete functions
+
+	t.Run("test delete an accession", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		url := fmt.Sprintf("%s/accessions/%d", APIROOT, accession.ID)
+		req, err := http.NewRequestWithContext(c, "DELETE", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+	})
+
 	t.Run("test delete a resource", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(recorder)
@@ -282,15 +375,26 @@ func TestAPI(t *testing.T) {
 		assert.Equal(t, 200, recorder.Code)
 		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
 
-		r.ServeHTTP(recorder, req)
-		assert.Equal(t, 200, recorder.Code)
-		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
 	})
 
 	t.Run("test delete a repository", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(recorder)
 		url := fmt.Sprintf("%s/repositories/%d", APIROOT, repoID)
+		req, err := http.NewRequestWithContext(c, "DELETE", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+	})
+
+	t.Run("test delete a token", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		url := fmt.Sprintf("%s/logout", APIROOT)
 		req, err := http.NewRequestWithContext(c, "DELETE", url, nil)
 		if err != nil {
 			t.Error(err)

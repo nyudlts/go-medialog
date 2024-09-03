@@ -96,6 +96,7 @@ func LoadRoutes(router *gin.Engine) {
 	//api v0
 	apiV0Routes := router.Group("/api/v0")
 	apiV0Routes.POST("users/:user/login", func(c *gin.Context) { controllers.APILogin(c) })
+	apiV0Routes.DELETE("logout", func(c *gin.Context) { controllers.APILogout(c) })
 	apiV0Routes.GET("", func(c *gin.Context) { controllers.GetV0Index(c) })
 	apiV0Routes.GET("repositories/:id", func(c *gin.Context) { controllers.GetRepositoryV0(c) })
 	apiV0Routes.GET("repositories", func(c *gin.Context) { controllers.GetRepositoriesV0(c) })
@@ -109,6 +110,8 @@ func LoadRoutes(router *gin.Engine) {
 	apiV0Routes.DELETE("resources/:id", func(c *gin.Context) { controllers.DeleteResourceV0(c) })
 	apiV0Routes.GET("resources/:id/entries", func(c *gin.Context) { controllers.GetResourceEntriesV0(c) })
 	apiV0Routes.GET("resources/:id/summary", func(c *gin.Context) { controllers.GetResourceSummaryV0(c) })
+	apiV0Routes.POST("accessions", func(c *gin.Context) { controllers.CreateAccessionV0(c) })
+	apiV0Routes.DELETE("accessions/:id", func(c *gin.Context) { controllers.DeleteAccessionV0(c) })
 	apiV0Routes.GET("accessions", func(c *gin.Context) { controllers.GetAccessionsV0(c) })
 	apiV0Routes.GET("accessions/:id", func(c *gin.Context) { controllers.GetAccessionV0(c) })
 	apiV0Routes.GET("accessions/:id/entries", func(c *gin.Context) { controllers.GetAccessionEntriesV0(c) })

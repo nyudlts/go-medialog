@@ -1,8 +1,6 @@
 package database
 
 import (
-	"log"
-
 	"github.com/nyudlts/go-medialog/models"
 	"gorm.io/gorm/clause"
 )
@@ -128,12 +126,21 @@ func ExpireAllTokens() error {
 	return nil
 }
 
+func DeleteToken(tkn string) error {
+	token, err := FindToken(tkn)
+	if err != nil {
+		return err
+	}
+	if err := db.Delete(models.Token{}, token.ID).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func FindUserIDByToken(token string) (uint, error) {
-	log.Println("TOKEN", token)
 	sessionToken := models.Token{}
 	if err := db.Where("token = ?", token).Find(&sessionToken).Error; err != nil {
 		return uint(0), err
 	}
-
 	return sessionToken.UserID, nil
 }
