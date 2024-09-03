@@ -131,7 +131,8 @@ func GetV0Index(c *gin.Context) {
 
 func GetRepositoriesV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -147,7 +148,8 @@ func GetRepositoriesV0(c *gin.Context) {
 
 func GetRepositoryV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -166,8 +168,67 @@ func GetRepositoryV0(c *gin.Context) {
 	c.JSON(http.StatusOK, repository)
 }
 
+func CreateRepositoryV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	repo := models.Repository{}
+	if err := c.Bind(&repo); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	userID, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	repo.CreatedBy = int(userID)
+	repo.UpdatedBy = int(userID)
+	repo.CreatedAt = time.Now()
+	repo.UpdatedAt = time.Now()
+
+	_, err = database.CreateRepository(&repo)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, repo)
+}
+
+func DeleteRepositoryV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	repositoryIDParam := c.Param("id")
+	repositoryID, err := strconv.Atoi(repositoryIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := database.DeleteRepository(uint(repositoryID)); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Repository %d deleted", repositoryID))
+
+}
+
+//repository functions
+
 func GetRepositoryEntriesV0(c *gin.Context) {
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -239,7 +300,8 @@ func GetRepositoryEntriesV0(c *gin.Context) {
 }
 
 func GetRepositorySummaryV0(c *gin.Context) {
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -272,10 +334,66 @@ func GetRepositorySummaryV0(c *gin.Context) {
 }
 
 /* Resource Functions */
+func CreateResourceV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	resource := models.Resource{}
+	if err := c.Bind(&resource); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	userID, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	resource.CreatedBy = int(userID)
+	resource.UpdatedBy = int(userID)
+	resource.CreatedAt = time.Now()
+	resource.UpdatedAt = time.Now()
+
+	_, err = database.InsertResource(&resource)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, resource)
+}
+
+func DeleteResourceV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	resourceIDParam := c.Param("id")
+	resourceID, err := strconv.Atoi(resourceIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := database.DeleteResource(uint(resourceID)); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Resource %d deleted", resourceID))
+
+}
 
 func GetResourcesV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -291,7 +409,8 @@ func GetResourcesV0(c *gin.Context) {
 
 func GetResourceV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -312,7 +431,8 @@ func GetResourceV0(c *gin.Context) {
 
 func GetResourceEntriesV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -384,7 +504,8 @@ func GetResourceEntriesV0(c *gin.Context) {
 
 func GetResourceSummaryV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -421,7 +542,8 @@ func GetResourceSummaryV0(c *gin.Context) {
 
 func GetAccessionsV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -437,7 +559,8 @@ func GetAccessionsV0(c *gin.Context) {
 
 func GetAccessionV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())
 		return
 	}
@@ -465,7 +588,8 @@ func GetAccessionV0(c *gin.Context) {
 }
 
 func GetAccessionEntriesV0(c *gin.Context) {
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -539,7 +663,8 @@ func GetAccessionEntriesV0(c *gin.Context) {
 
 func GetAccessionSummaryV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -576,7 +701,8 @@ func GetAccessionSummaryV0(c *gin.Context) {
 
 func GetEntryV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())
 		return
 	}
@@ -600,7 +726,8 @@ func GetEntryV0(c *gin.Context) {
 
 func GetEntriesV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -680,14 +807,9 @@ func GetEntriesV0(c *gin.Context) {
 }
 
 func UpdateEntryLocationV0(c *gin.Context) {
-	if err := checkToken(c); err != nil {
+	token, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
-
-	token := c.Request.Header.Get("X-Medialog-Token")
-	if token == "" {
-		c.JSON(http.StatusBadRequest, "no token provided")
 		return
 	}
 
@@ -741,22 +863,22 @@ func UpdateEntryLocationV0(c *gin.Context) {
 
 }
 
-func checkToken(c *gin.Context) error {
+func checkToken(c *gin.Context) (string, error) {
 	expireTokens()
 	token := c.Request.Header.Get("X-Medialog-Token")
 
 	if token == "" {
-		return fmt.Errorf("no `X-Medialog-Token` set in request header")
+		return "", fmt.Errorf("no `X-Medialog-Token` set in request header")
 	}
 
 	apiToken, err := database.FindToken(token)
 	if err != nil {
-		return fmt.Errorf("could not find supplied token: %s", token)
+		return "", fmt.Errorf("could not find supplied token: %s", token)
 	}
 
 	if !apiToken.IsValid {
-		return fmt.Errorf("invalid token - please reauthenticate")
+		return "", fmt.Errorf("invalid token - please reauthenticate")
 	}
 
-	return nil
+	return token, nil
 }
