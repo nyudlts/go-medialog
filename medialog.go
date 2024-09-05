@@ -28,7 +28,6 @@ var (
 const version = "v1.0.6"
 
 func init() {
-
 	flag.StringVar(&environment, "environment", "", "")
 	flag.StringVar(&configuration, "config", "", "")
 	flag.BoolVar(&gormDebug, "gorm-debug", false, "")

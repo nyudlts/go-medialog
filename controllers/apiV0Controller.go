@@ -784,9 +784,83 @@ func GetAccessionSummaryV0(c *gin.Context) {
 }
 
 /* Entry Functions */
+func CreateEntryV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	userID, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	entry := models.Entry{}
+	if err := c.Bind(&entry); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry.CreatedBy = int(userID)
+	entry.UpdatedBy = int(userID)
+	entry.CreatedAt = time.Now()
+	entry.UpdatedAt = time.Now()
+	entry.ID, _ = uuid.NewUUID()
+
+	accession, err := database.FindAccession(entry.AccessionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	entry.Accession = accession
+
+	resource, err := database.FindResource(accession.ResourceID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	entry.Resource = resource
+
+	repository, err := database.FindRepository(resource.RepositoryID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	entry.Repository = repository
+
+	_, err = database.InsertEntry(&entry)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, entry)
+}
+
+func DeleteEntryV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	entryID := c.Param("id")
+	entryUUID, err := uuid.Parse(entryID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := database.DeleteEntry(entryUUID); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Entry %s deleted", entryUUID))
+}
 
 func GetEntryV0(c *gin.Context) {
-
 	_, err := checkToken(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())
@@ -872,6 +946,8 @@ func GetEntriesV0(c *gin.Context) {
 				c.JSON(http.StatusBadRequest, err.Error())
 				return
 			}
+		} else {
+			page = 1
 		}
 
 		results := EntryResultSet{}

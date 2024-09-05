@@ -345,7 +345,111 @@ func TestAPI(t *testing.T) {
 		}
 	})
 
+	//Entry functions
+	var entry = models.Entry{}
+	t.Run("test create an entry", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		requestURL := fmt.Sprintf("%s/entries", APIROOT)
+		form := url.Values{}
+		form.Add("media_id", "1")
+		form.Add("mediatype", "mediatype_floppy_3_5")
+		form.Add("stock_unit", "MB")
+		form.Add("stock_size_num", "3.5")
+		form.Add("resource_id", fmt.Sprintf("%d", resource.ID))
+		form.Add("repository_id", fmt.Sprintf("%d", repository.ID))
+		form.Add("accession_id", fmt.Sprintf("%d", accession.ID))
+		req, err := http.NewRequestWithContext(c, "POST", requestURL, strings.NewReader(form.Encode()))
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+		r.ServeHTTP(recorder, req)
+
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+		body, err := io.ReadAll(recorder.Body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		if err := json.Unmarshal(body, &entry); err != nil {
+			t.Error(err)
+		}
+
+		assert.NotEqual(t, "00000000-0000-0000-0000-000000000000", entry.ID.String())
+	})
+
+	t.Run("test get all entry ids", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		requestURL := fmt.Sprintf("%s/entries?all_ids=true", APIROOT)
+		req, err := http.NewRequestWithContext(c, "GET", requestURL, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+		body, err := io.ReadAll(recorder.Body)
+		if err != nil {
+			t.Error(err)
+		}
+
+		entries := []string{}
+		if err := json.Unmarshal(body, &entries); err != nil {
+			t.Error(err)
+		}
+
+		assert.GreaterOrEqual(t, len(entries), 1)
+
+	})
+
+	t.Run("test get an entry", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		requestURL := fmt.Sprintf("%s/entries/%s", APIROOT, entry.ID.String())
+		req, err := http.NewRequestWithContext(c, "GET", requestURL, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+		body, err := io.ReadAll(recorder.Body)
+		if err != nil {
+			t.Error(err)
+		}
+		e := models.Entry{}
+		if err := json.Unmarshal(body, &e); err != nil {
+			t.Error(err)
+		}
+		assert.NotEqual(t, "00000000-0000-0000-0000-000000000000", e.ID.String())
+
+	})
+
 	//delete functions
+
+	t.Run("test delete an entry", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		url := fmt.Sprintf("%s/entries/%s", APIROOT, entry.ID)
+		req, err := http.NewRequestWithContext(c, "DELETE", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+	})
 
 	t.Run("test delete an accession", func(t *testing.T) {
 		recorder := httptest.NewRecorder()

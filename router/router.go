@@ -76,6 +76,10 @@ func SetupRouter(env models.Environment, gormDebug bool, prod bool) (*gin.Engine
 	log.Println("[INFO] Loading routes")
 	LoadRoutes(r)
 
+	//load api routes
+	log.Println("[INFO] Loading API")
+	LoadAPI(r)
+
 	return r, nil
 }
 
