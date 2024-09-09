@@ -1025,6 +1025,20 @@ func UpdateEntryLocationV0(c *gin.Context) {
 
 }
 
+func DeleteSessionsV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	if err := database.DeleteSessions(); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	c.JSON(http.StatusOK, "sessions deleted")
+}
+
 func checkToken(c *gin.Context) (string, error) {
 	expireTokens()
 	token := c.Request.Header.Get("X-Medialog-Token")

@@ -434,6 +434,36 @@ func TestAPI(t *testing.T) {
 
 	})
 
+	t.Run("test update location of an entry", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		location := "sl_rsw_acm_born_digital"
+		url := fmt.Sprintf("%s/entries/%s/update_location?location=%s", APIROOT, entry.ID, location)
+		req, err := http.NewRequestWithContext(c, "PATCH", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+	})
+
+	t.Run("test update location failure", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		location := "test"
+		url := fmt.Sprintf("%s/entries/%s/update_location?location=%s", APIROOT, entry.ID, location)
+		req, err := http.NewRequestWithContext(c, "PATCH", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 400, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+	})
+
 	//delete functions
 
 	t.Run("test delete an entry", func(t *testing.T) {
@@ -485,6 +515,20 @@ func TestAPI(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(recorder)
 		url := fmt.Sprintf("%s/repositories/%d", APIROOT, repoID)
+		req, err := http.NewRequestWithContext(c, "DELETE", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+	})
+
+	t.Run("test delete all sessions", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		url := fmt.Sprintf("%s/delete_sessions", APIROOT)
 		req, err := http.NewRequestWithContext(c, "DELETE", url, nil)
 		if err != nil {
 			t.Error(err)
