@@ -16,13 +16,6 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
-type MedialogInfo struct {
-	Version       string
-	GinVersion    string
-	GolangVersion string
-	APIVersion    string
-}
-
 type EntryResultSet struct {
 	FirstPage int            `json:"first_page"`
 	LastPage  int            `json:"last_page"`
@@ -51,17 +44,10 @@ type SummaryTotalsAccession struct {
 }
 
 const UNAUTHORIZED = "Please authenticate to access this service"
+const apiVersion = "v0.1.3"
+const medialogVersion = "v1.0.6"
 
 var ACCESS_DENIED = map[string]string{"error": "access denied"}
-
-func TestAPI(c *gin.Context) {
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		c.JSON(403, UNAUTHORIZED)
-		return
-	}
-	c.JSON(200, sessionCookies)
-}
 
 type APIError struct {
 	Message map[string][]string `json:"error"`
@@ -70,9 +56,9 @@ type APIError struct {
 func APILogin(c *gin.Context) {
 	expireTokens()
 	email := c.Param("user")
-	passwd := c.Query("password")
+	password := c.Query("password")
 
-	if passwd == "" {
+	if password == "" {
 		apiError := APIError{}
 		e := map[string][]string{"password": []string{"Parameter required but no value provided"}}
 		apiError.Message = e
@@ -86,11 +72,11 @@ func APILogin(c *gin.Context) {
 		return
 	}
 
-	hash := sha512.Sum512([]byte(passwd + user.Salt))
+	hash := sha512.Sum512([]byte(password + user.Salt))
 	userSHA512 := hex.EncodeToString(hash[:])
 
 	if userSHA512 != user.EncryptedPassword {
-		c.JSON(http.StatusUnauthorized, map[string]string{"error": "login failed -- password incorrect"})
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("storedChecksum: %s, calculatedChecksum: %s", user.EncryptedPassword, userSHA512))
 		return
 	}
 
@@ -130,12 +116,27 @@ func APILogin(c *gin.Context) {
 	c.JSON(200, apiToken)
 }
 
+func APILogout(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	if err := database.DeleteToken(token); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Logged Out"))
+}
+
 func GetV0Index(c *gin.Context) {
-	medialogInfo := MedialogInfo{
-		Version:       "v1.0.5",
+	medialogInfo := models.MedialogInfo{
+		Version:       medialogVersion,
 		GolangVersion: runtime.Version(),
 		GinVersion:    gin.Version,
-		APIVersion:    "0.1.2",
+		APIVersion:    apiVersion,
 	}
 
 	c.JSON(http.StatusOK, medialogInfo)
@@ -145,7 +146,8 @@ func GetV0Index(c *gin.Context) {
 
 func GetRepositoriesV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -161,7 +163,8 @@ func GetRepositoriesV0(c *gin.Context) {
 
 func GetRepositoryV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -180,8 +183,67 @@ func GetRepositoryV0(c *gin.Context) {
 	c.JSON(http.StatusOK, repository)
 }
 
+func CreateRepositoryV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	repo := models.Repository{}
+	if err := c.Bind(&repo); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	userID, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	repo.CreatedBy = int(userID)
+	repo.UpdatedBy = int(userID)
+	repo.CreatedAt = time.Now()
+	repo.UpdatedAt = time.Now()
+
+	_, err = database.CreateRepository(&repo)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, repo)
+}
+
+func DeleteRepositoryV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	repositoryIDParam := c.Param("id")
+	repositoryID, err := strconv.Atoi(repositoryIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := database.DeleteRepository(uint(repositoryID)); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Repository %d deleted", repositoryID))
+
+}
+
+//repository functions
+
 func GetRepositoryEntriesV0(c *gin.Context) {
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -253,7 +315,8 @@ func GetRepositoryEntriesV0(c *gin.Context) {
 }
 
 func GetRepositorySummaryV0(c *gin.Context) {
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -286,10 +349,73 @@ func GetRepositorySummaryV0(c *gin.Context) {
 }
 
 /* Resource Functions */
+func CreateResourceV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	resource := models.Resource{}
+	if err := c.Bind(&resource); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	userID, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	repository, err := database.FindRepository(resource.RepositoryID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	resource.CreatedBy = int(userID)
+	resource.UpdatedBy = int(userID)
+	resource.CreatedAt = time.Now()
+	resource.UpdatedAt = time.Now()
+	resource.Repository = repository
+
+	_, err = database.InsertResource(&resource)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, resource)
+}
+
+func DeleteResourceV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	resourceIDParam := c.Param("id")
+	resourceID, err := strconv.Atoi(resourceIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := database.DeleteResource(uint(resourceID)); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Resource %d deleted", resourceID))
+
+}
 
 func GetResourcesV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -305,7 +431,8 @@ func GetResourcesV0(c *gin.Context) {
 
 func GetResourceV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -326,7 +453,8 @@ func GetResourceV0(c *gin.Context) {
 
 func GetResourceEntriesV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -398,7 +526,8 @@ func GetResourceEntriesV0(c *gin.Context) {
 
 func GetResourceSummaryV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -433,9 +562,51 @@ func GetResourceSummaryV0(c *gin.Context) {
 
 /* Accession Functions */
 
+func CreateAccessionV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	accession := models.Accession{}
+	if err := c.Bind(&accession); err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	userId, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	resource, err := database.FindResource(accession.ResourceID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	accession.CreatedBy = int(userId)
+	accession.UpdatedBy = int(userId)
+	accession.CreatedAt = time.Now()
+	accession.UpdatedAt = time.Now()
+	accession.Resource = resource
+
+	_, err = database.InsertAccession(&accession)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, accession)
+
+}
+
 func GetAccessionsV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -451,7 +622,8 @@ func GetAccessionsV0(c *gin.Context) {
 
 func GetAccessionV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())
 		return
 	}
@@ -478,8 +650,32 @@ func GetAccessionV0(c *gin.Context) {
 	c.JSON(http.StatusOK, accession)
 }
 
+func DeleteAccessionV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	accessionIDParam := c.Param("id")
+	accessionID, err := strconv.Atoi(accessionIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := database.DeleteAccession(uint(accessionID)); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Resource %d deleted", accessionID))
+
+}
+
 func GetAccessionEntriesV0(c *gin.Context) {
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -553,7 +749,8 @@ func GetAccessionEntriesV0(c *gin.Context) {
 
 func GetAccessionSummaryV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
@@ -587,10 +784,85 @@ func GetAccessionSummaryV0(c *gin.Context) {
 }
 
 /* Entry Functions */
+func CreateEntryV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	userID, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	entry := models.Entry{}
+	if err := c.Bind(&entry); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	entry.CreatedBy = int(userID)
+	entry.UpdatedBy = int(userID)
+	entry.CreatedAt = time.Now()
+	entry.UpdatedAt = time.Now()
+	entry.ID, _ = uuid.NewUUID()
+
+	accession, err := database.FindAccession(entry.AccessionID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	entry.Accession = accession
+
+	resource, err := database.FindResource(accession.ResourceID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	entry.Resource = resource
+
+	repository, err := database.FindRepository(resource.RepositoryID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	entry.Repository = repository
+
+	_, err = database.InsertEntry(&entry)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, entry)
+}
+
+func DeleteEntryV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	entryID := c.Param("id")
+	entryUUID, err := uuid.Parse(entryID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := database.DeleteEntry(entryUUID); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("Entry %s deleted", entryUUID))
+}
 
 func GetEntryV0(c *gin.Context) {
-
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())
 		return
 	}
@@ -614,13 +886,14 @@ func GetEntryV0(c *gin.Context) {
 
 func GetEntriesV0(c *gin.Context) {
 
-	if err := checkToken(c); err != nil {
+	_, err := checkToken(c)
+	if err != nil {
 		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
 		return
 	}
 
 	allIDsParam := c.Query("all_ids")
-	log.Println(allIDsParam)
+
 	var allIds bool
 	if allIDsParam != "" {
 		var err error
@@ -673,6 +946,8 @@ func GetEntriesV0(c *gin.Context) {
 				c.JSON(http.StatusBadRequest, err.Error())
 				return
 			}
+		} else {
+			page = 1
 		}
 
 		results := EntryResultSet{}
@@ -693,17 +968,93 @@ func GetEntriesV0(c *gin.Context) {
 	}
 }
 
-func checkToken(c *gin.Context) error {
+func UpdateEntryLocationV0(c *gin.Context) {
+	token, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, "no id provided")
+		return
+	}
+
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "provided id is not a valid uuid")
+		return
+	}
+
+	location := c.Query("location")
+	if location == "" {
+		c.JSON(http.StatusBadRequest, "no location provided")
+		return
+	}
+
+	storageLocation := GetStorageLocation(location)
+
+	if storageLocation == "No Match" {
+		c.JSON(http.StatusBadRequest, fmt.Sprintf("`%s` is not a valid location", location))
+		return
+	}
+
+	entry, err := database.FindEntry(uid)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	userID, err := database.FindUserIDByToken(token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	entry.Location = location
+	entry.UpdatedAt = time.Now()
+	entry.UpdatedBy = int(userID)
+
+	if err := database.UpdateEntry(&entry); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("id: %s, location: %s, storage location: %s", id, location, storageLocation))
+
+}
+
+func DeleteSessionsV0(c *gin.Context) {
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	if err := database.DeleteSessions(); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	c.JSON(http.StatusOK, "sessions deleted")
+}
+
+func checkToken(c *gin.Context) (string, error) {
 	expireTokens()
 	token := c.Request.Header.Get("X-Medialog-Token")
+
+	if token == "" {
+		return "", fmt.Errorf("no `X-Medialog-Token` set in request header")
+	}
+
 	apiToken, err := database.FindToken(token)
 	if err != nil {
-		return fmt.Errorf("could not find supplied token: %s", token)
+		return "", fmt.Errorf("could not find supplied token: %s", token)
 	}
 
 	if !apiToken.IsValid {
-		return fmt.Errorf("invalid token - please reauthenticate")
+		return "", fmt.Errorf("invalid token - please reauthenticate")
 	}
 
-	return nil
+	return token, nil
 }

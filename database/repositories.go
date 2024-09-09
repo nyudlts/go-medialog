@@ -3,7 +3,7 @@ package database
 import "github.com/nyudlts/go-medialog/models"
 
 func CreateRepository(repository *models.Repository) (uint, error) {
-	if err := db.Create(&repository).Error; err != nil {
+	if err := db.Create(repository).Error; err != nil {
 		return 0, err
 	}
 	return repository.ID, nil

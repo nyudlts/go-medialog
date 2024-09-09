@@ -47,8 +47,8 @@ type Entry struct {
 	ID                    uuid.UUID  `json:"id" gorm:"primaryKey" form:"id"`
 	CreatedAt             time.Time  `json:"created_at"`
 	UpdatedAt             time.Time  `json:"updated_at"`
-	CreatedBy             int        `json:"created_by"`
-	UpdatedBy             int        `json:"updated_by"`
+	CreatedBy             int        `json:"created_by"` //this should be converted to a uint
+	UpdatedBy             int        `json:"updated_by"` //this should be converted to a uint
 	MediaID               uint       `json:"media_id" form:"media_id"`
 	Mediatype             string     `json:"mediatype" form:"mediatype"`
 	Manufacturer          string     `json:"manufacturer" form:"manufacturer"`
@@ -161,4 +161,35 @@ type Token struct {
 	UserID  uint      `json:"user_id"`
 	User    User      `json:"user"`
 	Type    string    `json:"type"`
+}
+
+// config functions
+type Environment struct {
+	LogLocation    string         `yaml:"log"`
+	DatabaseConfig DatabaseConfig `yaml:"database"`
+	TestCreds      TestCreds      `yaml:"test_creds"`
+}
+
+type DatabaseConfig struct {
+	Username     string `yaml:"username"`
+	Password     string `yaml:"password"`
+	URL          string `yaml:"url"`
+	Port         string `yaml:"port"`
+	DatabaseName string `yaml:"database_name"`
+}
+
+type TestCreds struct {
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
+
+type MedialogInfo struct {
+	Version       string
+	GinVersion    string
+	GolangVersion string
+	APIVersion    string
+}
+
+func (mli MedialogInfo) String() string {
+	return fmt.Sprintf("Medialog Version: %s, API Version: %s, Golang Version: %s, Gin Version: %s", mli.Version, mli.APIVersion, mli.GolangVersion, mli.GinVersion)
 }

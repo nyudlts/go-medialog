@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"crypto/md5"
 	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
@@ -182,6 +183,29 @@ func CreateUser(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, "/users")
+}
+
+func CreateAdminUser() (string, error) {
+	user := models.User{}
+	user.Email = "admin@medialog.dlib.nyu.edu" //this will come from a config
+	user.FirstName = "admin"
+	user.LastName = "user"
+	user.IsActive = true
+	user.CanAccessAPI = true
+	user.IsAdmin = true
+	salt := GenerateStringRunes(16)
+	md5Hash := md5.Sum([]byte(salt))
+	salt = hex.EncodeToString(md5Hash[:])
+	user.Salt = salt
+	password := GenerateStringRunes(16)
+	md5hash := md5.Sum([]byte(password))
+	password = hex.EncodeToString(md5hash[:])
+	sha512hash := sha512.Sum512([]byte(password + user.Salt))
+	user.EncryptedPassword = hex.EncodeToString(sha512hash[:])
+	if _, err := database.InsertUser(&user); err != nil {
+		return "", err
+	}
+	return password, nil
 }
 
 func EditUser(c *gin.Context) {

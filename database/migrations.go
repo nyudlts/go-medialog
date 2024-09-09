@@ -4,23 +4,22 @@ import (
 	"fmt"
 
 	"github.com/go-gormigrate/gormigrate/v2"
-	"github.com/nyudlts/go-medialog/config"
 	"github.com/nyudlts/go-medialog/models"
 	"gorm.io/gorm"
 )
 
-func AutoMigrate(dbc config.DatabaseConfig) error {
+func AutoMigrate(dbc models.DatabaseConfig) error {
 	if err := ConnectMySQL(dbc, true); err != nil {
 		return err
 	}
 
-	if err := db.AutoMigrate(&models.Repository{}, &models.Resource{}, &models.Accession{}, &models.Entry{}, &models.User{}); err != nil {
+	if err := db.AutoMigrate(&models.Repository{}, &models.Resource{}, &models.Accession{}, &models.Entry{}, &models.User{}, &models.Token{}); err != nil {
 		return err
 	}
 	return nil
 }
 
-func MigrateDatabase(rollback bool, dbc config.DatabaseConfig) error {
+func MigrateDatabase(rollback bool, dbc models.DatabaseConfig) error {
 	if err := ConnectMySQL(dbc, true); err != nil {
 		return err
 	}
