@@ -44,6 +44,7 @@ func LoadRoutes(router *gin.Engine) {
 	resourceRoutes.GET(":id/edit", func(c *gin.Context) { controllers.EditResource(c) })
 	resourceRoutes.POST(":id/update", func(c *gin.Context) { controllers.UpdateResource(c) })
 	resourceRoutes.GET(":id/delete", func(c *gin.Context) { controllers.DeleteResource(c) })
+	resourceRoutes.GET(":id/csv", func(c *gin.Context) { controllers.GenCSV(c) })
 
 	//Entries Group
 	entryRoutes := router.Group("/entries")

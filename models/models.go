@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/google/uuid"
@@ -80,6 +81,33 @@ type Entry struct {
 	ContentType           string     `json:"content_type" form:"content_type"`
 	Structure             string     `json:"structure"`
 	Location              string     `json:"location" form:"location"`
+}
+
+var CSVHeader = []string{"id", "media_id", "mediatype", "label_text", "is_refreshed", "repository", "resource", "accession", "storage_location"}
+
+func (e Entry) ToCSV() []string {
+	re := regexp.MustCompile(`\r?\n`)
+	labelText := re.ReplaceAllString(e.LabelText, " ")
+
+	csv := []string{
+		e.ID.String(),
+		fmt.Sprintf("%d", e.MediaID),
+		e.Mediatype,
+		labelText,
+		boolToString(e.IsRefreshed),
+		e.Repository.Slug,
+		e.Resource.CollectionCode,
+		e.Accession.AccessionNum,
+		e.Location,
+	}
+	return csv
+}
+
+func boolToString(b bool) string {
+	if b {
+		return "TRUE"
+	}
+	return "FALSE"
 }
 
 func (e *Entry) UpdateEntry(updatedEntry Entry) {

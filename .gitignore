@@ -6,3 +6,4 @@ build/*
 *.log
 *.conf
 sys/*
+/public/csv/*.csv

@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -354,4 +357,48 @@ func DeleteResource(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/repositories/%d/show", resource.RepositoryID))
+}
+
+func GenCSV(c *gin.Context) {
+
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
+		return
+	}
+	isLoggedIn := true
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	resource, err := database.FindResource(uint(id))
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	entries, err := database.FindEntriesByResourceID(uint(id))
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	csvFileName := fmt.Sprintf("%s_%s.csv", resource.Repository.Slug, resource.CollectionCode)
+	csvLocation := filepath.Join("public", "tmp", csvFileName)
+	csvFile, err := os.Create(csvLocation)
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+	defer csvFile.Close()
+	csvWriter := csv.NewWriter(csvFile)
+	csvWriter.Write(models.CSVHeader)
+	for _, entry := range entries {
+		csvWriter.Write(entry.ToCSV())
+		csvWriter.Flush()
+	}
+
+	c.Redirect(http.StatusTemporaryRedirect, "/public/tmp/"+csvFileName)
 }
