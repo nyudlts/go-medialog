@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -359,7 +358,7 @@ func DeleteResource(c *gin.Context) {
 	c.Redirect(http.StatusFound, fmt.Sprintf("/repositories/%d/show", resource.RepositoryID))
 }
 
-func GenCSV(c *gin.Context) {
+func ResourceGenCSV(c *gin.Context) {
 
 	if err := isLoggedIn(c); err != nil {
 		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
@@ -385,20 +384,18 @@ func GenCSV(c *gin.Context) {
 		return
 	}
 
-	csvFileName := fmt.Sprintf("%s_%s.csv", resource.Repository.Slug, resource.CollectionCode)
-	csvLocation := filepath.Join("public", "tmp", csvFileName)
-	csvFile, err := os.Create(csvLocation)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
-	}
-	defer csvFile.Close()
-	csvWriter := csv.NewWriter(csvFile)
+	csvBuffer := new(strings.Builder)
+	var csvWriter = csv.NewWriter(csvBuffer)
 	csvWriter.Write(models.CSVHeader)
 	for _, entry := range entries {
-		csvWriter.Write(entry.ToCSV())
-		csvWriter.Flush()
+		record := entry.ToCSV()
+		csvWriter.Write(record)
 	}
+	csvWriter.Flush()
 
-	c.Redirect(http.StatusTemporaryRedirect, "/public/tmp/"+csvFileName)
+	csvFileName := fmt.Sprintf("%s_%s.csv", resource.Repository.Slug, resource.CollectionCode)
+	c.Header("content-type", "text/csv")
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Disposition", "attachment; filename="+csvFileName)
+	c.Writer.Write([]byte(csvBuffer.String()))
 }

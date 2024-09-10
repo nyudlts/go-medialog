@@ -24,6 +24,7 @@ func LoadRoutes(router *gin.Engine) {
 	accessionsRoutes.GET(":id/delete", func(c *gin.Context) { controllers.DeleteAccession(c) })
 	accessionsRoutes.GET(":id/slew", func(c *gin.Context) { controllers.SlewAccession(c) })
 	accessionsRoutes.POST("slew", func(c *gin.Context) { controllers.CreateAccessionSlew(c) })
+	accessionsRoutes.GET(":id/csv", func(c *gin.Context) { controllers.AccessionGenCSV(c) })
 
 	//Repository Group
 	repositoryRoutes := router.Group("/repositories")
@@ -44,7 +45,7 @@ func LoadRoutes(router *gin.Engine) {
 	resourceRoutes.GET(":id/edit", func(c *gin.Context) { controllers.EditResource(c) })
 	resourceRoutes.POST(":id/update", func(c *gin.Context) { controllers.UpdateResource(c) })
 	resourceRoutes.GET(":id/delete", func(c *gin.Context) { controllers.DeleteResource(c) })
-	resourceRoutes.GET(":id/csv", func(c *gin.Context) { controllers.GenCSV(c) })
+	resourceRoutes.GET(":id/csv", func(c *gin.Context) { controllers.ResourceGenCSV(c) })
 
 	//Entries Group
 	entryRoutes := router.Group("/entries")

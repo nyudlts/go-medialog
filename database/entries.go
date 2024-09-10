@@ -71,9 +71,17 @@ func FindEntryIDsByAccessionID(id uint) ([]string, error) {
 	return ids, nil
 }
 
-func FindEntriesByAccessionID(id uint, pagination Pagination) ([]models.Entry, error) {
+func FindEntriesByAccessionIDPaginated(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Where("accession_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
+}
+
+func FindEntriesByAccessionID(id uint) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Preload(clause.Associations).Where("accession_id = ?", id).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil

@@ -723,7 +723,7 @@ func GetAccessionEntriesV0(c *gin.Context) {
 			pagination.Limit = pageSize
 		}
 
-		entries, err := database.FindEntriesByAccessionID(uint(accessionID), pagination)
+		entries, err := database.FindEntriesByAccessionIDPaginated(uint(accessionID), pagination)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
