@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"crypto/sha512"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 )
@@ -54,7 +55,7 @@ type APIError struct {
 }
 
 func APILogin(c *gin.Context) {
-	expireTokens()
+	controllers.ExpireTokens()
 	email := c.Param("user")
 	password := c.Query("password")
 
@@ -85,7 +86,7 @@ func APILogin(c *gin.Context) {
 		return
 	}
 
-	token := GenerateStringRunes(24)
+	token := controllers.GenerateStringRunes(24)
 	tkHash := sha512.Sum512([]byte(token))
 	token = hex.EncodeToString(tkHash[:])
 
@@ -993,7 +994,7 @@ func UpdateEntryLocationV0(c *gin.Context) {
 		return
 	}
 
-	storageLocation := GetStorageLocation(location)
+	storageLocation := controllers.GetStorageLocation(location)
 
 	if storageLocation == "No Match" {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("`%s` is not a valid location", location))
@@ -1040,7 +1041,7 @@ func DeleteSessionsV0(c *gin.Context) {
 }
 
 func checkToken(c *gin.Context) (string, error) {
-	expireTokens()
+	controllers.ExpireTokens()
 	token := c.Request.Header.Get("X-Medialog-Token")
 
 	if token == "" {
