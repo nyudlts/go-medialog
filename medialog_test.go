@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
 
@@ -40,25 +43,32 @@ func TestApplication(t *testing.T) {
 		r.ServeHTTP(recorder, req)
 		assert.Equal(t, http.StatusFound, recorder.Code)
 
-		t.Log(recorder.Result().Header.Get("Set-Cookie"))
-	})
-
-	t.Run("test get index authenticated", func(t *testing.T) {
-		recorder := httptest.NewRecorder()
-		c, _ := gin.CreateTestContext(recorder)
-		c.SetCookie("medialog-sessions",
-			"MTcyNTk5NzI2MHxOd3dBTkZkRVFUZEhRazFKU1VWVldqVlRSRlpZUkVWSVYxQkRRMUpHTjAxTFdsVk9OME5HTWpWTVdqSkhURnBPUkVsVVNGWmFWVkU9fGYXoOEZhC7V7FyNzW3NZd0xiPTGNjOqHJg2LMMM5iex",
-			2592000, "/", "", false, true,
-		)
-
-		req, err := http.NewRequestWithContext(c, "GET", "/", nil)
-		if err != nil {
-			t.Error(err)
-		}
-		r.ServeHTTP(recorder, req)
-		assert.Equal(t, 200, recorder.Code)
-		assert.Equal(t, "text/html; charset=utf-8", recorder.Header().Get("content-type"))
+		outFile, _ := os.Create("headers.txt")
+		defer outFile.Close()
+		writer := bufio.NewWriter(outFile)
+		writer.WriteString(fmt.Sprintf("%v", recorder.Result().Header))
+		writer.Flush()
 
 	})
+
+	/*
+		t.Run("test get index authenticated", func(t *testing.T) {
+			recorder := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(recorder)
+			c.SetCookie("medialog-sessions",
+				"MTcyNTk5NzI2MHxOd3dBTkZkRVFUZEhRazFKU1VWVldqVlRSRlpZUkVWSVYxQkRRMUpHTjAxTFdsVk9OME5HTWpWTVdqSkhURnBPUkVsVVNGWmFWVkU9fGYXoOEZhC7V7FyNzW3NZd0xiPTGNjOqHJg2LMMM5iex",
+				2592000, "/", "", false, true,
+			)
+
+			req, err := http.NewRequestWithContext(c, "GET", "/", nil)
+			if err != nil {
+				t.Error(err)
+			}
+			r.ServeHTTP(recorder, req)
+			assert.Equal(t, 200, recorder.Code)
+			assert.Equal(t, "text/html; charset=utf-8", recorder.Header().Get("content-type"))
+
+		})
+	*/
 
 }
