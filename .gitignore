@@ -1,6 +1,7 @@
 *.db
 *.exe
 build/*
+bin/*
 .vscode/*
 .idea/*
 *.log

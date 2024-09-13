@@ -110,7 +110,7 @@ func LoadAPI(router *gin.Engine) {
 	apiV0Routes := router.Group("/api/v0")
 
 	//index
-	apiV0Routes.GET("", func(c *gin.Context) { api.GetV0Index(c) })
+	apiV0Routes.GET("", func(c *gin.Context) { api.GetV0Root(c) })
 
 	//users
 	apiV0Routes.POST("users/:user/login", func(c *gin.Context) { api.APILogin(c) })
