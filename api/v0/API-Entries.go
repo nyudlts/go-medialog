@@ -59,8 +59,7 @@ func CreateEntryV0(c *gin.Context) {
 	}
 	entry.Repository = repository
 
-	_, err = database.InsertEntry(&entry)
-	if err != nil {
+	if err = database.InsertEntry(&entry); err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}

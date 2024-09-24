@@ -9,12 +9,11 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func InsertEntry(entry *models.Entry) (uuid.UUID, error) {
+func InsertEntry(entry *models.Entry) error {
 	if err := db.Create(&entry).Error; err != nil {
-		fakeUUID, _ := uuid.NewUUID()
-		return fakeUUID, err
+		return err
 	}
-	return entry.ID, nil
+	return nil
 }
 
 func DeleteEntry(id uuid.UUID) error {

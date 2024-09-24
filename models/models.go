@@ -83,7 +83,7 @@ type Entry struct {
 	Location              string     `json:"location" form:"location"`
 }
 
-var CSVHeader = []string{"id", "media_id", "mediatype", "label_text", "is_refreshed", "repository", "resource", "accession", "storage_location"}
+var CSVHeader = []string{"id", "media_id", "mediatype", "content_type", "label_text", "is_refreshed", "imaging_success", "repository", "resource", "accession", "storage_location"}
 
 func (e Entry) ToCSV() []string {
 	re := regexp.MustCompile(`\r?\n`)
@@ -93,8 +93,10 @@ func (e Entry) ToCSV() []string {
 		e.ID.String(),
 		fmt.Sprintf("%d", e.MediaID),
 		e.Mediatype,
+		e.ContentType,
 		labelText,
 		boolToString(e.IsRefreshed),
+		e.ImagingSuccess,
 		e.Repository.Slug,
 		e.Resource.CollectionCode,
 		e.Accession.AccessionNum,

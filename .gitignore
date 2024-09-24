@@ -6,5 +6,3 @@ bin/*
 .idea/*
 *.log
 *.conf
-sys/*
-/public/csv/*.csv

@@ -518,7 +518,7 @@ func createSlewEntry(slew Slew, accession models.Accession) error {
 		entry.UpdatedBy = userID
 		entry.UpdatedAt = time.Now()
 
-		if _, err := database.InsertEntry(&entry); err != nil {
+		if err := database.InsertEntry(&entry); err != nil {
 			return err
 		}
 	}
