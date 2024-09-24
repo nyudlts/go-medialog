@@ -42,8 +42,8 @@ type SummaryTotalsAccession struct {
 }
 
 const UNAUTHORIZED = "Please authenticate to access this service"
-const apiVersion = "v0.1.3"
-const medialogVersion = "v1.0.6"
+const apiVersion = "v0.1.4"
+const medialogVersion = "v1.0.7"
 
 var ACCESS_DENIED = map[string]string{"error": "access denied"}
 
