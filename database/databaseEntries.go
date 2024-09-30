@@ -243,18 +243,26 @@ func GetSummaryByYear(year int) (Summaries, error) {
 	return getSummary(entries), nil
 }
 
-type DateRange struct {
-	StartYear    int `form:"start-year"`
-	StartMonth   int `form:"start-month"`
-	StartDay     int `form:"start-day"`
-	EndYear      int `form:"end-year"`
-	EndMonth     int `form:"end-month"`
-	EndDay       int `form:"end-day"`
-	RepositoryID int `form:"partner_code"`
-}
-
 func (dr DateRange) String() string {
 	return fmt.Sprintf("%d-%d-%d to %d-%d-%d", dr.StartYear, dr.StartMonth, dr.StartDay, dr.EndYear, dr.EndMonth, dr.EndDay)
+}
+
+func GetEntriesByDateRange(dr DateRange) ([]models.Entry, error) {
+	startDate := fmt.Sprintf("%d-%d-%dT00:00:00Z", dr.StartYear, dr.StartMonth, dr.StartDay)
+	endDate := fmt.Sprintf("%d-%d-%dT23:59:59Z", dr.EndYear, dr.EndMonth, dr.EndDay)
+	entries := []models.Entry{}
+	if dr.RepositoryID == 0 {
+		if err := db.Preload(clause.Associations).Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
+			return entries, err
+		}
+		return entries, nil
+	} else {
+		if err := db.Preload(clause.Associations).Where("repository_id = ?", dr.RepositoryID).Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
+			return entries, err
+		}
+		return entries, nil
+	}
+
 }
 
 func GetSummaryByDateRange(dr DateRange) (Summaries, error) {
