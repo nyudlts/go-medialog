@@ -397,5 +397,6 @@ func ResourceGenCSV(c *gin.Context) {
 	c.Header("content-type", "text/csv")
 	c.Header("Content-Description", "File Transfer")
 	c.Header("Content-Disposition", "attachment; filename="+csvFileName)
+	c.Status(http.StatusOK)
 	c.Writer.Write([]byte(csvBuffer.String()))
 }

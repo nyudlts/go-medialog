@@ -120,19 +120,18 @@ func ReportsCSV(c *gin.Context) {
 	csvBuffer := new(strings.Builder)
 	var csvWriter = csv.NewWriter(csvBuffer)
 	csvWriter.Write(models.CSVHeader)
-	for _, entry := range entries {
-		record := entry.ToCSV()
-		csvWriter.Write(record)
-	}
 	csvWriter.Flush()
+	for _, entry := range entries {
+		csvWriter.Write(entry.ToCSV())
+		csvWriter.Flush()
+	}
 
-	csvFileName := fmt.Sprintf("%s.csv", "report") // make astring formatter for dateRage struct
+	csvFileName := fmt.Sprintf("%s.csv", "report") // make a string formatter for dateRage struct
 	c.Header("content-type", "text/csv")
 	c.Header("Content-Description", "File Transfer")
 	c.Header("Content-Disposition", "attachment; filename="+csvFileName)
+	c.Status(http.StatusOK)
 	c.Writer.Write([]byte(csvBuffer.String()))
-
-	c.JSON(http.StatusOK, entries)
 }
 
 var months = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}

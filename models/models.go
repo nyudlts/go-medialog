@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"regexp"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -86,8 +86,8 @@ type Entry struct {
 var CSVHeader = []string{"id", "media_id", "mediatype", "content_type", "label_text", "is_refreshed", "imaging_success", "repository", "resource", "accession", "storage_location"}
 
 func (e Entry) ToCSV() []string {
-	re := regexp.MustCompile(`\r?\n`)
-	labelText := re.ReplaceAllString(e.LabelText, " ")
+
+	labelText := strings.ReplaceAll(e.LabelText, "\n", " ")
 
 	csv := []string{
 		e.ID.String(),
