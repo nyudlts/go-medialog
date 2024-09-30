@@ -16,7 +16,7 @@ var isAdmin = "is-admin"
 var canAccessAPI = "can-access-api"
 var sessionToken = "token"
 
-func expireTokens() {
+func ExpireTokens() {
 	tokens := database.GetTokens()
 	log.Printf("[INFO] expiring api tokens")
 	for _, token := range tokens {
@@ -31,7 +31,7 @@ func expireTokens() {
 
 func isLoggedIn(c *gin.Context) error {
 
-	expireTokens()
+	ExpireTokens()
 
 	session := sessions.Default(c)
 	userIDCookie := session.Get(userkey)

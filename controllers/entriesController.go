@@ -364,7 +364,7 @@ func CreateEntry(c *gin.Context) {
 	createEntry.Repository = repository
 
 	//insert the entry
-	if _, err := database.InsertEntry(&createEntry); err != nil {
+	if err := database.InsertEntry(&createEntry); err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
@@ -603,7 +603,7 @@ func CloneEntry(c *gin.Context) {
 	entry.RepositoryID = repository.ID
 	entry.Repository = repository
 
-	if _, err := database.InsertEntry(&entry); err != nil {
+	if err := database.InsertEntry(&entry); err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}

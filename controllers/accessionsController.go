@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"encoding/csv"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -111,7 +113,7 @@ func GetAccession(c *gin.Context) {
 
 	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
 
-	entries, err := database.FindEntriesByAccessionID(accession.ID, pagination)
+	entries, err := database.FindEntriesByAccessionIDPaginated(accession.ID, pagination)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
@@ -424,7 +426,7 @@ func SlewAccession(c *gin.Context) {
 
 	pagination := database.Pagination{Limit: 10, Offset: 0, Sort: "media_id"}
 
-	entries, err := database.FindEntriesByAccessionID(accession.ID, pagination)
+	entries, err := database.FindEntriesByAccessionIDPaginated(accession.ID, pagination)
 	if err != nil {
 		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
@@ -516,9 +518,57 @@ func createSlewEntry(slew Slew, accession models.Accession) error {
 		entry.UpdatedBy = userID
 		entry.UpdatedAt = time.Now()
 
-		if _, err := database.InsertEntry(&entry); err != nil {
+		if err := database.InsertEntry(&entry); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func AccessionGenCSV(c *gin.Context) {
+
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
+		return
+	}
+	isLoggedIn := true
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	accession, err := database.FindAccession(uint(id))
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	entries, err := database.FindEntriesByAccessionID(accession.ID)
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	repository, err := database.FindRepository(accession.Resource.RepositoryID)
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	csvFileName := fmt.Sprintf("%s_%s_%s.csv", repository.Slug, accession.Resource.CollectionCode, accession.AccessionNum)
+	csvBuffer := new(strings.Builder)
+	var csvWriter = csv.NewWriter(csvBuffer)
+	csvWriter.Write(models.CSVHeader)
+	for _, entry := range entries {
+		record := entry.ToCSV()
+		csvWriter.Write(record)
+	}
+	csvWriter.Flush()
+
+	c.Header("content-type", "text/csv")
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Disposition", "attachment; filename="+csvFileName)
+	c.Writer.Write([]byte(csvBuffer.String()))
 }

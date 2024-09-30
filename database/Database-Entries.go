@@ -9,12 +9,11 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func InsertEntry(entry *models.Entry) (uuid.UUID, error) {
+func InsertEntry(entry *models.Entry) error {
 	if err := db.Create(&entry).Error; err != nil {
-		fakeUUID, _ := uuid.NewUUID()
-		return fakeUUID, err
+		return err
 	}
-	return entry.ID, nil
+	return nil
 }
 
 func DeleteEntry(id uuid.UUID) error {
@@ -47,6 +46,14 @@ func FindEntryIDsByResourceID(id uint) ([]string, error) {
 	return entries, nil
 }
 
+func FindEntriesByResourceID(id uint) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Preload(clause.Associations).Where("resource_id = ?", id).Find(&entries).Error; err != nil {
+		return []models.Entry{}, err
+	}
+	return entries, nil
+}
+
 func FindEntriesByResourceIDPaginated(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Preload(clause.Associations).Where("resource_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
@@ -63,9 +70,17 @@ func FindEntryIDsByAccessionID(id uint) ([]string, error) {
 	return ids, nil
 }
 
-func FindEntriesByAccessionID(id uint, pagination Pagination) ([]models.Entry, error) {
+func FindEntriesByAccessionIDPaginated(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Where("accession_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
+}
+
+func FindEntriesByAccessionID(id uint) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Preload(clause.Associations).Where("accession_id = ?", id).Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil

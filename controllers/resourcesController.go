@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -354,4 +356,46 @@ func DeleteResource(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/repositories/%d/show", resource.RepositoryID))
+}
+
+func ResourceGenCSV(c *gin.Context) {
+
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
+		return
+	}
+	isLoggedIn := true
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	resource, err := database.FindResource(uint(id))
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	entries, err := database.FindEntriesByResourceID(uint(id))
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	csvBuffer := new(strings.Builder)
+	var csvWriter = csv.NewWriter(csvBuffer)
+	csvWriter.Write(models.CSVHeader)
+	for _, entry := range entries {
+		record := entry.ToCSV()
+		csvWriter.Write(record)
+	}
+	csvWriter.Flush()
+
+	csvFileName := fmt.Sprintf("%s_%s.csv", resource.Repository.Slug, resource.CollectionCode)
+	c.Header("content-type", "text/csv")
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Disposition", "attachment; filename="+csvFileName)
+	c.Writer.Write([]byte(csvBuffer.String()))
 }

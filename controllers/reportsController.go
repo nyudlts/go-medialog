@@ -7,8 +7,6 @@ import (
 	"github.com/nyudlts/go-medialog/database"
 )
 
-var partnerCodes = map[int]string{0: "", 2: "tamwag", 3: "fales", 6: "nyu archives"}
-
 func ReportsIndex(c *gin.Context) {
 
 	if err := isLoggedIn(c); err != nil {
@@ -17,6 +15,12 @@ func ReportsIndex(c *gin.Context) {
 	}
 
 	isLoggedIn := true
+
+	partnerCodes, err := database.GetRepositoryMap()
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+		return
+	}
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -71,6 +75,12 @@ func ReportRange(c *gin.Context) {
 	summary, err := database.GetSummaryByDateRange(dateRange)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	partnerCodes, err := database.GetRepositoryMap()
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 

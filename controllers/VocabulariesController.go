@@ -2,20 +2,6 @@ package controllers
 
 var is_refreshed = map[bool]string{true: "yes", false: "no"}
 
-var PartnerCodes = map[string]string{
-	"":            "",
-	"fales":       "Fales Library & Special Collections",
-	"nyuarchives": "NYU Archives",
-	"tamwag":      "Tamiment Library and Robert F. Wagner Labor Archives",
-	"abudhabi":    "Abu Dhabi",
-}
-
-var filename_partner_codes = map[string]string{
-	"fa": "fales",
-	"tw": "tamwag",
-	"ua": "nyuarchives",
-}
-
 var storageLocations = map[string]string{
 	"sl_rsw_acm_born_digital": "RW ACM Born Digital",
 	"sl_rsw_spec_coll":        "RW Special Collections",
