@@ -45,7 +45,7 @@ func ReportsIndex(c *gin.Context) {
 	})
 }
 
-func ReportRange(c *gin.Context) {
+func ReportsRange(c *gin.Context) {
 
 	if err := isLoggedIn(c); err != nil {
 		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
@@ -98,6 +98,10 @@ func ReportRange(c *gin.Context) {
 		"user":          user,
 	})
 
+}
+
+func ReportsCSV(c *gin.Context) {
+	c.JSON(http.StatusOK, "Hello csv")
 }
 
 var months = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}

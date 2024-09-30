@@ -5,7 +5,21 @@
 <div class="card card-default">
     <div class="card-header">
         <h5 class="card-title">Range</h5>
-        {{ .repository }} {{ .dateRange }}
+        <div class="row">
+            <div class="col">Repository: 
+                {{if eq .repository ""}}
+                    all
+                {{else}}
+                    {{ .repository }}
+                {{ end }}
+            </div>
+            <div class="col">Date range: {{ .dateRange }}</div>
+            <div class="col">
+                <form action="/reports/csv" method="post" class="form-inline">
+                    <input type="submit" value="csv" class="btn btn-sm btn-info">
+                </form>
+            </div>
+        </div>
     </div>
     <div class="card-body">
         {{ template "summary-table.html" . }}

@@ -76,6 +76,7 @@
                 <div class="col-sm-2">repository</div>
                 <div class="col-sm-4">
                     <select name="partner_code" id="partner_code">
+                            <option value=""></option>
                         {{ range $id, $slug := .partner_codes }}
                             <option value="{{ $id }}">{{ $slug }}</option>
                         {{ end }}
