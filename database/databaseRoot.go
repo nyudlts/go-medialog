@@ -24,6 +24,7 @@ type DateRange struct {
 	EndMonth     int `form:"end-month"`
 	EndDay       int `form:"end-day"`
 	RepositoryID int `form:"repository-id"`
+	IsRefreshed  bool
 }
 
 func ConnectMySQL(dbconfig models.DatabaseConfig, gormDebug bool) error {

@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nyudlts/go-medialog/api/v0"
 	"github.com/nyudlts/go-medialog/models"
 	router "github.com/nyudlts/go-medialog/router"
 	"github.com/stretchr/testify/assert"
@@ -478,8 +479,41 @@ func TestAPI(t *testing.T) {
 		assert.Equal(t, 200, recorder.Code)
 		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
 
+		var summary = api.SummaryAndTotal{}
 		body, _ := io.ReadAll(recorder.Body)
-		t.Logf("%s", string(body))
+
+		//ensure the summary has one entry
+		if err := json.Unmarshal(body, &summary); err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+		}
+
+		assert.Equal(t, 1, len(summary.Summaries))
+
+	})
+
+	t.Run("test get summary of range refreshed only", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		url := fmt.Sprintf("%s/reports/range?start_date=%s&end_date=%s&is_refreshed=true", APIROOT, "20140101", "20241031")
+		req, err := http.NewRequestWithContext(c, "GET", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+		var summary = api.SummaryAndTotal{}
+		body, _ := io.ReadAll(recorder.Body)
+
+		//ensure the summary has one entry
+		if err := json.Unmarshal(body, &summary); err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+		}
+
+		assert.Equal(t, 0, len(summary.Summaries))
+
 	})
 
 	//delete functions

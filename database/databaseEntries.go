@@ -266,21 +266,34 @@ func GetEntriesByDateRange(dr DateRange) ([]models.Entry, error) {
 }
 
 func GetSummaryByDateRange(dr DateRange) (Summaries, error) {
+
 	startDate := fmt.Sprintf("%d-%d-%dT00:00:00Z", dr.StartYear, dr.StartMonth, dr.StartDay)
 	endDate := fmt.Sprintf("%d-%d-%dT23:59:59Z", dr.EndYear, dr.EndMonth, dr.EndDay)
 
 	entries := []models.Entry{}
-	if dr.RepositoryID == 0 {
-		if err := db.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
-			return Summaries{}, err
+	//this needs to be simplified
+	if dr.IsRefreshed {
+		if dr.RepositoryID == 0 {
+			if err := db.Where("created_at BETWEEN ? AND ?", startDate, endDate).Where("is_refreshed = true").Find(&entries).Error; err != nil {
+				return Summaries{}, err
+			}
+		} else {
+			if err := db.Where("repository_id = ?", dr.RepositoryID).Where("created_at BETWEEN ? AND ?", startDate, endDate).Where("is_refreshed = true").Find(&entries).Error; err != nil {
+				return Summaries{}, err
+			}
 		}
-		return getSummary(entries), nil
 	} else {
-		if err := db.Where("repository_id = ?", dr.RepositoryID).Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
-			return Summaries{}, err
+		if dr.RepositoryID == 0 {
+			if err := db.Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
+				return Summaries{}, err
+			}
+		} else {
+			if err := db.Where("repository_id = ?", dr.RepositoryID).Where("created_at BETWEEN ? AND ?", startDate, endDate).Find(&entries).Error; err != nil {
+				return Summaries{}, err
+			}
 		}
-		return getSummary(entries), nil
 	}
+	return getSummary(entries), nil
 }
 
 func summaryContains(summaries Summaries, mediatype string) bool {
