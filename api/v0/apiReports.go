@@ -89,7 +89,7 @@ func SummaryDateRange(c *gin.Context) {
 	var totalCount int = 0
 	for _, hit := range summaries.GetSlice() {
 		totalSize = totalSize + int64(hit.Size)
-		totalCount++
+		totalCount = totalCount + hit.Count
 	}
 
 	//convert the total size to a human readable format
