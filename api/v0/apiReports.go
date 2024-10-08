@@ -11,10 +11,11 @@ import (
 	"github.com/nyudlts/go-medialog/database"
 )
 
-type SummaryAndTotal struct {
+type SummaryAndTotals struct {
 	RepositoryID int                `json:"repository_id"`
-	Repository   string             `json:"repository`
-	Total        int64              `json:"total_Size"`
+	Repository   string             `json:"repository"`
+	TotalCount   int                `json:"total_count"`
+	TotalSize    int64              `json:"total_Size"`
 	TotalHuman   string             `json:"total_human_size"`
 	Summaries    database.Summaries `json:"summaries"`
 }
@@ -85,8 +86,10 @@ func SummaryDateRange(c *gin.Context) {
 	}
 
 	var totalSize int64 = 0
+	var totalCount int = 0
 	for _, hit := range summaries.GetSlice() {
 		totalSize = totalSize + int64(hit.Size)
+		totalCount++
 	}
 
 	//convert the total size to a human readable format
@@ -94,5 +97,12 @@ func SummaryDateRange(c *gin.Context) {
 	tsize := bytemath.ConvertToBytes(f64, bytemath.B)
 	humanSize := bytemath.ConvertBytesToHumanReadable(int64(tsize))
 
-	c.JSON(http.StatusOK, SummaryAndTotal{Repository: slug, Total: totalSize, Summaries: summaries, TotalHuman: humanSize, RepositoryID: dr.RepositoryID})
+	c.JSON(http.StatusOK, SummaryAndTotals{
+		RepositoryID: dr.RepositoryID,
+		Repository:   slug,
+		TotalCount:   totalCount,
+		TotalSize:    totalSize,
+		TotalHuman:   humanSize,
+		Summaries:    summaries,
+	})
 }
