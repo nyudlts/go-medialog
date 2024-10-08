@@ -464,6 +464,24 @@ func TestAPI(t *testing.T) {
 		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
 	})
 
+	//report functions
+	t.Run("test get summary of range", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(recorder)
+		url := fmt.Sprintf("%s/reports/range?start_date=%s&end_date=%s&repository_id=%d", APIROOT, "20140101", "20241031", repository.ID)
+		req, err := http.NewRequestWithContext(c, "GET", url, nil)
+		if err != nil {
+			t.Error(err)
+		}
+		req.Header.Add("X-Medialog-Token", token)
+		r.ServeHTTP(recorder, req)
+		assert.Equal(t, 200, recorder.Code)
+		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
+
+		body, _ := io.ReadAll(recorder.Body)
+		t.Logf("%s", string(body))
+	})
+
 	//delete functions
 
 	t.Run("test delete an entry", func(t *testing.T) {

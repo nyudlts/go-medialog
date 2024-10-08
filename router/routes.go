@@ -150,6 +150,9 @@ func LoadAPI(router *gin.Engine) {
 
 	//sessions
 	apiV0Routes.DELETE("delete_sessions", func(c *gin.Context) { api.DeleteSessionsV0(c) })
+
+	//reports
+	apiV0Routes.GET("reports/range", func(c *gin.Context) { api.SummaryDateRange(c) })
 }
 
 func Test(c *gin.Context) {
