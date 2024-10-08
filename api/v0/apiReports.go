@@ -26,7 +26,7 @@ func SummaryDateRange(c *gin.Context) {
 	}
 
 	//get the start and end dates
-	datePattern := regexp.MustCompile("[0-9]{8}")
+	datePattern := regexp.MustCompile("^[0-9]{8}$")
 	startDate := c.Query("start_date")
 	endDate := c.Query("end_date")
 
