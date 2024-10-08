@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -33,12 +32,12 @@ func SummaryDateRange(c *gin.Context) {
 
 	//validate start and end dates
 	if !datePattern.MatchString(startDate) {
-		c.JSON(http.StatusBadRequest, fmt.Errorf("invalid start_date"))
+		c.JSON(http.StatusBadRequest, "invalid start_date")
 		return
 	}
 
 	if !datePattern.MatchString(endDate) {
-		c.JSON(http.StatusBadRequest, fmt.Errorf("invalid end_date"))
+		c.JSON(http.StatusBadRequest, "invalid end_date")
 		return
 	}
 

@@ -479,7 +479,7 @@ func TestAPI(t *testing.T) {
 		assert.Equal(t, 200, recorder.Code)
 		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
 
-		var summary = api.SummaryAndTotal{}
+		var summary = api.SummaryAndTotals{}
 		body, _ := io.ReadAll(recorder.Body)
 
 		//ensure the summary has one entry
@@ -504,7 +504,7 @@ func TestAPI(t *testing.T) {
 		assert.Equal(t, 200, recorder.Code)
 		assert.Equal(t, "application/json; charset=utf-8", recorder.Header().Get("content-type"))
 
-		var summary = api.SummaryAndTotal{}
+		var summary = api.SummaryAndTotals{}
 		body, _ := io.ReadAll(recorder.Body)
 
 		//ensure the summary has one entry
