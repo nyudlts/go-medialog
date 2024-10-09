@@ -5,7 +5,28 @@
 <div class="card card-default">
     <div class="card-header">
         <h5 class="card-title">Range</h5>
-        {{ .repository }} {{ .dateRange }}
+        <div class="row">
+            <div class="col">Repository: 
+                {{if eq .repository ""}}
+                    all
+                {{else}}
+                    {{ .repository }}
+                {{ end }}
+            </div>
+            <div class="col">Date range: {{ .dateRange }}</div>
+            <div class="col">
+                <form action="/reports/csv" method="post" class="form-inline" target="_blank">
+                    <input type="submit" value="csv" class="btn btn-sm btn-info">
+                    <input type="hidden" name="start-year" id="start-year" value="{{ .dateRange.StartYear }}" />
+                    <input type="hidden" name="start-month" id="start-month" value="{{ .dateRange.StartMonth }}" />
+                    <input type="hidden" name="start-day" id="start-day" value="{{ .dateRange.StartDay }}" />
+                    <input type="hidden" name="end-year" id="end-year" value="{{ .dateRange.EndYear }}" />
+                    <input type="hidden" name="end-month" id="end-month" value="{{ .dateRange.EndMonth }}" />
+                    <input type="hidden" name="end-day" id="end-day" value="{{ .dateRange.EndDay }}" />
+                    <input type="hidden" name="repository-id" id="repository-id" value="{{ .dateRange.RepositoryID }}" />
+                </form>
+            </div>
+        </div>
     </div>
     <div class="card-body">
         {{ template "summary-table.html" . }}

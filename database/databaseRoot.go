@@ -16,6 +16,17 @@ type Pagination struct {
 	Sort   string `json:"sort"`
 }
 
+type DateRange struct {
+	StartYear    int `form:"start-year"`
+	StartMonth   int `form:"start-month"`
+	StartDay     int `form:"start-day"`
+	EndYear      int `form:"end-year"`
+	EndMonth     int `form:"end-month"`
+	EndDay       int `form:"end-day"`
+	RepositoryID int `form:"repository-id"`
+	IsRefreshed  bool
+}
+
 func ConnectMySQL(dbconfig models.DatabaseConfig, gormDebug bool) error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbconfig.Username, dbconfig.Password, dbconfig.URL, dbconfig.Port, dbconfig.DatabaseName)
 	var err error

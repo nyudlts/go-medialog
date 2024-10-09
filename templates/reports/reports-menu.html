@@ -51,7 +51,8 @@
             <div class="form-group row">
                 <div class="col-sm-2">repository</div>
                 <div class="col-sm-4">
-                    <select name="partner_code" id="partner_code">
+                    <select name="repository-id" id="repository-id">
+                        <option value=""></option>
                         {{ range $id, $slug := .partner_codes }}
                             <option value="{{ $id }}">{{ $slug }}</option>
                         {{ end }}

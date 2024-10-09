@@ -83,9 +83,10 @@ func LoadRoutes(router *gin.Engine) {
 	userRoutes.GET(":id/revoke_api", func(c *gin.Context) { controllers.RevokeAPI(c) })
 
 	//Report Group
-	reportRoutes := router.Group("/reports")
-	reportRoutes.GET("", func(c *gin.Context) { controllers.ReportsIndex(c) })
-	reportRoutes.POST("/range", func(c *gin.Context) { controllers.ReportRange(c) })
+	reportsRoutes := router.Group("/reports")
+	reportsRoutes.GET("", func(c *gin.Context) { controllers.ReportsIndex(c) })
+	reportsRoutes.POST("/range", func(c *gin.Context) { controllers.ReportsRange(c) })
+	reportsRoutes.POST("/csv", func(c *gin.Context) { controllers.ReportsCSV(c) })
 
 	//Search Group
 	searchRoutes := router.Group("/search")
@@ -149,6 +150,9 @@ func LoadAPI(router *gin.Engine) {
 
 	//sessions
 	apiV0Routes.DELETE("delete_sessions", func(c *gin.Context) { api.DeleteSessionsV0(c) })
+
+	//reports
+	apiV0Routes.GET("reports/range", func(c *gin.Context) { api.SummaryDateRange(c) })
 }
 
 func Test(c *gin.Context) {

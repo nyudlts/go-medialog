@@ -1,10 +1,14 @@
 package controllers
 
 import (
+	"encoding/csv"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
 )
 
 func ReportsIndex(c *gin.Context) {
@@ -45,7 +49,7 @@ func ReportsIndex(c *gin.Context) {
 	})
 }
 
-func ReportRange(c *gin.Context) {
+func ReportsRange(c *gin.Context) {
 
 	if err := isLoggedIn(c); err != nil {
 		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
@@ -98,6 +102,36 @@ func ReportRange(c *gin.Context) {
 		"user":          user,
 	})
 
+}
+
+func ReportsCSV(c *gin.Context) {
+	var dateRange = database.DateRange{}
+	if err := c.Bind(&dateRange); err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
+		return
+	}
+
+	entries, err := database.GetEntriesByDateRange(dateRange)
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, true)
+		return
+	}
+
+	csvBuffer := new(strings.Builder)
+	var csvWriter = csv.NewWriter(csvBuffer)
+	csvWriter.Write(models.CSVHeader)
+	csvWriter.Flush()
+	for _, entry := range entries {
+		csvWriter.Write(entry.ToCSV())
+		csvWriter.Flush()
+	}
+
+	csvFileName := fmt.Sprintf("%s.csv", "report") // make a string formatter for dateRage struct
+	c.Header("content-type", "text/csv")
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Disposition", "attachment; filename="+csvFileName)
+	c.Status(http.StatusOK)
+	c.Writer.Write([]byte(csvBuffer.String()))
 }
 
 var months = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
