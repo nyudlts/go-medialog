@@ -96,22 +96,11 @@ func GetAccession(c *gin.Context) {
 	}
 
 	//pagination
-	var p = 0
-	page := c.Request.URL.Query()["page"]
-
-	if len(page) > 0 {
-		p, err = strconv.Atoi(page[0])
-		if err != nil {
-			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-			return
-		}
+	pagination, err := getPagination(c)
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
 	}
-
-	if p < 0 {
-		p = 0
-	}
-
-	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
 
 	entries, err := database.FindEntriesByAccessionIDPaginated(accession.ID, pagination)
 	if err != nil {
@@ -145,7 +134,8 @@ func GetAccession(c *gin.Context) {
 		"entries":         entries,
 		"isAuthenticated": true,
 		"isAdmin":         sessionCookies.IsAdmin,
-		"page":            p,
+		"page":            pagination.Offset,
+		"numEntries":      pagination.Limit,
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
 		"users":           users,

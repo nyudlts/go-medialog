@@ -45,9 +45,9 @@
             <tbody>
             {{ range $accession := .accessions }}
             <tr>
-                <td><a href="/accessions/{{ $accession.ID }}/show">{{ $accession.AccessionNum }}</td>
+                <td><a href="/accessions/{{ $accession.ID }}/show?page=1&num_entries=10">{{ $accession.AccessionNum }}</td>
                 <td>
-                    <a href="/accessions/{{ $accession.ID }}/show" class="btn btn-primary">View</a>
+                    <a href="/accessions/{{ $accession.ID }}/show?page=1&num_entries=10" class="btn btn-primary">View</a>
                     <a href="/accessions/{{ $accession.ID }}/edit" class="btn btn-secondary">Edit</a>
                     <a href="/accessions/{{ $accession.ID }}/delete" class="btn btn-danger">Delete</a>
                 </td>
