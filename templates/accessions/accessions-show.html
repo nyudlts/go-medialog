@@ -8,6 +8,9 @@
       <li class="breadcrumb-item active" aria-current="page">{{ .accession.AccessionNum }}</li>
     </ol>
 </nav>
+
+{{ .limitString }}
+
 <div class="card card-default">
     <div class="card-header">
         <h5 class="card-title">{{ .accession.AccessionNum }}</h5>
@@ -38,7 +41,22 @@
         </div>
         <div class="row">
             <div class="col">entries {{ multAndAdd .page .numEntries 1 }}-{{ multAndAdd .page .numEntries .numEntries }} of {{ .entryCount }}</div>
-            <div class="col"> no. entries: {{ .numEntries }}</div>
+            <div class="col"> no. entries: 
+                <form class="inline" method="post" action="/accessions/update_num_entries">
+                    <input type="hidden" id="accession_id" name="accession_id" value="{{ .accession.ID }}">
+                    <input type="hidden" id="page" name="page" value="{{ .page }}" />
+                    <select id="num_entries" name="num_entries">
+                        {{ range .numEntriesSlice }}
+                            {{if eq  $.limitString . }}
+                                <option val="{{.}}" selected>{{.}}</option>
+                            {{ else }}
+                                <option val="{{.}}">{{.}}</option>
+                            {{ end }}
+                        {{end}}
+                    </select>
+                    <input type="submit" value="go"/>
+                </form>
+            </div>
             <div class="col"> jump to page: </div>
             <div class="col">
                 <a href="/accessions/{{ .accession.ID}}/show?page={{ subtract .page 1}}&num_entries={{ .numEntries }}" class="btn btn-primary btn-sm">prev{{ .numEntries }}</a>

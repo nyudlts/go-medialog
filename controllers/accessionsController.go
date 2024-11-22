@@ -16,6 +16,8 @@ import (
 
 const AccessionsShow = "/accessions/%d/show"
 
+var numEntriesSlice = []string{"10", "25", "50", "100", "all"}
+
 func GetAccessions(c *gin.Context) {
 
 	if err := isLoggedIn(c); err != nil {
@@ -96,16 +98,26 @@ func GetAccession(c *gin.Context) {
 	}
 
 	//pagination
-	pagination, err := getPagination(c)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
-	}
+	var pagination = database.Pagination{}
+	var entries = []models.Entry{}
 
-	entries, err := database.FindEntriesByAccessionIDPaginated(accession.ID, pagination)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
+	if c.Request.URL.Query()["num_entries"][0] == "all" {
+		entries, err = database.FindEntriesByAccessionID(accession.ID)
+		if err != nil {
+			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+			return
+		}
+	} else {
+		pagination, err = getPagination(c)
+		if err != nil {
+			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+			return
+		}
+		entries, err = database.FindEntriesByAccessionIDPaginated(accession.ID, pagination)
+		if err != nil {
+			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+			return
+		}
 	}
 
 	entryCount := database.GetCountOfEntriesInAccession(accession.ID)
@@ -128,6 +140,8 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
+	limitString := strconv.Itoa(pagination.Limit)
+
 	c.HTML(http.StatusOK, "accessions-show.html", gin.H{
 		"accession":       accession,
 		"repository":      repository,
@@ -142,6 +156,8 @@ func GetAccession(c *gin.Context) {
 		"entryCount":      entryCount,
 		"isLoggedIn":      isLoggedIn,
 		"user":            user,
+		"numEntriesSlice": numEntriesSlice,
+		"limitString":     limitString,
 	})
 }
 
@@ -562,4 +578,29 @@ func AccessionGenCSV(c *gin.Context) {
 	c.Header("Content-Disposition", "attachment; filename="+csvFileName)
 	c.Status(http.StatusOK)
 	c.Writer.Write([]byte(csvBuffer.String()))
+}
+
+type UpdateNumEntriesAcc struct {
+	AccessionID string `form:"accession_id"`
+	Page        string `form:"page"`
+	NumEntries  string `form:"num_entries"`
+}
+
+func (u UpdateNumEntriesAcc) GetUrl() string {
+	if u.NumEntries == "all" {
+		return fmt.Sprintf("/accessions/%s/show?num_entries=all", u.AccessionID)
+	} else {
+		return fmt.Sprintf("/accessions/%s/show?page=%s&num_entries=%s", u.AccessionID, u.Page, u.NumEntries)
+	}
+}
+
+func UpdateNumEntriesAccession(c *gin.Context) {
+	isLoggedIn := true
+	updateNumEntriesAcc := UpdateNumEntriesAcc{}
+	if err := c.Bind(&updateNumEntriesAcc); err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	c.Redirect(http.StatusFound, updateNumEntriesAcc.GetUrl())
 }

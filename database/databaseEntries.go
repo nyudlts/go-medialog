@@ -80,7 +80,7 @@ func FindEntriesByAccessionIDPaginated(id uint, pagination Pagination) ([]models
 
 func FindEntriesByAccessionID(id uint) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Preload(clause.Associations).Where("accession_id = ?", id).Find(&entries).Error; err != nil {
+	if err := db.Preload(clause.Associations).Where("accession_id = ?", id).Order("media_id asc").Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil

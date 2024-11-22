@@ -26,6 +26,7 @@ func LoadRoutes(router *gin.Engine) {
 	accessionsRoutes.GET(":id/slew", func(c *gin.Context) { controllers.SlewAccession(c) })
 	accessionsRoutes.POST("slew", func(c *gin.Context) { controllers.CreateAccessionSlew(c) })
 	accessionsRoutes.GET(":id/csv", func(c *gin.Context) { controllers.AccessionGenCSV(c) })
+	accessionsRoutes.POST("/update_num_entries", func(c *gin.Context) { controllers.UpdateNumEntriesAccession(c) })
 
 	//Repository Group
 	repositoryRoutes := router.Group("/repositories")
