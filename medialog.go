@@ -25,7 +25,7 @@ var (
 	createAdmin   bool
 )
 
-const version = "v1.0.8"
+const version = "v1.0.9"
 
 func init() {
 	flag.StringVar(&environment, "environment", "", "")
