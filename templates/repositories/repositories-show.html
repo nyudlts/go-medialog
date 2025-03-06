@@ -21,8 +21,9 @@
     </div>
     <div class="card-body">
         <div class="row mt-2">
-            <h5 class="card-title">Resources</h5>
-            <table class="table table-striped table-bordered table-sm">
+            <input type="text" id="filterText" onkeyup="filterResources()" placeholder="filter resources">
+            <table class="table table-striped table-bordered table-sm" id="resourceTable">
+                <tbody>
                 {{ range $resource := .resources }}
                 <tr>
                     <td>
@@ -35,8 +36,10 @@
                     </td>
                 </tr>
                 {{ end }}
+            </tbody>
             </table>
         </div>
     </div>
-
+    </div>
+    <script src="/public/table-filter.js"></script>
 {{ template "footer.html" .}}
