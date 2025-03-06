@@ -7,3 +7,5 @@ bin/*
 *.log
 *.conf
 tmp/*
+medialog.yml
+headers.txt
