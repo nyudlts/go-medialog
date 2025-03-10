@@ -33,7 +33,7 @@
                 {{ range $resource := .resources }}
                 <tr>
                     <td>
-                        {{ $resource.CollectionCode }}: {{  $resource.Title }}
+                        {{ $resource.CollectionCode }}<br>{{  $resource.Title }}
                     </td>
                     <td>
                         <a href="/resources/{{ $resource.ID }}/show" class="btn btn-primary">View</a>
