@@ -5,10 +5,10 @@
         <h5 class="card-title">Resources</h5>
     </div>
     <div class="card-body">
-        <table class="table table-sm table-striped">
+        <input type="text" id="filterText" onkeyup="filterResources()" placeholder="filter resources">
+        <table class="table table-sm table-striped" id="resourceTable">
             <thead class="thead thead-dark">
                 <tr>
-                    <th>Repository</th>
                     <th>Resource</th>
                     <th>Last Updated</th>
                     <th>Actions</th>
@@ -18,10 +18,7 @@
                 {{ range $resource := .resources }}
                 <tr>
                     <td>
-                        <a href="/repositories/{{ $resource.RepositoryID }}/show">{{ index $.repositoryMap $resource.RepositoryID }}</a>
-                    </td>
-                    <td>
-                        <a href="/resources/{{ $resource.ID }}/show">{{ $resource.CollectionCode}}</a><br>{{ printf "%.50s" $resource.Title }}
+                        {{ index $.repositoryMap $resource.RepositoryID }} {{ $resource.CollectionCode}}: {{ printf "%.50s" $resource.Title }}
                     </td>
                     <td>{{ formatAsDate $resource.UpdatedAt}}</td>
                     <td>
@@ -37,4 +34,4 @@
         </table>
     </div>
 </div>
-</br>
+{{ template "footer.html" .}}
