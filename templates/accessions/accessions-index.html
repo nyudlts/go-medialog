@@ -7,7 +7,8 @@
     </div>
 
     <div class="card-body">
-        <table class="table table-striped table-bordered">
+        <input type="text" id="filterText" onkeyup="filterAccessions()" placeholder="filter accessions">
+        <table class="table table-striped table-bordered" id="accessionsTable">
             <thead class="thead thead-dark">
                 <tr>
                     <th>Repository</th>
@@ -22,8 +23,13 @@
             {{ range $accession := .accessions }}
             <tr>
                 <td><a href="/repositories/{{ $accession.Resource.RepositoryID}}/show">{{ index $.repositoryMap $accession.Resource.RepositoryID }}</a></td>
-                <td><a href="/resources/{{ $accession.ResourceID}}/show">{{ $accession.Resource.CollectionCode }}</a><br/>{{ printf "%.50s" $accession.Resource.Title }}</td>
-                <td><a href="/accessions/{{ $accession.ID }}/show">{{ $accession.AccessionNum }}</a></td>
+                <td>
+                    <a href="/resources/{{ $accession.ResourceID}}/show">
+                        {{ $accession.Resource.CollectionCode }}
+                    </a>
+                    <br/>{{ printf "%.50s" $accession.Resource.Title }}
+                </td>
+                <td>{{ $accession.AccessionNum }}</td>
                 <td>{{ formatAsDate $accession.UpdatedAt }}</td>
                 <td>
                     <a href="/accessions/{{ $accession.ID }}/show" class="btn btn-primary">View</a>

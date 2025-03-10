@@ -5,7 +5,8 @@
         <h5 class="card-title">Resources</h5>
     </div>
     <div class="card-body">
-        <table class="table table-sm table-striped">
+        <input type="text" id="filterText" onkeyup="filterResourceCols()" placeholder="filter resources">
+        <table class="table table-sm table-striped" id="resourceTable">
             <thead class="thead thead-dark">
                 <tr>
                     <th>Repository</th>
@@ -21,7 +22,7 @@
                         <a href="/repositories/{{ $resource.RepositoryID }}/show">{{ index $.repositoryMap $resource.RepositoryID }}</a>
                     </td>
                     <td>
-                        <a href="/resources/{{ $resource.ID }}/show">{{ $resource.CollectionCode}}</a><br>{{ printf "%.50s" $resource.Title }}
+                        {{ $resource.CollectionCode}}<br>{{ printf "%.75s" $resource.Title }}
                     </td>
                     <td>{{ formatAsDate $resource.UpdatedAt}}</td>
                     <td>
@@ -37,4 +38,4 @@
         </table>
     </div>
 </div>
-</br>
+{{ template "footer.html" .}}
