@@ -11,9 +11,10 @@ import (
 var db *gorm.DB
 
 type Pagination struct {
-	Limit  int    `json:"limit"`
-	Offset int    `json:"offset"`
-	Sort   string `json:"sort"`
+	Limit        int    `json:"limit"`
+	Offset       int    `json:"offset"`
+	Sort         string `json:"sort"`
+	TotalRecords int64  `json:"total_records"`
 }
 
 type DateRange struct {

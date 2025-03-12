@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="row">showing entries {{ multAndAdd .page 10 1 }} - {{ multAndAdd .page 10 10 }} of {{ .entryCount }}</div>
+        <div class="row">showing entries {{ multAndAdd .page 10 1 }} - {{ multAndAdd .page 10 10 }} of {{ .pagination.TotalRecords }}</div>
         {{ template "entry-table-accession.html" . }}
         <a href="/entries/new?accession_id={{ .accession.ID }}" class="btn btn-primary">add entry</a>
         <a href="/accessions/{{ .accession.ID }}/slew" class="btn btn-secondary">slew entries</a>

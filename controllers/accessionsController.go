@@ -112,14 +112,13 @@ func GetAccession(c *gin.Context) {
 	}
 
 	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
-
+	totalEntries := database.GetCountOfEntriesInAccession(accession.ID)
+	pagination.TotalRecords = totalEntries
 	entries, err := database.FindEntriesByAccessionIDPaginated(accession.ID, pagination)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
-
-	entryCount := database.GetCountOfEntriesInAccession(accession.ID)
 
 	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
 	if err != nil {
@@ -149,9 +148,9 @@ func GetAccession(c *gin.Context) {
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
 		"users":           users,
-		"entryCount":      entryCount,
 		"isLoggedIn":      isLoggedIn,
 		"user":            user,
+		"pagination":      pagination,
 	})
 }
 
