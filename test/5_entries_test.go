@@ -28,8 +28,7 @@ func TestEntries(t *testing.T) {
 		entry.StockSizeNum = 1.2
 		entry.StockUnit = "MB"
 		var err error
-		entryID, err = database.InsertEntry(&entry)
-		if err != nil {
+		if err = database.InsertEntry(&entry); err != nil {
 			t.Error(err)
 		}
 
