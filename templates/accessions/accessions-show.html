@@ -25,8 +25,10 @@
             <div class="col">{{ template "summary-table.html" . }}</div>
         </div>
         <div class="row">
-            <a href="/accessions/{{ .accession.ID }}/edit" class="btn btn-secondary">edit</a>
-            <a href="/accessions/{{ .accession.ID }}/delete" class="btn btn-danger">delete</a>
+            <div class="col">
+                <a href="/accessions/{{ .accession.ID }}/edit" class="btn btn-secondary">edit</a>
+                <a href="/accessions/{{ .accession.ID }}/delete" class="btn btn-danger">delete</a>
+            </div>
         </div>
     </div>
 </div>
@@ -40,7 +42,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col">
-                showing entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }} - {{ multAndAdd  .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
+                showing entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ multAndAdd  .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
             </div>
             <div class="col">
                 jump to page:
@@ -51,12 +53,12 @@
                 </select>
             </div>
             <div class="col">
-                <a href="/accessions/{{ .accession.ID}}/show?page={{ subtract  .pagination.Page 1}}" class="btn btn-primary btn-sm">prev 10</a>
-            </div>
-            <div class="col">
-                <a href="/accessions/{{ .accession.ID}}/show?page={{ add  .pagination.Page 1 }}" class="btn btn-primary btn-sm">next 10</a>
-            </div>
-            <div class="col">
+                {{ if gt .pagination.Page 0 }}
+                    <a href="/accessions/{{ .accession.ID}}/show?page={{ subtract  .pagination.Page 1 }}" class="btn btn-primary btn-sm">prev. 10</a>
+                {{ end }}
+                {{ if lt (add .pagination.Page 1) .pagination.TotalPages }}
+                    <a href="/accessions/{{ .accession.ID}}/show?page={{ add  .pagination.Page 1 }}" class="btn btn-primary btn-sm">next 10</a>
+                {{ end }}
                 <a href="/accessions/{{ .accession.ID}}/csv" target="_blank" class="btn btn-info btn-sm">CSV</a>
             </div>
         </div>
@@ -65,10 +67,4 @@
         <a href="/accessions/{{ .accession.ID }}/slew" class="btn btn-secondary">slew entries</a>
     </div>
 </div>
-<script>
-    document.getElementById("page").onmouseup = function() {
-        var page = document.getElementById("page").value;
-        window.location.href = "/accessions/{{ .accession.ID }}/show?page=" + page;
-    };
-</script>
 {{ template "footer.html" .}}

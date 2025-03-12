@@ -9,6 +9,12 @@
             </span>
         </div>
     </footer>
+    <script>
+        document.getElementById("page").onmouseup = function() {
+            var page = document.getElementById("page").value;
+            window.location.href = "/accessions/{{ .accession.ID }}/show?page=" + page;
+        };
+    </script>
     <script src="/public/medialog.js"></script>
     <script src="/public/jquery-3.7.1.min.js"></script>
     <script src="/public/popper.min.js"></script>
