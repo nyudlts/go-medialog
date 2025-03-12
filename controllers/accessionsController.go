@@ -64,25 +64,28 @@ func GetAccessions(c *gin.Context) {
 }
 
 func GetAccession(c *gin.Context) {
+	//check login
 	if err := isLoggedIn(c); err != nil {
 		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
-
 	isLoggedIn := true
 
+	//get cookies
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
 		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//get user
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//get accession
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
@@ -95,7 +98,7 @@ func GetAccession(c *gin.Context) {
 		return
 	}
 
-	//pagination
+	//setup pagination
 	var p = 0
 	page := c.Request.URL.Query()["page"]
 
@@ -111,47 +114,56 @@ func GetAccession(c *gin.Context) {
 		p = 0
 	}
 
-	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
+	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id", Page: p}
+	totalEntries := database.GetCountOfEntriesInAccession(accession.ID)
+	pagination.TotalRecords = totalEntries
+	totalPages := totalEntries / int64(pagination.Limit)
+	if totalEntries%int64(pagination.Limit) > 0 {
+		totalPages++
+	}
+	pagination.TotalPages = int(totalPages)
 
+	//get entries
 	entries, err := database.FindEntriesByAccessionIDPaginated(accession.ID, pagination)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	entryCount := database.GetCountOfEntriesInAccession(accession.ID)
-
+	//get repository
 	repository, err := database.FindRepository(uint(accession.Resource.RepositoryID))
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//get summary
 	summary, err := database.GetSummaryByAccession(accession.ID)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//get users
 	users, err := getUserEmailMap([]int{accession.CreatedBy, accession.UpdatedBy})
 	if err != nil {
 		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//return
 	c.HTML(http.StatusOK, "accessions-show.html", gin.H{
 		"accession":       accession,
 		"repository":      repository,
 		"entries":         entries,
 		"isAuthenticated": true,
 		"isAdmin":         sessionCookies.IsAdmin,
-		"page":            p,
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
 		"users":           users,
-		"entryCount":      entryCount,
 		"isLoggedIn":      isLoggedIn,
 		"user":            user,
+		"pagination":      pagination,
 	})
 }
 

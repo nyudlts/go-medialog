@@ -96,6 +96,15 @@ func MultAndAdd(page int, mult int, add int) int {
 
 func FormatAsDate(t time.Time) string { return t.Format("2006-01-02") }
 
+func Iterate(count int) []int {
+	var i int
+	var Items []int
+	for i = 0; i < count; i++ {
+		Items = append(Items, i)
+	}
+	return Items
+}
+
 func SetGlobalFuncs(router *gin.Engine) {
 	router.SetFuncMap(template.FuncMap{
 		"formatAsDate":       FormatAsDate,
@@ -107,6 +116,7 @@ func SetGlobalFuncs(router *gin.Engine) {
 		"multAndAdd":         MultAndAdd,
 		"storageLocations":   controllers.GetStorageLocations,
 		"getStorageLocation": controllers.GetStorageLocation,
+		"iterate":            Iterate,
 	})
 }
 
