@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -15,25 +14,28 @@ import (
 )
 
 func GetResource(c *gin.Context) {
+	//check if user is logged in
 	if err := isLoggedIn(c); err != nil {
 		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
-
 	isLoggedIn := true
 
+	//get session cookies
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
 		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//get the user
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//get the resource
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
@@ -46,24 +48,19 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
+	//get the summary
 	summary, err := database.GetSummaryByResource(resource.ID)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//get associacted accessions
 	accessions, err := database.FindAccessionsByResourceID(resource.ID)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
-
-	//get page count
-	pageCount, err := database.GetNumberPagesInResource(resource.ID)
-	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-	}
-	log.Println("PAGE COUNT", pageCount)
 
 	//pagination
 	var p = 0
@@ -81,8 +78,15 @@ func GetResource(c *gin.Context) {
 		p = 0
 	}
 
-	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id"}
+	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id", Page: p}
+	pagination.TotalRecords = database.GetCountOfEntriesInResource(resource.ID)
+	totalPages := pagination.TotalRecords / int64(pagination.Limit)
+	if pagination.TotalRecords%int64(pagination.Limit) > 0 {
+		totalPages++
+	}
+	pagination.TotalPages = int(totalPages)
 
+	//get entries
 	entries, err := database.FindEntriesByResourceIDPaginated(resource.ID, pagination)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
@@ -95,20 +99,16 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
-	entryCount := database.GetCountOfEntriesInResource(resource.ID)
-
 	c.HTML(http.StatusOK, "resources-show.html", gin.H{
 		"resource":        resource,
 		"accessions":      accessions,
 		"entries":         entries,
 		"isAdmin":         sessionCookies.IsAdmin,
 		"isAuthenticated": true,
-		"page":            p,
+		"pagination":      pagination,
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
 		"entry_users":     entryUsers,
-		"page_count":      pageCount,
-		"entryCount":      entryCount,
 		"isLoggedIn":      isLoggedIn,
 		"user":            user,
 	})
