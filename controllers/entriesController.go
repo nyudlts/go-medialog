@@ -149,19 +149,21 @@ func GetNextEntry(c *gin.Context) {
 }
 
 func GetEntries(c *gin.Context) {
+	//check if user is logged in
 	if err := isLoggedIn(c); err != nil {
 		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
 		return
 	}
-
 	isLoggedIn := true
 
+	//get session cookies
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//get user
 	user, err := database.GetRedactedUser(sessionCookies.UserID)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
@@ -185,28 +187,35 @@ func GetEntries(c *gin.Context) {
 		p = 0
 	}
 
-	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "updated_at desc"}
+	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "updated_at desc", Page: p}
+	totalEntries := database.GetCountOfEntriesInDB()
+	pagination.TotalRecords = totalEntries
+	totalPages := totalEntries / int64(pagination.Limit)
+	if totalEntries%int64(pagination.Limit) > 0 {
+		totalPages++
+	}
+	pagination.TotalPages = int(totalPages)
 
+	//get entries
 	entries, err := database.FindPaginatedEntries(pagination)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
-	entryCount := database.GetCountOfEntriesInDB()
-
+	//get repositoryMap
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
 
+	//return
 	c.HTML(http.StatusOK, "entries-index.html", gin.H{
 		"entries":       entries,
 		"isAdmin":       sessionCookies.IsAdmin,
-		"page":          p,
+		"pagination":    pagination,
 		"repositoryMap": repositoryMap,
-		"entryCount":    entryCount,
 		"isLoggedIn":    isLoggedIn,
 		"user":          user,
 	})

@@ -79,7 +79,11 @@
                 jump to page:
                 <select id="page" name="page">
                     {{ range $val := iterate .pagination.TotalPages }}
-                        <option value="{{ $val }}">{{ add $val 1 }}</option>
+                        {{ if eq $val $.pagination.Page }}
+                            <option value="{{ $val }}" selected>{{ add $val 1 }}</option>
+                        {{ else }}
+                            <option value="{{ $val }}">{{ add $val 1 }}</option>
+                        {{ end }}
                     {{ end }}
                 </select>
             </div>

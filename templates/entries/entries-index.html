@@ -4,15 +4,41 @@
     <div class="card-header">
         <div class="row">
             <h5 class="card-title col">Recent Entries</h5>
-            <div clas="col pl-2">
-                <a href="/entries?page={{ subtract .page 1 }}" class="btn btn-primary btn-sm">prev 10</a>
-                <a href="/entries?page={{ add .page 1 }}" class="btn btn-primary btn-sm">next 10</a>
-            </div>
         </div>
     </div>
     <div class="card-body">
-        <div class="row">showing entries {{ multAndAdd .page 10 1 }} - {{ multAndAdd .page 10 10 }} of {{ .entryCount }}</div>
+        <div class="row">
+            <div class="col">
+                showing entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ multAndAdd .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
+            </div>
+            <div class="col">
+                jump to page:
+                <select id="page" name="page">
+                    {{ range $val := iterate .pagination.TotalPages }}
+                        {{ if eq $val $.pagination.Page }}
+                            <option value="{{ $val }}" selected>{{ add $val 1 }}</option>
+                        {{ else }}
+                            <option value="{{ $val }}">{{ add $val 1 }}</option>
+                        {{ end }}
+                    {{ end }}
+                </select>
+            </div>
+            <div class="col">
+                {{ if gt .pagination.Page 0 }}
+                    <a href="/entries?page={{ subtract .pagination.Page 1 }}" class="btn btn-primary btn-sm">prev 10</a>
+                {{ end }}
+                {{ if lt (add .pagination.Page 1) .pagination.TotalPages }}
+                    <a href="/entries?page={{ add .pagination.Page 1 }}" class="btn btn-primary btn-sm">next 10</a>
+                {{ end }}
+            </div>
+        </div>
         {{ template "entry-table-index.html" . }}
     </div>
 </div>
+<script>
+document.getElementById("page").onmouseup = function() {
+    var page = document.getElementById("page").value;
+    window.location.href = "/entries?page=" + page;
+};
+</script>
 {{ template "footer.html" .}}
