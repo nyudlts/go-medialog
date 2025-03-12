@@ -76,6 +76,14 @@
                 entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ multAndAdd .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
             </div>
             <div class="col">
+                jump to page:
+                <select id="page" name="page">
+                    {{ range $val := iterate .pagination.TotalPages }}
+                        <option value="{{ $val }}">{{ add $val 1 }}</option>
+                    {{ end }}
+                </select>
+            </div>
+            <div class="col">
                 {{ if gt .pagination.Page 0 }}
                     <a href="/resources/{{ .resource.ID}}/show?page={{ subtract .pagination.Page 1}}" class="btn btn-primary btn-sm">prev 10</a>
                 {{ end }}
@@ -88,4 +96,10 @@
         {{ template "entry-table-resource.html" . }}
     </div>
 </div>
+<script>
+    document.getElementById("page").onmouseup = function() {
+        var page = document.getElementById("page").value;
+        window.location.href = "/resources/{{ .resource.ID }}/show?page=" + page;
+    };
+</script>
 {{ template "footer.html" .}}

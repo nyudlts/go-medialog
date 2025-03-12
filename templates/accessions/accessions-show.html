@@ -67,4 +67,10 @@
         <a href="/accessions/{{ .accession.ID }}/slew" class="btn btn-secondary">slew entries</a>
     </div>
 </div>
+<script>
+    document.getElementById("page").onmouseup = function() {
+        var page = document.getElementById("page").value;
+        window.location.href = "/accessions/{{ .accession.ID }}/show?page=" + page;
+    };
+</script>
 {{ template "footer.html" .}}
