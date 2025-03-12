@@ -15,6 +15,8 @@ type Pagination struct {
 	Offset       int    `json:"offset"`
 	Sort         string `json:"sort"`
 	TotalRecords int64  `json:"total_records"`
+	Page         int    `json:"page"`
+	TotalPages   int    `json:"total_pages"`
 }
 
 type DateRange struct {

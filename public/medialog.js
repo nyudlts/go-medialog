@@ -74,3 +74,8 @@ function togglePassword() {
 	  passwd.type = "password";
 	}
 }
+
+function jumpToAccessionsPage() {
+	var page = document.getElementById("page").value;
+	window.location.href = "/accessions/{{ .accession.ID }}/show?page=" + page;
+}
