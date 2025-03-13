@@ -94,12 +94,12 @@ func main() {
 	}
 
 	if createAdmin {
-		password, err := controllers.CreateAdminUser()
+		password, err := controllers.CreateAdminUser(env.AdminEmail)
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Printf("admin user create with password `%s`", password)
+		fmt.Printf("admin user `%s` created with password `%s`", env.AdminEmail, password)
 		os.Exit(0)
 	}
 

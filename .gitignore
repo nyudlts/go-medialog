@@ -9,3 +9,4 @@ bin/*
 tmp/*
 medialog.yml
 headers.txt
+go-medialog.yml

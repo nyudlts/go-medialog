@@ -185,9 +185,9 @@ func CreateUser(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/users")
 }
 
-func CreateAdminUser() (string, error) {
+func CreateAdminUser(email string) (string, error) {
 	user := models.User{}
-	user.Email = "admin@medialog.dlib.nyu.edu" //this will come from a config
+	user.Email = email
 	user.FirstName = "admin"
 	user.LastName = "user"
 	user.IsActive = true

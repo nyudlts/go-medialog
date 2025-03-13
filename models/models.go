@@ -198,6 +198,7 @@ type Environment struct {
 	LogLocation    string         `yaml:"log"`
 	DatabaseConfig DatabaseConfig `yaml:"database"`
 	TestCreds      TestCreds      `yaml:"test_creds"`
+	AdminEmail     string         `yaml:"admin_email"`
 }
 
 type DatabaseConfig struct {
