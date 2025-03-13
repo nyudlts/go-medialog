@@ -6,4 +6,4 @@ dev:
     url: localhost
     port: 3306
     database_name: medialog
-  admin_email: admin@medialog.dlib.nyu.edu
+  admin_email: admin@example.org
