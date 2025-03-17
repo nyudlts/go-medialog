@@ -17,16 +17,19 @@ func GetIndex(c *gin.Context) {
 
 	isLoggedIn := true
 
-	p := 0
-	pagination := database.Pagination{Limit: 10, Offset: 0, Sort: "updated_at desc"}
+	pagination := database.Pagination{Limit: 10, Offset: 0, Sort: "updated_at desc", Page: 0}
+	pagination.TotalRecords = database.GetCountOfEntriesInDB()
+	totalPages := pagination.TotalRecords / int64(pagination.Limit)
+	if pagination.TotalRecords%int64(pagination.Limit) > 0 {
+		totalPages++
+	}
+	pagination.TotalPages = int(totalPages)
 
 	entries, err := database.FindPaginatedEntries(pagination)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
 	}
-
-	entryCount := database.GetCountOfEntriesInDB()
 
 	sessionCookies, err := getSessionCookies(c)
 	if err != nil {
@@ -49,11 +52,11 @@ func GetIndex(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"entries":       entries,
 		"isAdmin":       sessionCookies.IsAdmin,
-		"page":          p,
+		"pagination":    pagination,
 		"repositoryMap": repositoryMap,
-		"entryCount":    entryCount,
 		"isLoggedIn":    isLoggedIn,
 		"user":          user,
+		"limitValues":   LimitValues,
 	})
 }
 

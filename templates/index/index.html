@@ -6,12 +6,52 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col">showing entries {{ add .page 1 }} - {{ add .page 10 }} of {{ .entryCount }}</div>
+            <div class="col">showing entries 1-10 of {{ .pagination.TotalRecords }}</div>
             <div class="col">
-                <a href="/entries?page={{ add .page 1 }}" class="btn btn-primary btn-sm">next 10</a>
+                jump to page:
+                <select id="page" name="page">
+                    {{ range $val := iterate .pagination.TotalPages }}
+                        {{ if eq $val $.pagination.Page }}
+                            <option value="{{ $val }}" selected>{{ add $val 1 }}</option>
+                        {{ else }}
+                            <option value="{{ $val }}">{{ add $val 1 }}</option>
+                        {{ end }}
+                    {{ end }}
+                </select>
+            </div>
+            <div class="col">
+                num. entries:
+                <select id="limit" name="limit">
+                    {{ range $val := .limitValues }}
+                        {{ if eq $val $.pagination.Limit }}
+                            <option value="{{ $val }}" selected>{{ $val }}</option>
+                        {{ else }}
+                            <option value="{{ $val }}">{{ $val }}</option>
+                        {{ end }}
+                    {{ end }}
+                </select>
+            </div>
+            <div class="col">
+                <a href="/entries?page=1&limit=10" class="btn btn-primary btn-sm">next 10</a>
             </div>
         </div>
-        {{ template "entry-table-index.html" . }}
+        <div class="row">
+            <div class="col">
+                {{ template "entry-table-index.html" . }}
+            </div>
+        </div>
     </div>
 </div>
+<script>
+    document.getElementById("page").onmouseup = function() {
+        var page = document.getElementById("page").value;
+        window.location.href = "/entries?page=" + page + "&limit={{ .pagination.Limit }}";
+    };
+</script>
+<script>
+    document.getElementById("limit").onmouseup = function() {
+        var limit = document.getElementById("limit").value;
+        window.location.href = "/entries?page={{ .pagination.Page }}&limit=" + limit;
+    }
+</script>
 {{ template "footer.html" .}}

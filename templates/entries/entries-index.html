@@ -9,7 +9,11 @@
     <div class="card-body">
         <div class="row">
             <div class="col">
-                showing entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ multAndAdd .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
+                {{ if .overlimit }}
+                showing entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ .pagination.TotalRecords }} of {{ .pagination.TotalRecords }}
+                {{ else }}
+                    showing entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ multAndAdd  .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
+                {{ end }}
             </div>
             <div class="col">
                 jump to page:
@@ -23,12 +27,22 @@
                     {{ end }}
                 </select>
             </div>
+            num. entries:
+            <select id="limit" name="limit">
+                {{ range $val := .limitValues }}
+                    {{ if eq $val $.pagination.Limit }}
+                        <option value="{{ $val }}" selected>{{ $val }}</option>
+                    {{ else }}
+                        <option value="{{ $val }}">{{ $val }}</option>
+                    {{ end }}
+                {{ end }}
+            </select>
             <div class="col">
                 {{ if gt .pagination.Page 0 }}
-                    <a href="/entries?page={{ subtract .pagination.Page 1 }}" class="btn btn-primary btn-sm">prev 10</a>
+                    <a href="/entries?page={{ subtract .pagination.Page 1 }}&limit={{ .pagination.Limit }}" class="btn btn-primary btn-sm">prev {{ .pagination.Limit }}</a>
                 {{ end }}
                 {{ if lt (add .pagination.Page 1) .pagination.TotalPages }}
-                    <a href="/entries?page={{ add .pagination.Page 1 }}" class="btn btn-primary btn-sm">next 10</a>
+                    <a href="/entries?page={{ add .pagination.Page 1 }}&limit={{ .pagination.Limit }}" class="btn btn-primary btn-sm">next {{ .pagination.Limit }}</a>
                 {{ end }}
             </div>
         </div>
@@ -36,9 +50,15 @@
     </div>
 </div>
 <script>
-document.getElementById("page").onmouseup = function() {
-    var page = document.getElementById("page").value;
-    window.location.href = "/entries?page=" + page;
-};
+    document.getElementById("page").onmouseup = function() {
+        var page = document.getElementById("page").value;
+        window.location.href = "/entries?page=" + page + "&limit={{ .pagination.Limit }}";
+    };
+</script>
+<script>
+    document.getElementById("limit").onmouseup = function() {
+        var limit = document.getElementById("limit").value;
+        window.location.href = "/entries?page={{ .pagination.Page }}&limit=" + limit;
+    }
 </script>
 {{ template "footer.html" .}}
