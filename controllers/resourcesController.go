@@ -78,13 +78,24 @@ func GetResource(c *gin.Context) {
 		p = 0
 	}
 
-	pagination := database.Pagination{Limit: 10, Offset: (p * 10), Sort: "media_id", Page: p}
+	var limit = 10
+	l := c.Request.URL.Query()["limit"]
+	if len(l) > 0 {
+		limit, err = strconv.Atoi(l[0])
+		if err != nil {
+			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+			return
+		}
+	}
+
+	pagination := database.Pagination{Limit: limit, Offset: (p * limit), Sort: "media_id", Page: p}
 	pagination.TotalRecords = database.GetCountOfEntriesInResource(resource.ID)
 	totalPages := pagination.TotalRecords / int64(pagination.Limit)
 	if pagination.TotalRecords%int64(pagination.Limit) > 0 {
 		totalPages++
 	}
 	pagination.TotalPages = int(totalPages)
+	overlimit := ((pagination.Page * pagination.Limit) + pagination.Limit) > int(pagination.TotalRecords)
 
 	//get entries
 	entries, err := database.FindEntriesByResourceIDPaginated(resource.ID, pagination)
@@ -111,6 +122,8 @@ func GetResource(c *gin.Context) {
 		"entry_users":     entryUsers,
 		"isLoggedIn":      isLoggedIn,
 		"user":            user,
+		"overlimit":       overlimit,
+		"limitValues":     LimitValues,
 	})
 }
 
