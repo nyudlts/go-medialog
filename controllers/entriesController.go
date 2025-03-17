@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"encoding/csv"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -660,4 +662,36 @@ func FindEntry(c *gin.Context) {
 
 	c.Redirect(http.StatusFound, fmt.Sprintf(EntriesShow, id))
 
+}
+
+func EntriesGenCSV(c *gin.Context) {
+	//check if user is logged in
+	if err := isLoggedIn(c); err != nil {
+		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
+		return
+	}
+	isLoggedIn := true
+
+	//find the entries
+	entries, err := database.FindEntries()
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	//generate the csv
+	csvFileName := "medialog_entries.csv"
+	csvBuffer := new(strings.Builder)
+	var csvWriter = csv.NewWriter(csvBuffer)
+	csvWriter.Write(models.CSVHeader)
+	for _, entry := range entries {
+		record := entry.ToCSV()
+		csvWriter.Write(record)
+	}
+	csvWriter.Flush()
+	c.Header("content-type", "text/csv")
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Disposition", "attachment; filename="+csvFileName)
+	c.Status(http.StatusOK)
+	c.Writer.Write([]byte(csvBuffer.String()))
 }

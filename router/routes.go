@@ -61,6 +61,7 @@ func LoadRoutes(router *gin.Engine) {
 	entryRoutes.GET(":id/next", func(c *gin.Context) { controllers.GetNextEntry(c) })
 	entryRoutes.GET(":id/clone", func(c *gin.Context) { controllers.CloneEntry(c) })
 	entryRoutes.POST("find", func(c *gin.Context) { controllers.FindEntry(c) })
+	entryRoutes.GET("/csv", func(c *gin.Context) { controllers.EntriesGenCSV(c) })
 
 	//Users Group
 	userRoutes := router.Group("/users")
