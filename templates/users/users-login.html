@@ -27,31 +27,41 @@
             <h2 class="card-title">Login</h2>
         </div>
         <div class="card-body">
+            <table>
             <form action="/users/authenticate" method="post">
                 <div class="form-row">
                     <div class="col">
-                        <div class="form-group">
-                            <label for="email">email</label>
-                            <input type="text" name="email" id="email">
-                        </div>
+                        <tr>
+                            <div class="form-group">
+                                <td><label for="email">email</label></td>
+                                <td><input type="text" name="email" id="email"></td>
+                            </div>
+                        </tr>
                     </div>
                 </div>
                 <div class="form-row">
                     <br>
                     <div class="col">
                         <div class="form-group">
-                            <label for="password_1">password</label>
-                            <input type="password" name="password_1" id="password_1">
-                            <button type="button" onclick="togglePassword()" class="btn btn-light btn-sm" >show</button>
+                            <tr>
+                                <td><label for="password_1">password</label></td>
+                                <td>
+                                    <input type="password" name="password_1" id="password_1">
+                                    <button type="button" onclick="togglePassword()" class="btn btn-light btn-sm" >show</button>
+                                </td>
+                            </tr>
                         </div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="col">
-                        <input type="submit" class="btn btn-primary" value="Submit" />
+                        <tr><td>
+                            <input type="submit" class="btn btn-primary" value="Submit" />  
+                        </td></tr>
                     </div>
                 </div>
             </form>
+            </table>
         </div>
     </div>
 </card>
