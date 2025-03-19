@@ -68,6 +68,7 @@ type Entry struct {
 	BoxNumber             string     `json:"box_number" form:"box_number"`
 	OriginalID            string     `json:"original_id" form:"original_id"`
 	DispositionNote       string     `json:"disposition_note" form:"disposition_note"`
+	Status                string     `json:"status" form:"status"`
 	StockUnit             string     `json:"stock_unit" form:"stock_unit"`
 	StockSizeNum          float32    `json:"stock_size_num" form:"stock_size_num"`
 	RepositoryID          uint       `json:"repository_id" form:"repository_id"`
@@ -137,6 +138,7 @@ func (e *Entry) UpdateEntry(updatedEntry Entry) {
 	e.ImagingSoftware = updatedEntry.ImagingSoftware
 	e.ImageFormat = updatedEntry.ImageFormat
 	e.Location = updatedEntry.Location
+	e.Status = updatedEntry.Status
 }
 
 func (e *Entry) ValidateEntry() error {

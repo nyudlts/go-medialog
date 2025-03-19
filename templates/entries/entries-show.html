@@ -71,6 +71,10 @@
                     <td class="col-sm-10">{{ .entry.IsRefreshed }}</td>
                 </tr>
                 <tr>
+                    <td class="col-sm-2">Status</td>
+                    <td class="col-sm-10">{{ getEntryStatus .entry.Status }}</td>
+                </tr>
+                <tr>
                     <td class="col-sm-2">created by</td>
                     <td class="col-sm-10">{{ .entryUsers.CreateUser.Email}}</td>
                 </tr>
