@@ -56,6 +56,11 @@ func MigrateDatabase(rollback bool, dbc models.DatabaseConfig) error {
 			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.Token{}, "Type") },
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.Token{}, "Type") },
 		},
+		{
+			ID:       "20250317 - Adding Status to Entry",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.Entry{}, "Status") },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.Entry{}, "Status") },
+		},
 	}
 
 	m := gormigrate.New(db, gormigrate.DefaultOptions, migrations)

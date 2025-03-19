@@ -335,6 +335,10 @@ func CreateEntry(c *gin.Context) {
 		return
 	}
 
+	//add the default status and storage location
+	createEntry.Status = "es_to_be_processed"
+	createEntry.Location = "sl_not_imaged"
+
 	//check if media id is unique
 	b, err := database.IsMediaIDUniqueInResource(createEntry.MediaID, createEntry.ResourceID)
 	if err != nil {
@@ -519,6 +523,8 @@ func UpdateEntry(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, fmt.Sprintf("%s, %s", "bind", err.Error()))
 		return
 	}
+
+	log.Println("STATUS", editedEntry.Status)
 
 	//validate the form
 	if err := editedEntry.ValidateEntry(); err != nil {

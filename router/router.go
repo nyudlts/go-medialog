@@ -116,6 +116,8 @@ func SetGlobalFuncs(router *gin.Engine) {
 		"multAndAdd":         MultAndAdd,
 		"storageLocations":   controllers.GetStorageLocations,
 		"getStorageLocation": controllers.GetStorageLocation,
+		"entryStatuses":      controllers.GetEntryStatuses,
+		"getEntryStatus":     controllers.GetEntryStatus,
 		"iterate":            Iterate,
 	})
 }

@@ -2,6 +2,24 @@ package controllers
 
 var is_refreshed = map[bool]string{true: "yes", false: "no"}
 
+var entryStatuses = map[string]string{
+	"es_to_be_processed": "To Be Processed",
+	"es_processed":       "Proccessed",
+	"es_deaccessioned":   "Deaccessioned",
+	"":                   "unknown",
+}
+
+func GetEntryStatuses() map[string]string { return entryStatuses }
+
+func GetEntryStatus(s string) string {
+	for k, v := range entryStatuses {
+		if k == s {
+			return v
+		}
+	}
+	return "No Match"
+}
+
 var storageLocations = map[string]string{
 	"sl_rsw_acm_born_digital": "RW ACM Born Digital",
 	"sl_rsw_spec_coll":        "RW Special Collections",
@@ -12,7 +30,8 @@ var storageLocations = map[string]string{
 	"sl_fred":                 "ACM FRED FTK Workstation",
 	"sl_wilma":                "ACM WILMA FTK Workstation",
 	"sl_mac":                  "ACM Mac Workstation",
-	"":                        "unknown",
+	"sl_not_imaged":           "Not Imaged",
+	"sl_unknown":              "unknown",
 }
 
 func GetStorageLocations() map[string]string { return storageLocations }
