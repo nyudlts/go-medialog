@@ -16,8 +16,8 @@ var userID uint
 
 func TestUsers(t *testing.T) {
 
-	var email = "test@nyu.edu"
-	var password = "parallel"
+	var email = "test@medialog.dlib.nyu.edu"
+	var password = "medialog"
 
 	t.Run("Test create a user", func(t *testing.T) {
 		user := models.User{}

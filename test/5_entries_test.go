@@ -32,7 +32,8 @@ func TestEntries(t *testing.T) {
 			t.Error(err)
 		}
 
-		t.Logf("Created entry %s", entryID.String())
+		t.Logf("Created entry %s", entry.ID.String())
+		entryID = entry.ID
 	})
 
 	t.Run("Test invalid ID in entry", func(t *testing.T) {
