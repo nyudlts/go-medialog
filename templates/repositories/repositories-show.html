@@ -38,7 +38,9 @@
                     <td>
                         <a href="/resources/{{ $resource.ID }}/show" class="btn btn-primary">View</a>
                         <a href="/resources/{{ $resource.ID }}/edit" class="btn btn-secondary">Edit</a>
-                        <a href="/resources/{{ $resource.ID }}/delete" class="btn btn-danger">Delete</a>
+                        {{ if $.user.IsAdmin }}
+                            <a href="/resources/{{ $resource.ID }}/delete" class="btn btn-danger">Delete</a>
+                        {{ end }}
                     </td>
                 </tr>
                 {{ end }}

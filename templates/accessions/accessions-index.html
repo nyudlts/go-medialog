@@ -34,7 +34,9 @@
                 <td>
                     <a href="/accessions/{{ $accession.ID }}/show" class="btn btn-primary">View</a>
                     <a href="/accessions/{{ $accession.ID }}/edit" class="btn btn-secondary">Edit</a>
-                    <a href="/accessions/{{ $accession.ID }}/delete" class="btn btn-danger">Delete</a>
+                    {{ if $.isAdmin }}
+                        <a href="/accessions/{{ $accession.ID }}/delete" class="btn btn-danger">Delete</a>
+                    {{ end}}
                 </td>
             </tr>
             {{ end }}

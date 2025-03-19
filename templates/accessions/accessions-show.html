@@ -27,7 +27,9 @@
         <div class="row">
             <div class="col">
                 <a href="/accessions/{{ .accession.ID }}/edit" class="btn btn-secondary">edit</a>
-                <a href="/accessions/{{ .accession.ID }}/delete" class="btn btn-danger">delete</a>
+                {{ if $.user.IsAdmin }}
+                    <a href="/accessions/{{ .accession.ID }}/delete" class="btn btn-danger">delete</a>
+                {{ end }}
             </div>
         </div>
     </div>

@@ -25,11 +25,13 @@
                         {{ $resource.CollectionCode}}<br>{{ printf "%.75s" $resource.Title }}
                     </td>
                     <td>{{ formatAsDate $resource.UpdatedAt}}</td>
-                    <td>
+                    <td>    
                         <div class="col">
                             <a href="/resources/{{ $resource.ID }}/show" class="btn btn-primary">view</a>
                             <a href="/resources/{{ $resource.ID }}/edit" class="btn btn-secondary">edit</a>
-                            <a href="/resources/{{ $resource.ID }}/delete" class="btn btn-danger">delete</a>
+                            {{ if $.isAdmin}}
+                                <a href="/resources/{{ $resource.ID }}/delete" class="btn btn-danger">delete</a>
+                            {{ end }}
                         </div>
                     </td>
                 </tr>
