@@ -686,8 +686,9 @@ func EntriesGenCSV(c *gin.Context) {
 	}
 	isLoggedIn := true
 
+	filter := c.Request.URL.Query()["filter"][0]
 	//find the entries
-	entries, err := database.FindEntries()
+	entries, err := database.FindEntriesFiltered(filter)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return

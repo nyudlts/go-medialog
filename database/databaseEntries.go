@@ -39,6 +39,17 @@ func FindEntries() ([]models.Entry, error) {
 	return entries, nil
 }
 
+func FindEntriesFiltered(filter string) ([]models.Entry, error) {
+	if filter == "" {
+		return FindEntries()
+	} else {
+		entries := []models.Entry{}
+		if err := db.Where("mediatype = ?", filter).Find(&entries).Error; err != nil {
+			return entries, err
+		}
+		return entries, nil
+	}
+}
 func FindEntryIDsByResourceID(id uint) ([]string, error) {
 	entries := []string{}
 	if err := db.Table("entries").Where("resource_id = ?", id).Select("id").Find(&entries).Error; err != nil {

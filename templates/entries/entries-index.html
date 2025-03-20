@@ -54,7 +54,7 @@
                 {{ if lt (add .pagination.Page 1) .pagination.TotalPages }}
                     <a href="/entries?page={{ add .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}" class="btn btn-primary btn-sm">next {{ .pagination.Limit }}</a>
                 {{ end }}
-                <a href="/entries/csv" target="_blank" class="btn btn-info btn-sm">CSV</a>
+                <a href="/entries/csv?filter={{ .pagination.Filter }}" target="_blank" class="btn btn-info btn-sm">CSV</a>
             </div>
         </div>
         {{ template "entry-table-index.html" . }}
