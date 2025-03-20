@@ -112,6 +112,20 @@ func FindEntriesByAccessionID(id uint) ([]models.Entry, error) {
 	return entries, nil
 }
 
+func FindEntriesByAccessionIDFiltered(id uint, filter string) ([]models.Entry, error) {
+
+	if filter == "" {
+		return FindEntriesByAccessionID(id)
+	} else {
+		entries := []models.Entry{}
+		if err := db.Preload(clause.Associations).Where("accession_id = ? AND mediatype = ?", id).Find(&entries).Error; err != nil {
+			return entries, err
+		}
+		return entries, nil
+	}
+
+}
+
 func FindEntriesByRepositoryID(repositoryID uint) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if err := db.Preload(clause.Associations).Where("repository_id = ?", repositoryID).Find(&entries).Error; err != nil {

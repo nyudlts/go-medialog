@@ -89,7 +89,7 @@
                 {{ if lt (add .pagination.Page 1) .pagination.TotalPages }}
                     <a href="/accessions/{{ .accession.ID}}/show?page={{ add  .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}" class="btn btn-primary btn-sm">next {{ .pagination.Limit }}</a>
                 {{ end }}
-                <a href="/accessions/{{ .accession.ID}}/csv" target="_blank" class="btn btn-info btn-sm">CSV</a>
+                <a href="/accessions/{{ .accession.ID}}/csv?filter={{ .pagination.Filter }}" target="_blank" class="btn btn-info btn-sm">CSV</a>
             </div>
         </div>
         {{ template "entry-table-accession.html" . }}

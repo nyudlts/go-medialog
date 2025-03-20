@@ -579,7 +579,9 @@ func AccessionGenCSV(c *gin.Context) {
 		return
 	}
 
-	entries, err := database.FindEntriesByAccessionID(accession.ID)
+	filter := c.Request.URL.Query()["filter"][0]
+
+	entries, err := database.FindEntriesByAccessionIDFiltered(accession.ID, filter)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return
