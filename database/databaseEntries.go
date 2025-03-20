@@ -57,8 +57,14 @@ func FindEntriesByResourceID(id uint) ([]models.Entry, error) {
 
 func FindEntriesByResourceIDPaginated(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Preload(clause.Associations).Where("resource_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
-		return entries, err
+	if pagination.Filter == "" {
+		if err := db.Preload(clause.Associations).Where("resource_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+			return entries, err
+		}
+	} else {
+		if err := db.Preload(clause.Associations).Where("resource_id = ? AND mediatype = ?", id, pagination.Filter).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+			return entries, err
+		}
 	}
 	return entries, nil
 }
@@ -104,8 +110,14 @@ func FindEntriesByRepositoryID(repositoryID uint) ([]models.Entry, error) {
 
 func FindEntriesByRepositoryIDPaginated(repositoryID uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Where("repository_id = ?", repositoryID).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
-		return entries, err
+	if pagination.Filter == "" {
+		if err := db.Where("repository_id = ?", repositoryID).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+			return entries, err
+		}
+	} else {
+		if err := db.Where("repository_id = ? AND mediatype = ?", repositoryID, pagination.Filter).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+			return entries, err
+		}
 	}
 	return entries, nil
 }
@@ -204,6 +216,16 @@ func GetCountOfEntriesInResource(resourceID uint) int64 {
 	var count int64
 	db.Model(&models.Entry{}).Where("resource_id = ?", resourceID).Count(&count)
 	return count
+}
+
+func GetCountOfEntriesInResourcePaginated(resourceID uint, pagination Pagination) int64 {
+	if pagination.Filter != "" {
+		var count int64
+		db.Table("entries").Where("mediatype = ? AND resource_id = ?", pagination.Filter, resourceID).Count(&count)
+		return count
+	} else {
+		return GetCountOfEntriesInResource(resourceID)
+	}
 }
 
 func GetCountOfEntriesInRepository(repositoryID uint) int64 {

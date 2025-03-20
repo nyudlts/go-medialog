@@ -89,7 +89,14 @@ func GetResource(c *gin.Context) {
 	}
 
 	pagination := database.Pagination{Limit: limit, Offset: (p * limit), Sort: "media_id", Page: p}
-	pagination.TotalRecords = database.GetCountOfEntriesInResource(resource.ID)
+
+	//get filter
+	filter := c.Request.URL.Query()["filter"]
+	if len(filter) > 0 {
+		pagination.Filter = filter[0]
+	}
+
+	pagination.TotalRecords = database.GetCountOfEntriesInResourcePaginated(resource.ID, pagination)
 	totalPages := pagination.TotalRecords / int64(pagination.Limit)
 	if pagination.TotalRecords%int64(pagination.Limit) > 0 {
 		totalPages++
@@ -124,6 +131,7 @@ func GetResource(c *gin.Context) {
 		"user":            user,
 		"overlimit":       overlimit,
 		"limitValues":     LimitValues,
+		"mediatypes":      GetMediatypes(),
 	})
 }
 
