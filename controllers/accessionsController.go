@@ -125,7 +125,14 @@ func GetAccession(c *gin.Context) {
 	}
 
 	pagination := database.Pagination{Limit: limit, Offset: (p * limit), Sort: "media_id", Page: p}
-	totalEntries := database.GetCountOfEntriesInAccession(accession.ID)
+
+	//get filter
+	filter := c.Request.URL.Query()["filter"]
+	if len(filter) > 0 {
+		pagination.Filter = filter[0]
+	}
+
+	totalEntries := database.GetCountOfEntriesInAccessionPaginated(accession.ID, &pagination)
 	pagination.TotalRecords = totalEntries
 	totalPages := totalEntries / int64(pagination.Limit)
 	if totalEntries%int64(pagination.Limit) > 0 {
@@ -178,6 +185,7 @@ func GetAccession(c *gin.Context) {
 		"pagination":      pagination,
 		"limitValues":     LimitValues,
 		"overlimit":       overlimit,
+		"mediatypes":      GetMediatypes(),
 	})
 }
 

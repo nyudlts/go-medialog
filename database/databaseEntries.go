@@ -73,9 +73,16 @@ func FindEntryIDsByAccessionID(id uint) ([]string, error) {
 
 func FindEntriesByAccessionIDPaginated(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Where("accession_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
-		return entries, err
+	if pagination.Filter == "" {
+		if err := db.Where("accession_id = ?", id).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+			return entries, err
+		}
+	} else {
+		if err := db.Where("accession_id = ? AND mediatype = ?", id, pagination.Filter).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+			return entries, err
+		}
 	}
+
 	return entries, nil
 }
 
@@ -169,7 +176,6 @@ func GetCountOfEntriesInDB() int64 {
 
 func GetCountOfEntriesInDBPaginated(pagination *Pagination) int64 {
 	var count int64
-	log.Println("FILTERINDB:", pagination.Filter)
 	if pagination.Filter != "" {
 		db.Table("entries").Where("mediatype = ?", pagination.Filter).Count(&count)
 		return count
@@ -182,6 +188,16 @@ func GetCountOfEntriesInAccession(accessionID uint) int64 {
 	var count int64
 	db.Model(&models.Entry{}).Where("accession_id = ?", accessionID).Count(&count)
 	return count
+}
+
+func GetCountOfEntriesInAccessionPaginated(accessionID uint, pagination *Pagination) int64 {
+	var count int64
+	if pagination.Filter != "" {
+		db.Table("entries").Where("mediatype = ? AND accession_id = ?", pagination.Filter, accessionID).Count(&count)
+		return count
+	} else {
+		return GetCountOfEntriesInAccession(accessionID)
+	}
 }
 
 func GetCountOfEntriesInResource(resourceID uint) int64 {
