@@ -399,7 +399,9 @@ func ResourceGenCSV(c *gin.Context) {
 		return
 	}
 
-	entries, err := database.FindEntriesByResourceID(uint(id))
+	filter := c.Request.URL.Query()["filter"][0]
+
+	entries, err := database.FindEntriesByResourceIDFiltered(uint(id), filter)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
 		return

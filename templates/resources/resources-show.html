@@ -78,10 +78,11 @@
         <div class="row">
             <div class="col">
                 {{ if .overlimit }}
-                entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ .pagination.TotalRecords }} of {{ .pagination.TotalRecords }}
+                    entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ .pagination.TotalRecords }} of {{ .pagination.TotalRecords }}
                 {{ else }}
-                    showing entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ multAndAdd  .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
-                {{ end }}            </div>
+                    entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ multAndAdd  .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
+                {{ end }}            
+            </div>
             <div class="col">
                 jump to page:
                 <select id="page" name="page">
@@ -121,7 +122,7 @@
                 {{ if lt (add .pagination.Page 1) .pagination.TotalPages }}
                     <a href="/resources/{{ .resource.ID}}/show?page={{ add .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}" class="btn btn-primary btn-sm">next {{ .pagination.Limit }}</a>
                 {{ end }}
-                <a href="/resources/{{ .resource.ID}}/csv" target="_blank" class="btn btn-info btn-sm">CSV</a>
+                <a href="/resources/{{ .resource.ID}}/csv?filter={{ .pagination.Filter }}" target="_blank" class="btn btn-info btn-sm">CSV</a>
             </div>
         </div>
         {{ template "entry-table-resource.html" . }}

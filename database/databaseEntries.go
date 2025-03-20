@@ -55,6 +55,18 @@ func FindEntriesByResourceID(id uint) ([]models.Entry, error) {
 	return entries, nil
 }
 
+func FindEntriesByResourceIDFiltered(id uint, filter string) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if filter == "" {
+		return FindEntriesByResourceID(id)
+	} else {
+		if err := db.Preload(clause.Associations).Where("resource_id = ? AND mediatype = ?", id, filter).Find(&entries).Error; err != nil {
+			return []models.Entry{}, err
+		}
+		return entries, nil
+	}
+}
+
 func FindEntriesByResourceIDPaginated(id uint, pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
 	if pagination.Filter == "" {
