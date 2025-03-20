@@ -6,7 +6,7 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col">showing entries 1-10 of {{ .pagination.TotalRecords }}</div>
+            <div class="col">entries 1-10 of {{ .pagination.TotalRecords }}</div>
             <div class="col">
                 jump to page:
                 <select id="page" name="page">
@@ -32,6 +32,14 @@
                 </select>
             </div>
             <div class="col">
+                filter:
+                <select id="filter" name="filter">
+                    {{ range $key,  $val := .mediatypes }}
+                        <option value="{{ $key }}">{{ $val }}</option>
+                    {{ end }}
+                </select>    
+            </div>
+            <div class="col">
                 <a href="/entries?page=1&limit=10" class="btn btn-primary btn-sm">next 10</a>
                 <a href="/entries/csv" target="_blank" class="btn btn-info btn-sm">CSV</a>
             </div>
@@ -53,6 +61,12 @@
     document.getElementById("limit").onmouseup = function() {
         var limit = document.getElementById("limit").value;
         window.location.href = "/entries?page={{ .pagination.Page }}&limit=" + limit;
+    }
+</script>
+<script>
+    document.getElementById("filter").onmouseup = function() {
+        var filter = document.getElementById("filter").value;
+        window.location.href = "/entries?page={{ .pagination.Page }}&limit={{ .pagination.Limit }}&filter=" + filter;
     }
 </script>
 {{ template "footer.html" .}}
