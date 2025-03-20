@@ -200,7 +200,14 @@ func GetEntries(c *gin.Context) {
 	}
 
 	pagination := database.Pagination{Limit: limit, Offset: (p * limit), Sort: "updated_at desc", Page: p}
-	totalEntries := database.GetCountOfEntriesInDB()
+
+	//get filter
+	filter := c.Request.URL.Query()["filter"]
+	if len(filter) > 0 {
+		pagination.Filter = filter[0]
+	}
+
+	totalEntries := database.GetCountOfEntriesInDBPaginated(&pagination)
 	pagination.TotalRecords = totalEntries
 	totalPages := totalEntries / int64(pagination.Limit)
 	if totalEntries%int64(pagination.Limit) > 0 {
@@ -233,6 +240,7 @@ func GetEntries(c *gin.Context) {
 		"user":          user,
 		"overlimit":     overlimit,
 		"limitValues":   LimitValues,
+		"mediatypes":    GetMediatypes(),
 	})
 }
 

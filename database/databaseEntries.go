@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/nyudlts/bytemath"
@@ -134,8 +135,16 @@ func FindMaxMediaIDInResource(resourceID uint) int {
 
 func FindPaginatedEntries(pagination Pagination) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Preload(clause.Associations).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
-		return entries, err
+
+	if pagination.Filter == "" {
+		if err := db.Preload(clause.Associations).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+			return entries, err
+		}
+	} else {
+		log.Println("FILTER", pagination.Filter)
+		if err := db.Preload(clause.Associations).Where("mediatype = ?", pagination.Filter).Limit(pagination.Limit).Offset(pagination.Offset).Order(pagination.Sort).Find(&entries).Error; err != nil {
+			return entries, err
+		}
 	}
 	return entries, nil
 }
@@ -156,6 +165,17 @@ func GetCountOfEntriesInDB() int64 {
 	var count int64
 	db.Model(&models.Entry{}).Count(&count)
 	return count
+}
+
+func GetCountOfEntriesInDBPaginated(pagination *Pagination) int64 {
+	var count int64
+	log.Println("FILTERINDB:", pagination.Filter)
+	if pagination.Filter != "" {
+		db.Table("entries").Where("mediatype = ?", pagination.Filter).Count(&count)
+		return count
+	} else {
+		return GetCountOfEntriesInDB()
+	}
 }
 
 func GetCountOfEntriesInAccession(accessionID uint) int64 {
