@@ -98,19 +98,19 @@
     </div>
 </div>
 <script>
-    document.getElementById("page").onmouseup = function() {
+    document.getElementById("page").onchange = function() {
         var page = document.getElementById("page").value;
         window.location.href = "/accessions/{{ .accession.ID }}/show?page=" + page + "&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}";
     };
 </script>
 <script>
-    document.getElementById("limit").onmouseup = function() {
+    document.getElementById("limit").onchange = function() {
         var limit = document.getElementById("limit").value;
         window.location.href = "/accessions/{{ .accession.ID }}/show?page={{ .pagination.Page }}&limit=" + limit + "&filter={{ .pagination.Filter }}";
     }
 </script>
 <script>
-    document.getElementById("filter").onmouseup = function() {
+    document.getElementById("filter").onchange = function() {
         var filter = document.getElementById("filter").value;
         window.location.href = "/accessions/{{ .accession.ID }}/show?page={{ .pagination.Page }}&limit={{ .pagination.Limit }}&filter=" + filter;
     }
