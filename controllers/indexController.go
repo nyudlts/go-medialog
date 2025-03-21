@@ -57,6 +57,7 @@ func GetIndex(c *gin.Context) {
 		"isLoggedIn":    isLoggedIn,
 		"user":          user,
 		"limitValues":   LimitValues,
+		"mediatypes":    GetMediatypes(),
 	})
 }
 

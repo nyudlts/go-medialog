@@ -200,7 +200,14 @@ func GetEntries(c *gin.Context) {
 	}
 
 	pagination := database.Pagination{Limit: limit, Offset: (p * limit), Sort: "updated_at desc", Page: p}
-	totalEntries := database.GetCountOfEntriesInDB()
+
+	//get filter
+	filter := c.Request.URL.Query()["filter"]
+	if len(filter) > 0 {
+		pagination.Filter = filter[0]
+	}
+
+	totalEntries := database.GetCountOfEntriesInDBPaginated(&pagination)
 	pagination.TotalRecords = totalEntries
 	totalPages := totalEntries / int64(pagination.Limit)
 	if totalEntries%int64(pagination.Limit) > 0 {
@@ -233,6 +240,7 @@ func GetEntries(c *gin.Context) {
 		"user":          user,
 		"overlimit":     overlimit,
 		"limitValues":   LimitValues,
+		"mediatypes":    GetMediatypes(),
 	})
 }
 
@@ -679,9 +687,30 @@ func EntriesGenCSV(c *gin.Context) {
 	isLoggedIn := true
 
 	//find the entries
-	entries, err := database.FindEntries()
+	entries, err := database.FindEntriesFiltered(c.Request.URL.Query()["filter"][0])
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	//get the repository map
+	repositoryMap, err := database.GetRepositoryMap()
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	//get the resource map
+	resourceMap, err := database.GetResourceMap()
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+		return
+	}
+
+	//get the accessions map
+	accessionsMap, err := database.GetAccessionsMap()
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
 		return
 	}
 
@@ -691,7 +720,28 @@ func EntriesGenCSV(c *gin.Context) {
 	var csvWriter = csv.NewWriter(csvBuffer)
 	csvWriter.Write(models.CSVHeader)
 	for _, entry := range entries {
-		record := entry.ToCSV()
+		record := entry.ToCSVEntryResult().ToCSV()
+		record[2] = GetMediaType(record[2])
+		repoID, err := strconv.Atoi(record[7])
+		if err != nil {
+			ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+			return
+		}
+		record[7] = repositoryMap[repoID]
+
+		resID, err := strconv.Atoi(record[8])
+		if err != nil {
+			ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+			return
+		}
+		record[8] = resourceMap[uint(resID)]
+
+		accID, err := strconv.Atoi(record[9])
+		if err != nil {
+			ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+			return
+		}
+		record[9] = accessionsMap[uint(accID)]
 		csvWriter.Write(record)
 	}
 	csvWriter.Flush()

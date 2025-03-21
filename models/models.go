@@ -106,6 +106,22 @@ func (e Entry) ToCSV() []string {
 	return csv
 }
 
+func (e Entry) ToCSVEntryResult() CSVEntryResult {
+	return CSVEntryResult{
+		ID:              e.ID,
+		MediaID:         e.MediaID,
+		MediaType:       e.Mediatype,
+		ContentType:     e.ContentType,
+		LabelText:       e.LabelText,
+		IsRefreshed:     e.IsRefreshed,
+		ImagingSuccess:  e.ImagingSuccess,
+		RepositoryID:    e.RepositoryID,
+		ResourceID:      e.ResourceID,
+		AccessionID:     e.AccessionID,
+		StorageLocation: e.Location,
+	}
+}
+
 func boolToString(b bool) string {
 	if b {
 		return "TRUE"
@@ -225,4 +241,34 @@ type MedialogInfo struct {
 
 func (mli MedialogInfo) String() string {
 	return fmt.Sprintf("Medialog Version: %s, API Version: %s, Golang Version: %s, Gin Version: %s", mli.Version, mli.APIVersion, mli.GolangVersion, mli.GinVersion)
+}
+
+type CSVEntryResult struct {
+	ID              uuid.UUID
+	MediaID         uint
+	MediaType       string
+	ContentType     string
+	LabelText       string
+	IsRefreshed     bool
+	ImagingSuccess  string
+	RepositoryID    uint
+	ResourceID      uint
+	AccessionID     uint
+	StorageLocation string
+}
+
+func (er CSVEntryResult) ToCSV() []string {
+	return []string{
+		er.ID.String(),
+		fmt.Sprintf("%d", er.MediaID),
+		er.MediaType,
+		er.ContentType,
+		er.LabelText,
+		boolToString(er.IsRefreshed),
+		er.ImagingSuccess,
+		fmt.Sprintf("%d", er.RepositoryID),
+		fmt.Sprintf("%d", er.ResourceID),
+		fmt.Sprintf("%d", er.AccessionID),
+		er.StorageLocation,
+	}
 }

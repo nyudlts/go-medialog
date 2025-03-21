@@ -17,6 +17,7 @@ type Pagination struct {
 	TotalRecords int64  `json:"total_records"`
 	Page         int    `json:"page"`
 	TotalPages   int    `json:"total_pages"`
+	Filter       string `json:"filter"`
 }
 
 type DateRange struct {
