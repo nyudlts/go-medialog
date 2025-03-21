@@ -65,3 +65,15 @@ func CountAccessions() int64 {
 	db.Model(&models.Accession{}).Count(&count)
 	return count
 }
+
+func GetAccessionsMap() (map[uint]string, error) {
+	accessions, err := FindAccessions()
+	if err != nil {
+		return map[uint]string{}, err
+	}
+	accessionsMap := map[uint]string{}
+	for _, accession := range accessions {
+		accessionsMap[accession.ID] = accession.AccessionNum
+	}
+	return accessionsMap, nil
+}

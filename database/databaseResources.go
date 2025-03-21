@@ -63,3 +63,15 @@ func CountResources() int64 {
 	db.Model(models.Resource{}).Count(&count)
 	return count
 }
+
+func GetResourceMap() (map[uint]string, error) {
+	resources, err := FindResources()
+	if err != nil {
+		return map[uint]string{}, err
+	}
+	resourceMap := map[uint]string{}
+	for _, resource := range resources {
+		resourceMap[resource.ID] = resource.CollectionCode
+	}
+	return resourceMap, nil
+}
