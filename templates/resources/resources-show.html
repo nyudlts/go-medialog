@@ -111,7 +111,11 @@
                 filter:
                 <select id="filter" name="filter">
                     {{ range $key,  $val := .mediatypes }}
-                        <option value="{{ $key }}">{{ $val }}</option>
+                        {{ if eq $key $.pagination.Filter }}
+                            <option value="{{ $key }}" selected>{{ $val }}</option>
+                        {{ else }}
+                            <option value="{{ $key }}">{{ $val }}</option>
+                        {{ end }}
                     {{ end }}
                 </select>  
             </div>

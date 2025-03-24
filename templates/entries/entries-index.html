@@ -3,7 +3,7 @@
 <div class="card card-default">
     <div class="card-header">
         <div class="row">
-            <h5 class="card-title col">Recent Entries</h5>
+            <h5 class="card-title col">Recent Entries</h5> {{ .pagination.Filter}}
         </div>
     </div>
     <div class="card-body">
@@ -43,7 +43,11 @@
                 filter:
                 <select id="filter" name="filter">
                     {{ range $key,  $val := .mediatypes }}
-                        <option value="{{ $key }}">{{ $val }}</option>
+                        {{ if eq $key $.pagination.Filter }}
+                            <option value="{{ $key }}" selected>{{ $val }}</option>
+                        {{ else }}
+                            <option value="{{ $key }}">{{ $val }}</option>
+                        {{ end }}
                     {{ end }}
                 </select>        
             </div>
