@@ -22,7 +22,15 @@ func GlobalSearch(c *gin.Context) {
 		return
 	}
 
+	//get Resource Matches
 	resources, err := database.SearchResources(query)
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, true)
+		return
+	}
+
+	//get Accession Matches
+	accessions, err := database.SearchAccessions(query)
 	if err != nil {
 		ThrowError(http.StatusInternalServerError, err.Error(), c, true)
 		return
@@ -35,6 +43,7 @@ func GlobalSearch(c *gin.Context) {
 		"query":        query,
 		"repositories": repositories,
 		"resources":    resources,
+		"accessions":   accessions,
 	})
 
 }

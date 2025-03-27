@@ -14,10 +14,15 @@
         <div class="row"><h5>Resources ({{ len .resources }} hits)</h5></div>
         {{ if  gt (len .resources) 0 }}
             {{ range $res := .resources }}
-                <a href="/resources/{{ $res.ID }}/show">{{ $res.CollectionCode }} {{ $res.Title }}</a><br>
+                <a href="/resources/{{ $res.ID }}/show">{{ $res.Repository.Slug }}{{ $res.CollectionCode }} - {{ $res.Title }}</a><br>
             {{ end }}
         {{ end }}
-        <div class="row"><h5>Accessions</h5></div>
+        <div class="row"><h5>Accessions ({{ len .accessions }} hits)</h5></div>
+        {{ if  gt (len .accessions) 0 }}
+            {{ range $accession := .accessions }}
+                <a href="/accessions/{{ $accession.ID }}/show">{{$accession.Resource.CollectionCode }} {{ $accession.Resource.Title }} {{ $accession.AccessionNum }}</a><br>
+            {{ end }}
+        {{ end }}
         <div class="row"><h5>Entries</h5></div>
     </div>
 </div>
