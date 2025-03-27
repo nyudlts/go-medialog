@@ -1,0 +1,24 @@
+{{ template "header.html" .}}
+
+<div class="card card-default">
+    <div class="card-header">
+        <h5 class="card-title"> Global Search: `{{ .query }}`</h5>
+    </div>
+    <div class="card-body">
+        <div class="row"><h5>Repositories ({{ len .repositories }} hits)</h5></div>
+        {{ if  gt (len .repositories) 0 }}
+            {{ range $repo := .repositories }}
+                <a href="/repositories/{{ $repo.ID }}/show">{{ $repo.Title }}</a><br>
+            {{ end }}
+        {{ end }}
+        <div class="row"><h5>Resources ({{ len .resources }} hits)</h5></div>
+        {{ if  gt (len .resources) 0 }}
+            {{ range $res := .resources }}
+                <a href="/resources/{{ $res.ID }}/show">{{ $res.CollectionCode }} {{ $res.Title }}</a><br>
+            {{ end }}
+        {{ end }}
+        <div class="row"><h5>Accessions</h5></div>
+        <div class="row"><h5>Entries</h5></div>
+    </div>
+</div>
+{{ template "footer.html" .}}

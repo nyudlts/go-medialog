@@ -91,7 +91,7 @@ func LoadRoutes(router *gin.Engine) {
 
 	//Search Group
 	searchRoutes := router.Group("/search")
-	searchRoutes.POST("", func(c *gin.Context) { c.JSON(http.StatusNotImplemented, "Not Implemented") })
+	searchRoutes.GET("", func(c *gin.Context) { controllers.GlobalSearch(c) })
 
 	//Session Group
 	sessionRoutes := router.Group("/sessions")
