@@ -19,6 +19,18 @@
             $( "#tabs" ).tabs();
         } );
     </script>
+    <script>
+       
+    document.getElementById("globalSearch").addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            var searchValue = document.getElementById("globalSearch").value;
+            window.location.href = "/search?query=" + encodeURIComponent(searchValue);
+        }
+    });
+            
+        
+    </script>
 
 </div>
 </body>
