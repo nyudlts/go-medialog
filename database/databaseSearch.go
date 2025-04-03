@@ -31,7 +31,7 @@ func SearchAccessions(query string) ([]models.Accession, error) {
 
 func SearchEntries(query string) ([]models.Entry, error) {
 	entries := []models.Entry{}
-	if err := db.Preload(clause.Associations).Where("label_text LIKE ?", "%"+query+"%").Find(&entries).Error; err != nil {
+	if err := db.Preload(clause.Associations).Where("label_text LIKE ?", "%"+query+"%").Order("repository_id asc").Order("resource_id asc").Order("media_id asc").Find(&entries).Error; err != nil {
 		return entries, err
 	}
 	return entries, nil

@@ -3,7 +3,6 @@
 		<thead class="thead thead-dark">
 			<tr>
 				<th>repo</th>
-				<th>resource</th>
 				<th>MediaID</th>
 				<th>Label Text</th>
 				<th>Type</th>
@@ -16,8 +15,7 @@
 		<tbody>
 		{{ range $entry := .entries }}
 			<tr>
-				<td>{{ $entry.Repository.Slug }}</td>
-				<td>{{ $entry.Resource.CollectionCode }}</td>
+				<td>{{ $entry.Repository.Slug }} {{ $entry.Resource.CollectionCode }}</td>
 				<td>{{ $entry.MediaID }}</td>
 				<td>{{ printf "%0.40s" $entry.LabelText }}</td>
 				<td>{{ getMediatype $entry.Mediatype }}</td>
@@ -26,8 +24,6 @@
 				<td>{{ formatAsDate $entry.UpdatedAt }}</td>
 				<td>
 					<a href="/entries/{{ $entry.ID }}/show" class="btn-sm btn-primary">View</a>
-					<a href="/entries/{{ $entry.ID }}/edit" class="btn-sm btn-secondary">Edit</a>
-					<a href="/entries/{{ $entry.ID }}/delete" class="btn-sm btn-danger">Delete</a>
 				</td>
 			</tr>
 		{{ end }}
