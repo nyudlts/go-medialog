@@ -28,3 +28,11 @@ func SearchAccessions(query string) ([]models.Accession, error) {
 	}
 	return accessions, nil
 }
+
+func SearchEntries(query string) ([]models.Entry, error) {
+	entries := []models.Entry{}
+	if err := db.Preload(clause.Associations).Where("label_text LIKE ?", "%"+query+"%").Find(&entries).Error; err != nil {
+		return entries, err
+	}
+	return entries, nil
+}

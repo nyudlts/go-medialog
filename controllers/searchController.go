@@ -36,6 +36,13 @@ func GlobalSearch(c *gin.Context) {
 		return
 	}
 
+	//get Entry matches
+	entries, err := database.SearchEntries(query)
+	if err != nil {
+		ThrowError(http.StatusInternalServerError, err.Error(), c, true)
+		return
+	}
+
 	c.HTML(200, "results.html", gin.H{
 		"user":         user,
 		"isLoggedIn":   true,
@@ -44,6 +51,7 @@ func GlobalSearch(c *gin.Context) {
 		"repositories": repositories,
 		"resources":    resources,
 		"accessions":   accessions,
+		"entries":      entries,
 	})
 
 }

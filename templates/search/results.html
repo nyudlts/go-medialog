@@ -5,12 +5,6 @@
         <h5 class="card-title"> Global Search: `{{ .query }}`</h5>
     </div>
     <div class="card-body">
-        <div class="row"><h5>Repositories ({{ len .repositories }} hits)</h5></div>
-        {{ if  gt (len .repositories) 0 }}
-            {{ range $repo := .repositories }}
-                <a href="/repositories/{{ $repo.ID }}/show">{{ $repo.Title }}</a><br>
-            {{ end }}
-        {{ end }}
         <div class="row"><h5>Resources ({{ len .resources }} hits)</h5></div>
         {{ if  gt (len .resources) 0 }}
             {{ range $res := .resources }}
@@ -23,7 +17,8 @@
                 <a href="/accessions/{{ $accession.ID }}/show">{{$accession.Resource.CollectionCode }} {{ $accession.Resource.Title }} {{ $accession.AccessionNum }}</a><br>
             {{ end }}
         {{ end }}
-        <div class="row"><h5>Entries</h5></div>
+        <div class="row"><h5>Entries ({{ len .entries}} hits)</h5></div>
+        {{ template "search-entries-table.html" .}}
     </div>
 </div>
 {{ template "footer.html" .}}
