@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -14,6 +15,11 @@ func InsertEntry(entry *models.Entry) error {
 	if err := db.Create(&entry).Error; err != nil {
 		return err
 	}
+
+	if err := InsertEntryJSON(*entry); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -21,6 +27,16 @@ func DeleteEntry(id uuid.UUID) error {
 	if err := db.Delete(models.Entry{}, id).Error; err != nil {
 		return err
 	}
+
+	ej, err := FindEntryJSONByEntryID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := DeleteEntryJSON(ej.ID); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -28,6 +44,23 @@ func UpdateEntry(entry *models.Entry) error {
 	if err := db.Save(entry).Error; err != nil {
 		return err
 	}
+
+	ej, err := FindEntryJSONByEntryID(entry.ID)
+	if err != nil {
+		return err
+	}
+
+	em := entry.Minimal()
+	emBytes, err := json.Marshal(em)
+	if err != nil {
+		return err
+	}
+	ej.JSON = string(emBytes)
+
+	if err := UpdateEntryJSON(ej); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -495,4 +528,12 @@ func FindEntriesPaginated(pagination Pagination) ([]models.Entry, error) {
 		return entries, err
 	}
 	return entries, nil
+}
+
+func getEntryIDs() ([]uuid.UUID, error) {
+	entryIDs := []uuid.UUID{}
+	if err := db.Table("entries").Select("id").Scan(&entryIDs).Error; err != nil {
+		return entryIDs, err
+	}
+	return entryIDs, nil
 }

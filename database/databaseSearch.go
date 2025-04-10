@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/google/uuid"
 	"github.com/nyudlts/go-medialog/models"
 	"gorm.io/gorm/clause"
 )
@@ -30,9 +31,18 @@ func SearchAccessions(query string) ([]models.Accession, error) {
 }
 
 func SearchEntries(query string) ([]models.Entry, error) {
+	hitIds := []uuid.UUID{}
 	entries := []models.Entry{}
-	if err := db.Preload(clause.Associations).Where("label_text LIKE ?", "%"+query+"%").Order("repository_id asc").Order("resource_id asc").Order("media_id asc").Find(&entries).Error; err != nil {
+	if err := db.Table("entry_jsons").Select("entry_id").Where("json LIKE ?", "%"+query+"%").Scan(&hitIds).Error; err != nil {
 		return entries, err
+	}
+
+	for _, hitID := range hitIds {
+		entry, err := FindEntry(hitID)
+		if err != nil {
+			return entries, err
+		}
+		entries = append(entries, entry)
 	}
 	return entries, nil
 }

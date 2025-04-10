@@ -5,58 +5,9 @@
         <h5 class="card-title"> Global Search: `{{ .query }}`</h5>
     </div>
     <div class="card-body">
-        <div class="row"><h5>Resources ({{ len .resources }} hits)</h5></div>
-        {{ if  gt (len .resources) 0 }}
-        <table class="table table-striped table-bordered table-sm">
-            <thead class="thead thead-dark">
-                <tr>
-                    <th>Resource</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {{ range $res := .resources }}
-                <tr>
-                    <td>
-                        {{ $res.Repository.Slug }}{{ $res.CollectionCode }} {{ $res.Title }}
-                    </td>
-                    <td>
-                        <a href="/resources/{{ $res.ID }}/show" class="btn-sm btn-primary">view</a>
-                    </td>
-                </tr>   
-            {{ end }}
-            </tbody>
-        </table>
-        {{ end }}
-        <div class="row"><h5>Accessions ({{ len .accessions }} hits)</h5></div>
-        {{ if  gt (len .accessions) 0 }}
-        <table class="table table-striped table-bordered table-sm">
-            <thead class="thead thead-dark">
-                <tr>
-                    <th>Accession</th>
-                    <th>Resource</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {{ range $accession := .accessions }}
-                <tr>
-                    <td>
-                        {{ $accession.AccessionNum }}
-                    </td>
-                    <td>
-                        {{$accession.Resource.CollectionCode }} {{ $accession.Resource.Title }}
-                    </td>
-                    <td>
-                        <a href="/accessions/{{ $accession.ID }}/show" class="btn-sm btn-primary">view</a>
-                    </td>
-                </tr>
-            {{ end }}
-            </tbody>
-        </table>
-        {{ end }}
         <div class="row"><h5>Entries ({{ len .entries}} hits)</h5></div>
         {{ template "search-entries-table.html" .}}
+        </div>
     </div>
 </div>
 {{ template "footer.html" .}}
