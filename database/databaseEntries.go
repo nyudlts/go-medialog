@@ -41,21 +41,15 @@ func DeleteEntry(id uuid.UUID) error {
 }
 
 func UpdateEntry(entry *models.Entry) error {
-	log.Println("UPDATING ENTRY", entry.ID.String())
 	if err := db.Save(entry).Error; err != nil {
 		return err
 	}
-	log.Println("ENTRY UPDATED", entry.ID.String())
 
-	log.Println("LOOKING UP JSON FOR ENTRY", entry.ID.String())
 	ej, err := FindEntryJSONByEntryID(entry.ID)
 	if err != nil {
 		return err
 	}
-	log.Printf("JSON %d FOUND FOR ENTRY %s", ej.ID, entry.ID.String())
-	log.Printf("%v", ej)
 
-	log.Printf("MARSHALLING ENTRY %s", entry.ID.String())
 	em := entry.Minimal()
 	emBytes, err := json.Marshal(em)
 	if err != nil {
@@ -63,13 +57,10 @@ func UpdateEntry(entry *models.Entry) error {
 	}
 	ej.JSON = string(emBytes)
 	ej.EntryID = entry.ID
-	log.Printf("ENTRY MARSHALLED %s", entry.ID.String())
 
-	log.Printf("UPDATING ENTRY JSON %d", ej.ID)
 	if err := UpdateEntryJSON(ej); err != nil {
 		return err
 	}
-	log.Printf("ENTRY JSON UPDATED %d", ej.ID)
 
 	return nil
 }
