@@ -33,7 +33,7 @@ func SearchAccessions(query string) ([]models.Accession, error) {
 func SearchEntries(query string) ([]models.Entry, error) {
 	hitIds := []uuid.UUID{}
 	entries := []models.Entry{}
-	if err := db.Table("entry_jsons").Select("entry_id").Where("json LIKE ?", "%"+query+"%").Scan(&hitIds).Error; err != nil {
+	if err := db.Table("entry_jsons").Select("entry_id").Where("json LIKE ? AND deleted_at IS NULL", "%"+query+"%").Scan(&hitIds).Error; err != nil {
 		return entries, err
 	}
 

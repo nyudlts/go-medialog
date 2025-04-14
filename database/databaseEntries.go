@@ -24,10 +24,6 @@ func InsertEntry(entry *models.Entry) error {
 }
 
 func DeleteEntry(id uuid.UUID) error {
-	if err := db.Delete(models.Entry{}, id).Error; err != nil {
-		return err
-	}
-
 	ej, err := FindEntryJSONByEntryID(id)
 	if err != nil {
 		return err
@@ -37,29 +33,43 @@ func DeleteEntry(id uuid.UUID) error {
 		return err
 	}
 
+	if err := db.Delete(models.Entry{}, id).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func UpdateEntry(entry *models.Entry) error {
+	log.Println("UPDATING ENTRY", entry.ID.String())
 	if err := db.Save(entry).Error; err != nil {
 		return err
 	}
+	log.Println("ENTRY UPDATED", entry.ID.String())
 
+	log.Println("LOOKING UP JSON FOR ENTRY", entry.ID.String())
 	ej, err := FindEntryJSONByEntryID(entry.ID)
 	if err != nil {
 		return err
 	}
+	log.Printf("JSON %d FOUND FOR ENTRY %s", ej.ID, entry.ID.String())
+	log.Printf("%v", ej)
 
+	log.Printf("MARSHALLING ENTRY %s", entry.ID.String())
 	em := entry.Minimal()
 	emBytes, err := json.Marshal(em)
 	if err != nil {
 		return err
 	}
 	ej.JSON = string(emBytes)
+	ej.EntryID = entry.ID
+	log.Printf("ENTRY MARSHALLED %s", entry.ID.String())
 
+	log.Printf("UPDATING ENTRY JSON %d", ej.ID)
 	if err := UpdateEntryJSON(ej); err != nil {
 		return err
 	}
+	log.Printf("ENTRY JSON UPDATED %d", ej.ID)
 
 	return nil
 }
@@ -467,16 +477,18 @@ func FindEntryByMediaIDAndCollectionID(mediaID uint, ResourceID uint) (uuid.UUID
 }
 
 func FindNextMediaCollectionInResource(resourceID uint) (uint, error) {
-	var entry models.Entry
-	if err := db.Where("resource_id = ?", resourceID).Order("media_id desc").First(&entry).Error; err != nil {
-		if (entry == models.Entry{}) {
-			return 1, nil
-		} else {
-			return 0, err
-		}
+
+	var entries = []models.Entry{}
+
+	if err := db.Where("resource_id = ?", resourceID).Order("media_id desc").Find(&entries).Error; err != nil {
+		return 0, err
 	}
 
-	return entry.MediaID + 1, nil
+	if (len(entries)) == 0 {
+		return 1, nil
+	}
+
+	return entries[0].MediaID + 1, nil
 }
 
 func IsMediaIDUniqueInResource(mediaID uint, resourceID uint) (bool, error) {
