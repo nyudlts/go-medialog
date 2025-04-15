@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -14,13 +15,28 @@ func InsertEntry(entry *models.Entry) error {
 	if err := db.Create(&entry).Error; err != nil {
 		return err
 	}
+
+	if err := InsertEntryJSON(*entry); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func DeleteEntry(id uuid.UUID) error {
+	ej, err := FindEntryJSONByEntryID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := DeleteEntryJSON(ej.ID); err != nil {
+		return err
+	}
+
 	if err := db.Delete(models.Entry{}, id).Error; err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -28,6 +44,24 @@ func UpdateEntry(entry *models.Entry) error {
 	if err := db.Save(entry).Error; err != nil {
 		return err
 	}
+
+	ej, err := FindEntryJSONByEntryID(entry.ID)
+	if err != nil {
+		return err
+	}
+
+	em := entry.Minimal()
+	emBytes, err := json.Marshal(em)
+	if err != nil {
+		return err
+	}
+	ej.JSON = string(emBytes)
+	ej.EntryID = entry.ID
+
+	if err := UpdateEntryJSON(ej); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -434,27 +468,27 @@ func FindEntryByMediaIDAndCollectionID(mediaID uint, ResourceID uint) (uuid.UUID
 }
 
 func FindNextMediaCollectionInResource(resourceID uint) (uint, error) {
-	var entry models.Entry
-	if err := db.Where("resource_id = ?", resourceID).Order("media_id desc").First(&entry).Error; err != nil {
-		if (entry == models.Entry{}) {
-			return 1, nil
-		} else {
-			return 0, err
-		}
+
+	var entries = []models.Entry{}
+
+	if err := db.Where("resource_id = ?", resourceID).Order("media_id desc").Find(&entries).Error; err != nil {
+		return 0, err
 	}
 
-	return entry.MediaID + 1, nil
+	if (len(entries)) == 0 {
+		return 1, nil
+	}
+
+	return entries[0].MediaID + 1, nil
 }
 
 func IsMediaIDUniqueInResource(mediaID uint, resourceID uint) (bool, error) {
-	fmt.Println("TEST", mediaID, resourceID)
+
 	entries := []models.Entry{}
 
 	if err := db.Where("resource_id = ?", int(resourceID)).Find(&entries).Error; err != nil {
 		return false, err
 	}
-
-	fmt.Println("TEST", entries)
 
 	for _, entry := range entries {
 		if entry.MediaID == mediaID {
@@ -495,4 +529,12 @@ func FindEntriesPaginated(pagination Pagination) ([]models.Entry, error) {
 		return entries, err
 	}
 	return entries, nil
+}
+
+func getEntryIDs() ([]uuid.UUID, error) {
+	entryIDs := []uuid.UUID{}
+	if err := db.Table("entries").Select("id").Scan(&entryIDs).Error; err != nil {
+		return entryIDs, err
+	}
+	return entryIDs, nil
 }

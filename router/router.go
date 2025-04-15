@@ -43,7 +43,6 @@ func SetupRouter(env models.Environment, gormDebug bool, prod bool) (*gin.Engine
 	//configure the router
 	r.LoadHTMLGlob("templates/**/*.html")
 	r.StaticFile("/favicon.ico", "./public/favicon.ico")
-	r.StaticFile("/test.css", "/public/test.css")
 	r.Static("/public", "./public")
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 

@@ -49,12 +49,10 @@ func TestUsers(t *testing.T) {
 			t.Error(err)
 		}
 
-		b, err := json.Marshal(user)
-		if err != nil {
+		if _, err = json.Marshal(user); err != nil {
 			t.Error(err)
 		}
 
-		t.Logf("got user %s", string(b))
 	})
 
 	t.Run("Test authenticate a user", func(t *testing.T) {
@@ -70,8 +68,6 @@ func TestUsers(t *testing.T) {
 
 		if err := database.UpdateUser(&user); err != nil {
 			t.Error(err)
-		} else {
-			t.Logf("Authenticated user %d", userID)
 		}
 	})
 

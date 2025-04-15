@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Repository struct {
@@ -82,6 +83,42 @@ type Entry struct {
 	ContentType           string     `json:"content_type" form:"content_type"`
 	Structure             string     `json:"structure"`
 	Location              string     `json:"location" form:"location"`
+}
+
+func (e Entry) Minimal() EntryMin {
+	entryMin := EntryMin{}
+	entryMin.Mediatype = e.Mediatype
+	entryMin.LabelText = e.LabelText
+	entryMin.Manufacturer = e.Manufacturer
+	entryMin.MediaNote = e.MediaNote
+	entryMin.DispositionNote = e.DispositionNote
+	entryMin.ImagingNote = e.ImagingNote
+	entryMin.ImageFilename = e.ImageFilename
+	entryMin.ContentType = e.ContentType
+	entryMin.Structure = e.Structure
+	entryMin.Location = e.Location
+	entryMin.BoxNumber = e.BoxNumber
+	return entryMin
+}
+
+type EntryMin struct {
+	Mediatype       string
+	LabelText       string
+	Manufacturer    string
+	MediaNote       string
+	DispositionNote string
+	ImagingNote     string
+	ImageFilename   string
+	ContentType     string
+	Structure       string
+	Location        string
+	BoxNumber       string
+}
+
+type EntryJSON struct {
+	gorm.Model
+	EntryID uuid.UUID
+	JSON    string `gorm:"serializer:json"`
 }
 
 var CSVHeader = []string{"id", "media_id", "mediatype", "content_type", "label_text", "is_refreshed", "imaging_success", "repository", "resource", "accession", "storage_location"}

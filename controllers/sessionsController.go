@@ -18,7 +18,7 @@ var sessionToken = "token"
 
 func ExpireTokens() {
 	tokens := database.GetTokens()
-	log.Printf("[INFO] expiring api tokens")
+
 	for _, token := range tokens {
 		if token.IsValid && time.Now().After(token.Expires) {
 			//log.Printf("[INFO] Expiring token %d", token.ID)

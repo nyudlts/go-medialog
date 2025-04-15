@@ -23,6 +23,7 @@ var (
 	rollback      bool
 	automigrate   bool
 	createAdmin   bool
+	createJSON    bool
 )
 
 const version = "v1.0.13"
@@ -37,6 +38,7 @@ func init() {
 	flag.BoolVar(&automigrate, "automigrate", false, "")
 	flag.BoolVar(&rollback, "rollback", false, "")
 	flag.BoolVar(&createAdmin, "create-admin", false, "")
+	flag.BoolVar(&createJSON, "create-json", false, "")
 }
 
 var r *gin.Engine
@@ -100,6 +102,13 @@ func main() {
 		}
 
 		fmt.Printf("admin user `%s` created with password `%s`", env.AdminEmail, password)
+		os.Exit(0)
+	}
+
+	if createJSON {
+		if err := database.CreateJSON(); err != nil {
+			panic(err)
+		}
 		os.Exit(0)
 	}
 

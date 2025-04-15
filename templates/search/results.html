@@ -1,0 +1,13 @@
+{{ template "header.html" .}}
+
+<div class="card card-default">
+    <div class="card-header">
+        <h5 class="card-title"> Global Search: `{{ .query }}`</h5>
+    </div>
+    <div class="card-body">
+        <div class="row"><h5>Entries ({{ len .entries}} hits)</h5></div>
+        {{ template "search-entries-table.html" .}}
+        </div>
+    </div>
+</div>
+{{ template "footer.html" .}}

@@ -27,7 +27,6 @@ func TestRepositories(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		t.Logf("Created repository %d", repositoryID)
 
 	})
 
@@ -39,11 +38,10 @@ func TestRepositories(t *testing.T) {
 			t.Error(err)
 		}
 
-		b, err := json.Marshal(repo)
-		if err != nil {
+		if _, err = json.Marshal(repo); err != nil {
 			t.Error(err)
 		}
-		t.Log("returned repository " + string(b))
+
 	})
 
 	t.Run("Test Update a Repository", func(t *testing.T) {

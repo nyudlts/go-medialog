@@ -14,10 +14,8 @@ func TestDeleteObjects(t *testing.T) {
 			t.Error(err)
 		}
 
-		t.Logf("deleted entry %d", entryID)
-
 		if _, err := database.FindEntry(entryID); err == nil {
-			t.Logf("Found deleted entry %d", entryID)
+			t.Errorf("Found deleted entry %d", entryID)
 		}
 	})
 
@@ -50,7 +48,6 @@ func TestDeleteObjects(t *testing.T) {
 		if err := database.DeleteRepository(repositoryID); err != nil {
 			t.Error(err)
 		}
-		t.Logf("Repository %d Deleted", repositoryID)
 
 		if _, err := database.FindRepository(repositoryID); err == nil {
 			t.Errorf("found deleted repository")
@@ -63,10 +60,8 @@ func TestDeleteObjects(t *testing.T) {
 			t.Error(err)
 		}
 
-		t.Logf("deleted user %d", userID)
-
 		if _, err := database.FindUser(userID); err == nil {
-			t.Logf("Found deleted user %d", userID)
+			t.Errorf("Found deleted user %d", userID)
 		}
 	})
 }

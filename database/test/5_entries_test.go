@@ -27,6 +27,7 @@ func TestEntries(t *testing.T) {
 		entry.UpdatedBy = int(userID)
 		entry.StockSizeNum = 1.2
 		entry.StockUnit = "MB"
+		entry.LabelText = "Rusty Buckles"
 		var err error
 		if err = database.InsertEntry(&entry); err != nil {
 			t.Error(err)
@@ -95,18 +96,14 @@ func TestEntries(t *testing.T) {
 			t.Error(err)
 		}
 
-		b, err := json.Marshal(entry)
-		if err != nil {
+		if _, err = json.Marshal(entry); err != nil {
 			t.Error(err)
 		}
-
-		t.Logf("got entry: %s", string(b))
 
 	})
 
 	t.Run("Test Unique Media ID in Resource", func(t *testing.T) {
 		mediaID := uint(5)
-		resourceID := resourceID
 
 		got, err := database.IsMediaIDUniqueInResource(mediaID, resourceID)
 		if err != nil {
@@ -122,7 +119,6 @@ func TestEntries(t *testing.T) {
 	t.Run("Test Non-Unique Media ID in Resource", func(t *testing.T) {
 
 		mediaID := uint(789)
-		resourceID := resourceID
 
 		got, err := database.IsMediaIDUniqueInResource(mediaID, resourceID)
 		if err != nil {

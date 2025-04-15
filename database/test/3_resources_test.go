@@ -46,12 +46,9 @@ func TestResources(t *testing.T) {
 			t.Errorf("Wanted: %s, Got: %s", want, got)
 		}
 
-		b, err := json.Marshal(resource)
-		if err != nil {
+		if _, err = json.Marshal(resource); err != nil {
 			t.Error(err)
 		}
-
-		t.Log("returned resource: " + string(b))
 	})
 
 	t.Run("Test update a resource", func(t *testing.T) {

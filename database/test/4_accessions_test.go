@@ -34,11 +34,9 @@ func TestAccessions(t *testing.T) {
 			t.Error(err)
 		}
 
-		b, err := json.Marshal(accession)
-		if err != nil {
+		if _, err = json.Marshal(accession); err != nil {
 			t.Error(err)
 		}
-		t.Log("returned accession: " + string(b))
 
 	})
 
