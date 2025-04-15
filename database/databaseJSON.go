@@ -69,7 +69,7 @@ func UpdateEntryJSON(ej models.EntryJSON) error {
 }
 
 func DeleteEntryJSON(id uint) error {
-	if err := db.Delete(&models.EntryJSON{}, id).Error; err != nil {
+	if err := db.Unscoped().Delete(&models.EntryJSON{}, id).Error; err != nil {
 		return err
 	}
 	return nil

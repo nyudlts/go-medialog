@@ -483,14 +483,12 @@ func FindNextMediaCollectionInResource(resourceID uint) (uint, error) {
 }
 
 func IsMediaIDUniqueInResource(mediaID uint, resourceID uint) (bool, error) {
-	fmt.Println("TEST", mediaID, resourceID)
+
 	entries := []models.Entry{}
 
 	if err := db.Where("resource_id = ?", int(resourceID)).Find(&entries).Error; err != nil {
 		return false, err
 	}
-
-	fmt.Println("TEST", entries)
 
 	for _, entry := range entries {
 		if entry.MediaID == mediaID {
