@@ -148,6 +148,7 @@ func LoadAPI(router *gin.Engine) {
 	apiV0Routes.GET("entries", func(c *gin.Context) { api.GetEntriesV0(c) })
 	apiV0Routes.GET("entries/:id", func(c *gin.Context) { api.GetEntryV0(c) })
 	apiV0Routes.PATCH("entries/:id/update_location", func(c *gin.Context) { api.UpdateEntryLocationV0(c) })
+	apiV0Routes.POST("entries/:id/update", func(c *gin.Context) { api.UpdateEntryV0(c) })
 
 	//sessions
 	apiV0Routes.DELETE("delete_sessions", func(c *gin.Context) { api.DeleteSessionsV0(c) })

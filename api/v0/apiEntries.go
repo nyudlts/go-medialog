@@ -1,7 +1,9 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -251,4 +253,41 @@ func UpdateEntryLocationV0(c *gin.Context) {
 
 	c.JSON(http.StatusOK, fmt.Sprintf("id: %s, location: %s, storage location: %s", id, location, storageLocation))
 
+}
+
+func UpdateEntryV0(c *gin.Context) {
+	id := c.Param("id")
+
+	tkn, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	entry := models.Entry{}
+	if err := json.Unmarshal(body, &entry); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	userID, err := database.FindUserIDByToken(tkn)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	entry.UpdatedBy = int(userID)
+	entry.UpdatedAt = time.Now()
+
+	if err := database.UpdateEntry(&entry); err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, fmt.Sprintf("entry %s updated", id))
 }
