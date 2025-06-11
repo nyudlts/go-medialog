@@ -162,9 +162,9 @@ var filesystems = map[string]string{
 func getImageSuccess() map[string]string { return image_success }
 
 var image_success = map[string]string{
-	"":                 "",
-	"image_sucess_yes": "Yes",
-	"image_success_no": "No",
+	"":                  "",
+	"image_success_yes": "Yes",
+	"image_success_no":  "No",
 }
 
 func getInterpretSuccess() map[string]string { return interpret_success }
@@ -173,7 +173,7 @@ var interpret_success = map[string]string{
 	"":                             "",
 	"interpret_success_yes":        "Yes",
 	"interpret_success_yes_errors": "Yes W/Errors",
-	"interpret_succes_no":          "No",
+	"interpret_success_no":         "No",
 }
 
 func getStockUnits() map[string]string { return stock_unit }
