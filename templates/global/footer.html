@@ -4,7 +4,7 @@
         <div class="container">
             <span class="text-muted ">
                 <div class="float-right">
-                    <a href="https://github.com/nyudlts/go-medialog/releases/tag/v1.0.15">go-medialog v1.0.14</a>
+                    <a href="https://github.com/nyudlts/go-medialog/releases/tag/v1.0.15">go-medialog v1.0.15</a>
                 </div>
             </span>
         </div>
@@ -14,6 +14,20 @@
     <script src="/public/popper.min.js"></script>
     <script src="/public/jquery-3.7.1.min.js"></script>
     <script src="/public/jquery-ui.min.js"></script>
+    <script>
+        $( function() {
+            $( "#tabs" ).tabs();
+        } );
+    </script>
+    <script>      
+        document.getElementById("globalSearch").addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                var searchValue = document.getElementById("globalSearch").value;
+                window.location.href = "/search?query=" + encodeURIComponent(searchValue);
+            }
+        });    
+    </script>
 </div>
 </body>
 
