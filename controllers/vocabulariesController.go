@@ -79,6 +79,7 @@ var Mediatypes = map[string]string{
 	"mediatype_data_cartridge":  "Data Cartridge",
 	"mediatype_laserdisc":       "Laserdisc",
 	"mediatype_orb":             "Orb Disk",
+	"mediatype_cf":		     "CompactFlash",
 }
 
 func getInterfaces() map[string]string { return interfaces }
