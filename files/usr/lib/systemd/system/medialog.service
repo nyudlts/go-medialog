@@ -1,0 +1,19 @@
+[Unit]
+Description=medialog
+Requires=network.target
+
+
+[Service]
+Type=simple
+User=medialog
+Group=medialog
+WorkingDirectory=/var/www/medialog
+ExecStart=/var/www/medialog/medialog \
+  --config /etc/medialog/medialog.conf \
+  --environment dev
+TimeoutSec=30
+RestartSec=15s
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
