@@ -58,6 +58,7 @@ func GetMediaType(s string) string {
 }
 
 var Mediatypes = map[string]string{
+
 	"":                           "",
 	"mediatype_floppy_3_5":       "3.5 in. Floppy Disk",
 	"mediatype_floppy_5_25":      "5.25 in. Floppy Disk",
@@ -65,6 +66,7 @@ var Mediatypes = map[string]string{
 	"mediatype_cd":               "CD commercial",
 	"mediatype_cdr":              "CD-R",
 	"mediatype_cdrw":             "CD-RW",
+  "mediatype_cf":		            "CompactFlash",
 	"mediatype_data_cartridge":   "Data Cartridge",
 	"mediatype_dvd":              "DVD commercial",
 	"mediatype_dvdr":             "DVD-R",
