@@ -26,7 +26,7 @@ var (
 	createJSON    bool
 )
 
-const version = "v1.0.15p1"
+const version = "v1.0.16"
 
 func init() {
 	flag.StringVar(&environment, "environment", "", "")
