@@ -62,7 +62,6 @@ var Mediatypes = map[string]string{
 	"mediatype_floppy_3_5":       "3.5 in. Floppy Disk",
 	"mediatype_floppy_5_25":      "5.25 in. Floppy Disk",
 	"mediatype_floppy_8":         "8 in. Floppy Disk",
-	"mediatype_cdda":             "Audio CD",
 	"mediatype_cd":               "CD commercial",
 	"mediatype_cdr":              "CD-R",
 	"mediatype_cdrw":             "CD-RW",
