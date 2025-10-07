@@ -2,7 +2,6 @@
 Description=medialog
 Requires=network.target
 
-
 [Service]
 Type=simple
 User=medialog

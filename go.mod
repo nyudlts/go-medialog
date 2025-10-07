@@ -1,6 +1,6 @@
 module github.com/nyudlts/go-medialog
 
-go 1.24.1
+go 1.25.1
 
 require (
 	github.com/gin-contrib/sessions v1.0.2
@@ -22,8 +22,6 @@ require (
 
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
-	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
-	github.com/chenzhuoyu/iasm v0.9.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
