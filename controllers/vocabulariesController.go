@@ -90,7 +90,7 @@ var interfaces = map[string]string{
 	"interface_tableau_ultrabay": "Tableau Ultrabay",
 	"interface_kryoflux":         "KryoFlux",
 	"interface_tableau_t8r2":     "Tableau T8-R2",
-	"interface_optical_HP":       "HP CD/DVD Drive",
+	"interface_optical_HP":       "CD/DVD Drive",
 }
 
 func getInterface(s string) string {
