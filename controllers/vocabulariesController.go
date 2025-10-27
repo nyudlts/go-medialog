@@ -66,7 +66,7 @@ var Mediatypes = map[string]string{
 	"mediatype_cd":               "CD commercial",
 	"mediatype_cdr":              "CD-R",
 	"mediatype_cdrw":             "CD-RW",
-  "mediatype_cf":		            "CompactFlash",
+	"mediatype_cf":               "CompactFlash",
 	"mediatype_data_cartridge":   "Data Cartridge",
 	"mediatype_dvd":              "DVD commercial",
 	"mediatype_dvdr":             "DVD-R",
@@ -111,8 +111,11 @@ var imaging_software = map[string]string{
 	"imaging_software_kryoflux_imager_v35":  "KryoFlux Imager (DTC 3.5)",
 	"imaging_software_ftk_imager_v3146":     "FTK Imager (v3.1.4.6)",
 	"imaging_software_ftk_imager_v42013":    "FTK Imager (v4.2.0.13)",
-	"imaging_software_isobusterpro_v43":     "IsoBuster Pro (v4.3)",
+	"imaging_software_isobusterpro_v43":     "IsoBuster(v4.3)",
+	"imaging_software_isobusterpro_v50":     "IsoBuster(v5.0)",
+	"imaging_software_isobusterpro_v56":     "IsoBuster(v5.6)",
 	"imaging_software_eac_v13":              "Exact Audio Copy (v1.3)",
+	"imageing_software_winscp":              "WinSCP",
 }
 
 func getHDDInterfaces() map[string]string { return hdd_interfaces }
@@ -131,9 +134,10 @@ func getImageFormats() map[string]string { return image_formats }
 
 var image_formats = map[string]string{
 	"":                     "",
-	"image_format_raw":     "Raw (dd)",
-	"image_format_e01":     "E01",
 	"image_format_ad1":     "AD1",
+	"image_format_e01":     "E01",
+	"image_format_files":   "Files",
+	"image_format_raw":     "Raw (dd)",
 	"image_format_iso":     "ISO - Userspace",
 	"image_format_iso_raw": "ISO - Raw",
 	"image_format_bincue":  "BIN/CUE",
@@ -205,7 +209,7 @@ var content_type = map[string]string{
 	"content_video": "Video",
 	"content_audio": "Audio",
 	"content_data":  "Data",
-	"content_email": "Email",
+	"content_email": "Email", //this should be removed
 }
 
 var structure = map[string]string{
