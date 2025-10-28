@@ -117,7 +117,7 @@ var imaging_software = map[string]string{
 	"imaging_software_isobusterpro_v50":     "IsoBuster(v5.0)",
 	"imaging_software_isobusterpro_v56":     "IsoBuster(v5.6)",
 	"imaging_software_eac_v13":              "Exact Audio Copy (v1.3)",
-	"imageing_software_winscp":              "WinSCP",
+	"imaging_software_winscp":               "WinSCP",
 }
 
 func getHDDInterfaces() map[string]string { return hdd_interfaces }
