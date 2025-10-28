@@ -26,7 +26,7 @@ var (
 	createJSON    bool
 )
 
-const version = "v1.0.16"
+const version = "v1.0.17"
 
 func init() {
 	flag.StringVar(&environment, "environment", "", "")
@@ -60,7 +60,7 @@ func main() {
 	}
 
 	if migrate || rollback {
-		fmt.Println("[]running migrations")
+		fmt.Println("  * running migrations")
 
 		if err := database.MigrateDatabase(rollback, env.DatabaseConfig); err != nil {
 			panic(err)
@@ -70,7 +70,7 @@ func main() {
 	}
 
 	if automigrate {
-		fmt.Println("auto-migrating database")
+		fmt.Println("  * auto-migrating database")
 		if err := database.AutoMigrate(env.DatabaseConfig); err != nil {
 			panic(err)
 		}
@@ -115,7 +115,7 @@ func main() {
 	//start the application
 	log.Printf("[INFO] Running Go-Medialog %s", version)
 
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(fmt.Sprintf(":%s", env.Port)); err != nil {
 		log.Fatal(err)
 	}
 

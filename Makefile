@@ -26,10 +26,10 @@ archive:
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
 
 install:
+	chmod +x medialog
 	sudo systemctl stop medialog
-	sudo cp bin/medialog $(MEDIALOG_HOME)/
-	sudo cp -r templates $(MEDIALOG_HOME)/
-	sudo cp -r public $(MEDIALOG_HOME)/
+	sudo cp medialog $(MEDIALOG_HOME)
+	sudo cp -r templates/ public/ $(MEDIALOG_HOME)
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
 
 update-templates:

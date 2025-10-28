@@ -254,6 +254,7 @@ type Environment struct {
 	DatabaseConfig DatabaseConfig `yaml:"database"`
 	TestCreds      TestCreds      `yaml:"test_creds"`
 	AdminEmail     string         `yaml:"admin_email"`
+	Port           string         `yaml:"port"`
 }
 
 type DatabaseConfig struct {
