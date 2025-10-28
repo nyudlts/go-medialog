@@ -204,6 +204,15 @@ var accession_state = map[string]string{
 	"acceession_complete":          "Archivesspace Updated /  Complete",
 }
 
+func GetOpticalContentType(ct string) string {
+	for k, v := range content_type {
+		if k == ct {
+			return v
+		}
+	}
+	return ""
+}
+
 func getOpticalContentTypes() map[string]string { return content_type }
 
 var content_type = map[string]string{

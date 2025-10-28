@@ -106,18 +106,19 @@ func Iterate(count int) []int {
 
 func SetGlobalFuncs(router *gin.Engine) {
 	router.SetFuncMap(template.FuncMap{
-		"formatAsDate":       FormatAsDate,
-		"add":                Add,
-		"subtract":           Subtract,
-		"multiply":           Multiply,
-		"getMediatype":       controllers.GetMediaType,
-		"getMediatypes":      controllers.GetMediatypes,
-		"multAndAdd":         MultAndAdd,
-		"storageLocations":   controllers.GetStorageLocations,
-		"getStorageLocation": controllers.GetStorageLocation,
-		"entryStatuses":      controllers.GetEntryStatuses,
-		"getEntryStatus":     controllers.GetEntryStatus,
-		"iterate":            Iterate,
+		"formatAsDate":          FormatAsDate,
+		"add":                   Add,
+		"subtract":              Subtract,
+		"multiply":              Multiply,
+		"getMediatype":          controllers.GetMediaType,
+		"getMediatypes":         controllers.GetMediatypes,
+		"multAndAdd":            MultAndAdd,
+		"storageLocations":      controllers.GetStorageLocations,
+		"getStorageLocation":    controllers.GetStorageLocation,
+		"entryStatuses":         controllers.GetEntryStatuses,
+		"getEntryStatus":        controllers.GetEntryStatus,
+		"getOpticalContentType": controllers.GetOpticalContentType,
+		"iterate":               Iterate,
 	})
 }
 

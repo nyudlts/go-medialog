@@ -2,20 +2,9 @@ v := $(shell $(MEDIALOG_HOME)/medialog --version | jq '.version')
 ts := $(shell date +%s)
 ver := $(v)-$(ts)
 
-pull:
-	git pull origin main
-
-tidy:
-	go mod tidy
-
-clean:
-	rm bin/medialog
-
-build:
-	go build -o bin/medialog medialog.go
+upgrade: stop archive install start
 
 archive:
-	sudo systemctl stop medialog
 	sudo mkdir $(MEDIALOG_HOME)/$(ver)
 	sudo mv $(MEDIALOG_HOME)/medialog $(MEDIALOG_HOME)/$(ver)
 	sudo mv $(MEDIALOG_HOME)/public $(MEDIALOG_HOME)/$(ver)
@@ -25,15 +14,14 @@ archive:
 	sudo rm -r $(MEDIALOG_HOME)/$(ver)
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
 
-upgrade:
-	sudo systemctl stop medialog
+install:
 	chmod +x medialog
 	sudo cp medialog $(MEDIALOG_HOME)
 	sudo cp -r templates/ public/ $(MEDIALOG_HOME)
 	sudo chown -R medialog:medialog $(MEDIALOG_HOME)
 
 deploy:
-	echo "Not Implemented Yet"
+	@echo "Not Implemented Yet"
 
 update-templates:
 	sudo cp -r templates $(MEDIALOG_HOME)
@@ -44,3 +32,6 @@ version:
 
 start:
 	sudo systemctl start medialog
+
+stop:
+	sudo systemctl stop medialog
