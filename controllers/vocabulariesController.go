@@ -86,11 +86,13 @@ var Mediatypes = map[string]string{
 func getInterfaces() map[string]string { return interfaces }
 
 var interfaces = map[string]string{
-	"":                           "",
-	"interface_tableau_ultrabay": "Tableau Ultrabay",
-	"interface_kryoflux":         "KryoFlux",
-	"interface_tableau_t8r2":     "Tableau T8-R2",
-	"interface_optical_HP":       "CD/DVD Drive",
+	"":                                  "",
+	"interface_tableau_ultrabay":        "Tableau Ultrabay",
+	"interface_kryoflux":                "KryoFlux",
+	"interface_tableau_t8r2":            "Tableau T8-R2",
+	"interface_tableau_ultrablock":      "Tableau Ultrablock USB",
+	"interface_tableau_ultrablock_card": "Tableau Ultrablock Forensic Card Reader",
+	"interface_optical_HP":              "CD/DVD Drive",
 }
 
 func getInterface(s string) string {
