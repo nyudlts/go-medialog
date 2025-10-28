@@ -113,9 +113,9 @@ var imaging_software = map[string]string{
 	"imaging_software_kryoflux_imager_v35":  "KryoFlux Imager (DTC 3.5)",
 	"imaging_software_ftk_imager_v3146":     "FTK Imager (v3.1.4.6)",
 	"imaging_software_ftk_imager_v42013":    "FTK Imager (v4.2.0.13)",
-	"imaging_software_isobusterpro_v43":     "IsoBuster(v4.3)",
-	"imaging_software_isobusterpro_v50":     "IsoBuster(v5.0)",
-	"imaging_software_isobusterpro_v56":     "IsoBuster(v5.6)",
+	"imaging_software_isobusterpro_v43":     "IsoBuster (v4.3)",
+	"imaging_software_isobusterpro_v50":     "IsoBuster (v5.0)",
+	"imaging_software_isobusterpro_v56":     "IsoBuster (v5.6)",
 	"imaging_software_eac_v13":              "Exact Audio Copy (v1.3)",
 	"imaging_software_winscp":               "WinSCP",
 }
