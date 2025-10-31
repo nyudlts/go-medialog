@@ -56,8 +56,11 @@ func main() {
 	switch runtime.GOOS {
 	case "windows":
 		buildCommand = exec.Command("powershell", "-File", "build.ps1", "-Os", OS)
+	case "linux":
+		buildCommand = exec.Command("./build.sh")
 	default:
-		fmt.Println("builds other than windows are not supported")
+		fmt.Println("builds systems other than windows or linux are not supported")
+		os.Exit(1)
 	}
 
 	//build the binary
