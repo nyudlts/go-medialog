@@ -15,15 +15,17 @@ import (
 )
 
 var (
-	OS string
-	bd string
+	OS  string
+	all bool
 )
 
 func init() {
 	flag.StringVar(&OS, "os", "", "")
+	flag.BoolVar(&all, "all", false, "")
 }
 
 func main() {
+	fmt.Println("go-medialog build system v0.1.0")
 	flag.Parse()
 
 	if OS == "" {
@@ -34,26 +36,40 @@ func main() {
 		os.Exit(1)
 	}
 
-	bd = filepath.Join(fmt.Sprintf("go-medialog-%s-v%s", OS, version.AppVersion))
+	wd, _ := os.Getwd()
 
-	if _, err := os.Stat(bd); err == nil {
-		if err := os.RemoveAll(bd); err != nil {
-			fmt.Printf("ERROR could not remove build directory: %s", bd)
+	binDirectory := filepath.Join(wd, "bin", fmt.Sprintf("go-medialog-%s-v%s", OS, version.AppVersion))
+	buildDirectory := filepath.Join(wd, "build")
+
+	if all {
+		for _, target := range []string{"windows", "linux", "darwin"} {
+			build(binDirectory, buildDirectory, wd, target)
+		}
+	} else {
+		build(binDirectory, buildDirectory, wd, OS)
+	}
+}
+
+func build(binDirectory string, buildDirectory string, wd string, targetSystem string) {
+
+	if _, err := os.Stat(binDirectory); err == nil {
+		if err := os.RemoveAll(binDirectory); err != nil {
+			fmt.Printf("ERROR could not remove build directory: %s", binDirectory)
 			os.Exit(1)
 		}
-		fmt.Printf("removed existing build directory: %s\n", bd)
+		fmt.Printf("  * removed existing build directory: %s\n", binDirectory)
 	}
 
-	if err := os.Mkdir(bd, 0755); err != nil {
-		fmt.Printf("ERROR could not create build directory: %s", bd)
+	if err := os.Mkdir(binDirectory, 0755); err != nil {
+		fmt.Printf("ERROR could not create build directory: %s", binDirectory)
 		os.Exit(1)
 	}
-	fmt.Printf("created build directory: %s\n", bd)
+	fmt.Printf("  * created build directory: %s\n", binDirectory)
 
 	var buildCommand *exec.Cmd
 	switch runtime.GOOS {
 	case "windows":
-		buildCommand = exec.Command("powershell", "-File", "build.ps1", "-Os", OS)
+		buildCommand = exec.Command("powershell", "-File", filepath.Join(buildDirectory, "build.ps1"), "-Os", targetSystem, "-Od", filepath.Join(binDirectory, "medialog"), "-Path", wd)
 	case "linux":
 		buildCommand = exec.Command("./build.sh")
 	default:
@@ -68,75 +84,63 @@ func main() {
 		fmt.Printf("failed to execute build script: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("binary built")
 
-	//move the binary to the build directory
-	if err := os.Rename("medialog", filepath.Join(bd, "medialog")); err != nil {
-		fmt.Printf("ERROR could not move binary to build directory: %v", err)
-		os.Exit(1)
-	}
+	fmt.Println("  * binary built")
 
 	//copy the needed directories
-	public := os.DirFS("../public")
-	templates := os.DirFS("../templates")
-	files := os.DirFS("../files")
-	if err := os.CopyFS(filepath.Join(bd, "public"), public); err != nil {
+	public := os.DirFS("public")
+	templates := os.DirFS("templates")
+	files := os.DirFS("files")
+	if err := os.CopyFS(filepath.Join(binDirectory, "public"), public); err != nil {
 		fmt.Printf("ERROR could not copy public directory: %v", err)
 		os.Exit(1)
 	}
 
-	if err := os.CopyFS(filepath.Join(bd, "templates"), templates); err != nil {
+	if err := os.CopyFS(filepath.Join(binDirectory, "templates"), templates); err != nil {
 		fmt.Printf("ERROR could not copy templates directory: %v", err)
 		os.Exit(1)
 	}
 
-	if err := os.CopyFS(filepath.Join(bd, "files"), files); err != nil {
+	if err := os.CopyFS(filepath.Join(binDirectory, "files"), files); err != nil {
 		fmt.Printf("ERROR could not copy files directory: %v", err)
 		os.Exit(1)
 	}
 
-	//copy the Makfile
-	mf, err := os.ReadFile("Makefile")
+	//copy the Makefile
+	mf, err := os.ReadFile(filepath.Join(buildDirectory, "Makefile"))
 	if err != nil {
 		fmt.Printf("ERROR could not read Makefile: %v", err)
 		os.Exit(1)
 	}
 
-	if err := os.WriteFile(filepath.Join(bd, "Makefile"), mf, 0755); err != nil {
+	if err := os.WriteFile(filepath.Join(binDirectory, "Makefile"), mf, 0755); err != nil {
 		fmt.Printf("ERROR could not copy Makefile: %v", err)
 		os.Exit(1)
 	}
-	fmt.Println("moved resources to build directory")
+	fmt.Println("  * moved resources to build directory")
 
 	//compress the build directory
-	tgzFile := fmt.Sprintf("%s.tar.gz", bd)
-	var compressCmd = exec.Command("tar", "-czvf", tgzFile, bd)
+
+	tgzFile := fmt.Sprintf("%s.tar.gz", binDirectory)
+	var compressCmd = exec.Command(
+		"tar",
+		"-czvf",
+		tgzFile,
+		"-C",
+		filepath.Dir(binDirectory),
+		filepath.Base(binDirectory),
+	)
 	compressCmd.Stdout = os.Stdout
 	compressCmd.Stderr = os.Stderr
 	if err := compressCmd.Run(); err != nil {
 		fmt.Printf("failed to compress build directory: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("build directory compressed")
+	fmt.Println("  * build directory compressed")
 
-	//remove the build directory
-	if err := os.RemoveAll(bd); err != nil {
-		fmt.Printf("ERROR could not remove build directory: %v", err)
-		os.Exit(1)
+	if err := os.RemoveAll(binDirectory); err != nil {
+		fmt.Printf("ERROR could not remove build directory: %s", binDirectory)
 	}
-	fmt.Println("build directory removed")
+	fmt.Printf("  * removed build directory: %s\n", binDirectory)
 
-	if _, err := os.Stat(filepath.Join("../bin", tgzFile)); err == nil {
-		if err := os.Remove(filepath.Join("../bin", tgzFile)); err != nil {
-			fmt.Printf("ERROR could not remove existing tarball: %v", err)
-		}
-		fmt.Println("removed existing tarball from bin directory")
-	}
-
-	//move the build tar to bin dir
-	if err := os.Rename(tgzFile, filepath.Join("../bin", tgzFile)); err != nil {
-		fmt.Printf("ERROR could not move build tar to bin directory: %v", err)
-		os.Exit(1)
-	}
-	fmt.Println("build tarball moved to bin directory")
 }
