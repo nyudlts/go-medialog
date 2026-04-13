@@ -16,6 +16,7 @@ import (
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
+	"github.com/nyudlts/go-medialog/version"
 	"gopkg.in/yaml.v2"
 )
 
@@ -106,6 +107,7 @@ func Iterate(count int) []int {
 
 func SetGlobalFuncs(router *gin.Engine) {
 	router.SetFuncMap(template.FuncMap{
+		"AppVersion":            version.GetAppVersion,
 		"formatAsDate":          FormatAsDate,
 		"add":                   Add,
 		"subtract":              Subtract,

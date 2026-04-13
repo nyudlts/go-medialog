@@ -11,6 +11,7 @@ import (
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
 	router "github.com/nyudlts/go-medialog/router"
+	"github.com/nyudlts/go-medialog/version"
 )
 
 var (
@@ -25,8 +26,6 @@ var (
 	createAdmin   bool
 	createJSON    bool
 )
-
-const version = "v1.0.17"
 
 func init() {
 	flag.StringVar(&environment, "environment", "", "")
@@ -49,7 +48,7 @@ func main() {
 	flag.Parse()
 
 	if vers {
-		fmt.Printf("{ \"version\": \"%s\"}", version)
+		fmt.Printf("{ \"version\": \"%s\"\n}", version.AppVersion)
 		os.Exit(0)
 	}
 
@@ -113,7 +112,7 @@ func main() {
 	}
 
 	//start the application
-	log.Printf("[INFO] Running Go-Medialog %s", version)
+	log.Printf("[INFO] Running Go-Medialog %s", version.AppVersion)
 
 	if err := r.Run(fmt.Sprintf(":%s", env.Port)); err != nil {
 		log.Fatal(err)

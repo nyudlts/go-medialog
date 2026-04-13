@@ -12,6 +12,7 @@ import (
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
+	"github.com/nyudlts/go-medialog/version"
 )
 
 type EntryResultSet struct {
@@ -42,8 +43,6 @@ type SummaryTotalsAccession struct {
 }
 
 const UNAUTHORIZED = "Please authenticate to access this service"
-const apiVersion = "v0.1.5"
-const medialogVersion = "v0.1.15"
 
 var ACCESS_DENIED = map[string]string{"error": "access denied"}
 
@@ -126,15 +125,15 @@ func APILogout(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, fmt.Sprintf("Logged Out"))
+	c.JSON(http.StatusOK, "Logged Out")
 }
 
 func GetV0Root(c *gin.Context) {
 	medialogInfo := models.MedialogInfo{
-		Version:       medialogVersion,
+		Version:       version.AppVersion,
 		GolangVersion: runtime.Version(),
 		GinVersion:    gin.Version,
-		APIVersion:    apiVersion,
+		APIVersion:    version.APIVersion,
 	}
 
 	c.JSON(http.StatusOK, medialogInfo)

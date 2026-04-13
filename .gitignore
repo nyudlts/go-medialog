@@ -5,4 +5,4 @@ bin/*
 .idea/*
 *.log
 tmp/*
-medialog.yml
+config/go-medialog.yml

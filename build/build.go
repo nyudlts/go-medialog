@@ -10,33 +10,31 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
+	"github.com/nyudlts/go-medialog/version"
 )
 
 var (
-	OS      string
-	Version string
-	bd      string
+	OS string
+	bd string
 )
 
 func init() {
-	flag.StringVar(&OS, "os", "", "Operating System")
-	flag.StringVar(&Version, "version", "", "Version")
+	flag.StringVar(&OS, "os", "", "")
 }
 
 func main() {
 	flag.Parse()
 
+	if OS == "" {
+		OS = runtime.GOOS
+	}
 	if !(OS == "windows" || OS == "linux" || OS == "darwin") {
 		fmt.Println("Error: Unsupported OS. Please use 'windows', 'linux', or 'darwin'.")
 		os.Exit(1)
 	}
 
-	if Version == "" {
-		fmt.Println("Error: version is required") // will grab the version from the source if this is empty later
-		os.Exit(1)
-	}
-
-	bd = filepath.Join(fmt.Sprintf("go-medialog-%s-%s", OS, Version))
+	bd = filepath.Join(fmt.Sprintf("go-medialog-%s-v%s", OS, version.AppVersion))
 
 	if _, err := os.Stat(bd); err == nil {
 		if err := os.RemoveAll(bd); err != nil {
