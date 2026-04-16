@@ -138,6 +138,18 @@ func build(binDirectory string, buildDirectory string, wd string, targetSystem s
 		fmt.Printf("ERROR could not copy Makefile: %v", err)
 		os.Exit(1)
 	}
+
+	//Copy the Config
+	cfg, err := os.ReadFile(filepath.Join(buildDirectory, "go-medialog.yml"))
+	if err != nil {
+		fmt.Printf("ERROR could not read config file: %v", err)
+		os.Exit(1)
+	}
+
+	if err := os.WriteFile(filepath.Join(binDirectory, "go-medialog.yml"), cfg, 0755); err != nil {
+		fmt.Printf("ERROR could not copy config file: %v", err)
+		os.Exit(1)
+	}
 	fmt.Println("  * moved resources to build directory")
 
 	//compress the build directory

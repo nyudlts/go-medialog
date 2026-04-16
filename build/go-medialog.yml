@@ -1,0 +1,10 @@
+local:
+  log: medialog_dev.log
+  port: 8080
+  database:
+    username: medialog
+    password: medialog
+    url: localhost
+    port: 3306
+    database_name: medialog_prod
+  admin_email: admin@medialog.dlib.nyu.edu
