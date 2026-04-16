@@ -6,3 +6,5 @@ bin/*
 *.log
 tmp/*
 config/go-medialog.yml
+*.http
+go-medialog.yml
