@@ -15,6 +15,19 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
+// CreateEntryV0 creates a new media entry.
+// @Summary      Create entry
+// @Description  Creates a new media entry within an accession.
+// @Tags         entries
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        entry  body      models.Entry  true  "Entry data"
+// @Success      200    {object}  models.Entry
+// @Failure      400    {string}  string
+// @Failure      401    {string}  string
+// @Failure      500    {string}  string
+// @Router       /entries [post]
 func CreateEntryV0(c *gin.Context) {
 	token, err := checkToken(c)
 	if err != nil {
@@ -68,6 +81,18 @@ func CreateEntryV0(c *gin.Context) {
 	c.JSON(http.StatusOK, entry)
 }
 
+// DeleteEntryV0 deletes an entry by UUID.
+// @Summary      Delete entry
+// @Description  Deletes a media entry by its UUID.
+// @Tags         entries
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      string  true  "Entry UUID"
+// @Success      200  {string}  string
+// @Failure      400  {string}  string
+// @Failure      401  {string}  string
+// @Failure      500  {string}  string
+// @Router       /entries/{id} [delete]
 func DeleteEntryV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {
@@ -90,6 +115,17 @@ func DeleteEntryV0(c *gin.Context) {
 	c.JSON(http.StatusOK, fmt.Sprintf("Entry %s deleted", entryUUID))
 }
 
+// GetEntryV0 returns an entry by UUID.
+// @Summary      Get entry
+// @Description  Returns a single media entry by its UUID.
+// @Tags         entries
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      string  true  "Entry UUID"
+// @Success      200  {object}  models.Entry
+// @Failure      400  {string}  string
+// @Failure      401  {string}  string
+// @Router       /entries/{id} [get]
 func GetEntryV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {
@@ -114,6 +150,19 @@ func GetEntryV0(c *gin.Context) {
 	c.JSON(http.StatusOK, entry)
 }
 
+// GetEntriesV0 returns all entries.
+// @Summary      List entries
+// @Description  Returns paginated entries across all accessions. Use all_ids=true to return only UUIDs.
+// @Tags         entries
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        all_ids    query  bool  false  "Return all entry IDs (no pagination)"
+// @Param        page       query  int   false  "Page number"
+// @Param        page_size  query  int   false  "Results per page (default 25)"
+// @Success      200  {object}  EntryResultSet
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Router       /entries [get]
 func GetEntriesV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -198,6 +247,19 @@ func GetEntriesV0(c *gin.Context) {
 	}
 }
 
+// UpdateEntryLocationV0 updates the storage location of an entry.
+// @Summary      Update entry location
+// @Description  Updates the storage location for a given entry by UUID.
+// @Tags         entries
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id        path   string  true  "Entry UUID"
+// @Param        location  query  string  true  "Storage location code"
+// @Success      200  {string}  string
+// @Failure      400  {string}  string
+// @Failure      401  {string}  string
+// @Failure      500  {string}  string
+// @Router       /entries/{id}/update_location [patch]
 func UpdateEntryLocationV0(c *gin.Context) {
 	token, err := checkToken(c)
 	if err != nil {
@@ -255,6 +317,20 @@ func UpdateEntryLocationV0(c *gin.Context) {
 
 }
 
+// UpdateEntryV0 updates all fields of an entry.
+// @Summary      Update entry
+// @Description  Replaces all updatable fields of an entry by UUID.
+// @Tags         entries
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id     path      string        true  "Entry UUID"
+// @Param        entry  body      models.Entry  true  "Updated entry data"
+// @Success      200  {string}  string
+// @Failure      400  {string}  string
+// @Failure      401  {string}  string
+// @Failure      500  {string}  string
+// @Router       /entries/{id}/update [post]
 func UpdateEntryV0(c *gin.Context) {
 	id := c.Param("id")
 

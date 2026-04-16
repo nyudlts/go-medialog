@@ -50,6 +50,18 @@ type APIError struct {
 	Message map[string][]string `json:"error"`
 }
 
+// APILogin authenticates a user and returns an API token.
+// @Summary      Login
+// @Description  Authenticates a user by email and password, returning a session token valid for 3 hours.
+// @Tags         auth
+// @Produce      json
+// @Param        user      path   string  true  "User email address"
+// @Param        password  query  string  true  "User password"
+// @Success      200  {object}  models.Token
+// @Failure      400  {object}  APIError
+// @Failure      401  {string}  string
+// @Failure      500  {string}  string
+// @Router       /users/{user}/login [post]
 func APILogin(c *gin.Context) {
 	controllers.ExpireTokens()
 	email := c.Param("user")
@@ -113,6 +125,16 @@ func APILogin(c *gin.Context) {
 	c.JSON(200, apiToken)
 }
 
+// APILogout invalidates the current API token.
+// @Summary      Logout
+// @Description  Invalidates the current API token.
+// @Tags         auth
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Success      200  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /logout [delete]
 func APILogout(c *gin.Context) {
 	token, err := checkToken(c)
 	if err != nil {
@@ -128,6 +150,13 @@ func APILogout(c *gin.Context) {
 	c.JSON(http.StatusOK, "Logged Out")
 }
 
+// GetV0Root returns application version information.
+// @Summary      API root
+// @Description  Returns version information about the application and API.
+// @Tags         root
+// @Produce      json
+// @Success      200  {object}  models.MedialogInfo
+// @Router       / [get]
 func GetV0Root(c *gin.Context) {
 	medialogInfo := models.MedialogInfo{
 		Version:       version.AppVersion,
@@ -139,6 +168,16 @@ func GetV0Root(c *gin.Context) {
 	c.JSON(http.StatusOK, medialogInfo)
 }
 
+// DeleteSessionsV0 deletes all active web sessions.
+// @Summary      Delete all sessions
+// @Description  Deletes all active web sessions from the database.
+// @Tags         sessions
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Success      200  {string}  string
+// @Failure      401  {string}  string
+// @Failure      500  {string}  string
+// @Router       /delete_sessions [delete]
 func DeleteSessionsV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {

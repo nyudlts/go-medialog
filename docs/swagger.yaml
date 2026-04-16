@@ -1,0 +1,1324 @@
+basePath: /api/v0
+definitions:
+  api.APIError:
+    properties:
+      error:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        type: object
+    type: object
+  api.EntryResultSet:
+    properties:
+      first_page:
+        type: integer
+      last_page:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/models.Entry'
+        type: array
+      this_page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  api.SummaryAndTotals:
+    properties:
+      repository:
+        type: string
+      repository_id:
+        type: integer
+      summaries:
+        $ref: '#/definitions/database.Summaries'
+      total_Size:
+        type: integer
+      total_count:
+        type: integer
+      total_human_size:
+        type: string
+    type: object
+  api.SummaryTotalsAccession:
+    properties:
+      accession_identifier:
+        type: string
+      summaries:
+        items:
+          $ref: '#/definitions/database.Summary'
+        type: array
+      totals:
+        $ref: '#/definitions/database.Totals'
+    type: object
+  api.SummaryTotalsRepo:
+    properties:
+      repository:
+        type: string
+      summaries:
+        items:
+          $ref: '#/definitions/database.Summary'
+        type: array
+      totals:
+        $ref: '#/definitions/database.Totals'
+    type: object
+  api.SummaryTotalsResource:
+    properties:
+      resource_identifier:
+        type: string
+      resource_title:
+        type: string
+      summaries:
+        items:
+          $ref: '#/definitions/database.Summary'
+        type: array
+      totals:
+        $ref: '#/definitions/database.Totals'
+    type: object
+  database.Summaries:
+    additionalProperties:
+      $ref: '#/definitions/database.Summary'
+    type: object
+  database.Summary:
+    properties:
+      count:
+        type: integer
+      humanSize:
+        type: string
+      mediatype:
+        type: string
+      size:
+        format: float64
+        type: number
+    type: object
+  database.Totals:
+    properties:
+      count:
+        type: integer
+      humanSize:
+        type: string
+      size:
+        format: float64
+        type: number
+    type: object
+  models.Accession:
+    properties:
+      accession_note:
+        description: deprecated
+        type: string
+      accession_num:
+        type: string
+      accession_state:
+        description: deprecated
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      id:
+        type: integer
+      resource:
+        $ref: '#/definitions/models.Resource'
+      resource_id:
+        type: integer
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  models.Entry:
+    properties:
+      accession:
+        $ref: '#/definitions/models.Accession'
+      accession_id:
+        type: integer
+      box_number:
+        type: string
+      content_type:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        description: this should be converted to a uint
+        type: integer
+      disposition_note:
+        type: string
+      hdd_interface:
+        type: string
+      id:
+        type: string
+      image_filename:
+        type: string
+      image_format:
+        type: string
+      imaged_by:
+        type: string
+      imaging_note:
+        type: string
+      imaging_software:
+        type: string
+      imaging_success:
+        type: string
+      interface:
+        type: string
+      interpretation_success:
+        type: string
+      is_refreshed:
+        type: boolean
+      is_transferred:
+        type: boolean
+      label_text:
+        type: string
+      location:
+        type: string
+      manufacturer:
+        type: string
+      manufacturer_serial:
+        type: string
+      media_id:
+        type: integer
+      media_note:
+        type: string
+      mediatype:
+        type: string
+      original_id:
+        type: string
+      repository:
+        $ref: '#/definitions/models.Repository'
+      repository_id:
+        type: integer
+      resource:
+        $ref: '#/definitions/models.Resource'
+      resource_id:
+        type: integer
+      status:
+        type: string
+      stock_size_num:
+        type: number
+      stock_unit:
+        type: string
+      structure:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        description: this should be converted to a uint
+        type: integer
+    type: object
+  models.MedialogInfo:
+    properties:
+      apiversion:
+        type: string
+      ginVersion:
+        type: string
+      golangVersion:
+        type: string
+      version:
+        type: string
+    type: object
+  models.Repository:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      id:
+        type: integer
+      slug:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  models.Resource:
+    properties:
+      collection_code:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      id:
+        type: integer
+      partner_code:
+        type: string
+      repository:
+        $ref: '#/definitions/models.Repository'
+      repository_id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  models.Token:
+    properties:
+      expires:
+        type: string
+      id:
+        type: integer
+      is_valid:
+        type: boolean
+      token:
+        type: string
+      type:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      can_access_api:
+        type: boolean
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      current_ip_address:
+        type: string
+      email:
+        type: string
+      encrypted_password:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      is_admin:
+        type: boolean
+      last_name:
+        type: string
+      previous_ip_address:
+        type: string
+      salt:
+        type: string
+      sign_in_count:
+        type: integer
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: REST API for managing digital media in archival collections.
+  title: Go-Medialog API
+  version: 0.1.5
+paths:
+  /:
+    get:
+      description: Returns version information about the application and API.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MedialogInfo'
+      summary: API root
+      tags:
+      - root
+  /accessions:
+    get:
+      description: Returns a list of all accessions.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Accession'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: List accessions
+      tags:
+      - accessions
+    post:
+      consumes:
+      - application/json
+      description: Creates a new accession within a resource.
+      parameters:
+      - description: Accession data
+        in: body
+        name: accession
+        required: true
+        schema:
+          $ref: '#/definitions/models.Accession'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Accession'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create accession
+      tags:
+      - accessions
+  /accessions/{id}:
+    delete:
+      description: Deletes an accession by its ID.
+      parameters:
+      - description: Accession ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete accession
+      tags:
+      - accessions
+    get:
+      description: Returns a single accession by its ID.
+      parameters:
+      - description: Accession ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Accession'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get accession
+      tags:
+      - accessions
+  /accessions/{id}/entries:
+    get:
+      description: Returns paginated entries for a given accession. Use all_ids=true
+        to return only entry UUIDs.
+      parameters:
+      - description: Accession ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Return all entry IDs (no pagination)
+        in: query
+        name: all_ids
+        type: boolean
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Results per page (default 25)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.EntryResultSet'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get accession entries
+      tags:
+      - accessions
+  /accessions/{id}/summary:
+    get:
+      description: Returns media type totals and per-type summaries for a given accession.
+      parameters:
+      - description: Accession ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SummaryTotalsAccession'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get accession summary
+      tags:
+      - accessions
+  /delete_sessions:
+    delete:
+      description: Deletes all active web sessions from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete all sessions
+      tags:
+      - sessions
+  /entries:
+    get:
+      description: Returns paginated entries across all accessions. Use all_ids=true
+        to return only UUIDs.
+      parameters:
+      - description: Return all entry IDs (no pagination)
+        in: query
+        name: all_ids
+        type: boolean
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Results per page (default 25)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.EntryResultSet'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: List entries
+      tags:
+      - entries
+    post:
+      consumes:
+      - application/json
+      description: Creates a new media entry within an accession.
+      parameters:
+      - description: Entry data
+        in: body
+        name: entry
+        required: true
+        schema:
+          $ref: '#/definitions/models.Entry'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Entry'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create entry
+      tags:
+      - entries
+  /entries/{id}:
+    delete:
+      description: Deletes a media entry by its UUID.
+      parameters:
+      - description: Entry UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete entry
+      tags:
+      - entries
+    get:
+      description: Returns a single media entry by its UUID.
+      parameters:
+      - description: Entry UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Entry'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get entry
+      tags:
+      - entries
+  /entries/{id}/update:
+    post:
+      consumes:
+      - application/json
+      description: Replaces all updatable fields of an entry by UUID.
+      parameters:
+      - description: Entry UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated entry data
+        in: body
+        name: entry
+        required: true
+        schema:
+          $ref: '#/definitions/models.Entry'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update entry
+      tags:
+      - entries
+  /entries/{id}/update_location:
+    patch:
+      description: Updates the storage location for a given entry by UUID.
+      parameters:
+      - description: Entry UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Storage location code
+        in: query
+        name: location
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update entry location
+      tags:
+      - entries
+  /logout:
+    delete:
+      description: Invalidates the current API token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Logout
+      tags:
+      - auth
+  /reports/range:
+    get:
+      description: Returns total counts and sizes of media ingested within a date
+        range. Dates must be in YYYYMMDD format.
+      parameters:
+      - description: Start date (YYYYMMDD)
+        in: query
+        name: start_date
+        required: true
+        type: string
+      - description: End date (YYYYMMDD)
+        in: query
+        name: end_date
+        required: true
+        type: string
+      - description: Filter by repository ID (0 = all)
+        in: query
+        name: repository_id
+        type: integer
+      - description: Filter by refreshed status
+        in: query
+        name: is_refreshed
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SummaryAndTotals'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Date range summary
+      tags:
+      - reports
+  /repositories:
+    get:
+      description: Returns a list of all repositories.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Repository'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: List repositories
+      tags:
+      - repositories
+    post:
+      consumes:
+      - application/json
+      description: Creates a new repository record.
+      parameters:
+      - description: Repository data
+        in: body
+        name: repository
+        required: true
+        schema:
+          $ref: '#/definitions/models.Repository'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Repository'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create repository
+      tags:
+      - repositories
+  /repositories/{id}:
+    delete:
+      description: Deletes a repository by its ID.
+      parameters:
+      - description: Repository ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete repository
+      tags:
+      - repositories
+    get:
+      description: Returns a single repository by its ID.
+      parameters:
+      - description: Repository ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Repository'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get repository
+      tags:
+      - repositories
+  /repositories/{id}/entries:
+    get:
+      description: Returns paginated entries for a given repository. Use all_ids=true
+        to return only entry UUIDs.
+      parameters:
+      - description: Repository ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Return all entry IDs (no pagination)
+        in: query
+        name: all_ids
+        type: boolean
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Results per page (default 25)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.EntryResultSet'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get repository entries
+      tags:
+      - repositories
+  /repositories/{id}/summary:
+    get:
+      description: Returns media type totals and per-type summaries for a given repository.
+      parameters:
+      - description: Repository ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SummaryTotalsRepo'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get repository summary
+      tags:
+      - repositories
+  /resources:
+    get:
+      description: Returns a list of all resources.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Resource'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: List resources
+      tags:
+      - resources
+    post:
+      consumes:
+      - application/json
+      description: Creates a new resource (collection) within a repository.
+      parameters:
+      - description: Resource data
+        in: body
+        name: resource
+        required: true
+        schema:
+          $ref: '#/definitions/models.Resource'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Resource'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create resource
+      tags:
+      - resources
+  /resources/{id}:
+    delete:
+      description: Deletes a resource by its ID.
+      parameters:
+      - description: Resource ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete resource
+      tags:
+      - resources
+    get:
+      description: Returns a single resource by its ID.
+      parameters:
+      - description: Resource ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Resource'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get resource
+      tags:
+      - resources
+  /resources/{id}/entries:
+    get:
+      description: Returns paginated entries for a given resource. Use all_ids=true
+        to return only entry UUIDs.
+      parameters:
+      - description: Resource ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Return all entry IDs (no pagination)
+        in: query
+        name: all_ids
+        type: boolean
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Results per page (default 25)
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.EntryResultSet'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get resource entries
+      tags:
+      - resources
+  /resources/{id}/summary:
+    get:
+      description: Returns media type totals and per-type summaries for a given resource.
+      parameters:
+      - description: Resource ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.SummaryTotalsResource'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get resource summary
+      tags:
+      - resources
+  /users/{user}/login:
+    post:
+      description: Authenticates a user by email and password, returning a session
+        token valid for 3 hours.
+      parameters:
+      - description: User email address
+        in: path
+        name: user
+        required: true
+        type: string
+      - description: User password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Token'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIError'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Login
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: X-Medialog-Token
+    type: apiKey
+swagger: "2.0"

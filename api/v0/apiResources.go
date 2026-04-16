@@ -11,6 +11,19 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
+// CreateResourceV0 creates a new resource.
+// @Summary      Create resource
+// @Description  Creates a new resource (collection) within a repository.
+// @Tags         resources
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        resource  body      models.Resource  true  "Resource data"
+// @Success      200       {object}  models.Resource
+// @Failure      400       {string}  string
+// @Failure      401       {object}  map[string]string
+// @Failure      500       {string}  string
+// @Router       /resources [post]
 func CreateResourceV0(c *gin.Context) {
 	token, err := checkToken(c)
 	if err != nil {
@@ -51,6 +64,18 @@ func CreateResourceV0(c *gin.Context) {
 	c.JSON(http.StatusOK, resource)
 }
 
+// DeleteResourceV0 deletes a resource by ID.
+// @Summary      Delete resource
+// @Description  Deletes a resource by its ID.
+// @Tags         resources
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Resource ID"
+// @Success      200  {string}  string
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /resources/{id} [delete]
 func DeleteResourceV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {
@@ -74,6 +99,16 @@ func DeleteResourceV0(c *gin.Context) {
 
 }
 
+// GetResourcesV0 returns all resources.
+// @Summary      List resources
+// @Description  Returns a list of all resources.
+// @Tags         resources
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Success      200  {array}   models.Resource
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /resources [get]
 func GetResourcesV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -91,6 +126,18 @@ func GetResourcesV0(c *gin.Context) {
 	c.JSON(http.StatusOK, resources)
 }
 
+// GetResourceV0 returns a resource by ID.
+// @Summary      Get resource
+// @Description  Returns a single resource by its ID.
+// @Tags         resources
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Resource ID"
+// @Success      200  {object}  models.Resource
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /resources/{id} [get]
 func GetResourceV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -113,6 +160,21 @@ func GetResourceV0(c *gin.Context) {
 	c.JSON(http.StatusOK, resource)
 }
 
+// GetResourceEntriesV0 returns entries for a resource.
+// @Summary      Get resource entries
+// @Description  Returns paginated entries for a given resource. Use all_ids=true to return only entry UUIDs.
+// @Tags         resources
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id         path   int   true   "Resource ID"
+// @Param        all_ids    query  bool  false  "Return all entry IDs (no pagination)"
+// @Param        page       query  int   false  "Page number"
+// @Param        page_size  query  int   false  "Results per page (default 25)"
+// @Success      200  {object}  EntryResultSet
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /resources/{id}/entries [get]
 func GetResourceEntriesV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -186,6 +248,18 @@ func GetResourceEntriesV0(c *gin.Context) {
 	}
 }
 
+// GetResourceSummaryV0 returns a media type summary for a resource.
+// @Summary      Get resource summary
+// @Description  Returns media type totals and per-type summaries for a given resource.
+// @Tags         resources
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Resource ID"
+// @Success      200  {object}  SummaryTotalsResource
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /resources/{id}/summary [get]
 func GetResourceSummaryV0(c *gin.Context) {
 
 	_, err := checkToken(c)

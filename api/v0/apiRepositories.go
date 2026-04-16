@@ -12,6 +12,16 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
+// GetRepositoriesV0 returns all repositories.
+// @Summary      List repositories
+// @Description  Returns a list of all repositories.
+// @Tags         repositories
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Success      200  {array}   models.Repository
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /repositories [get]
 func GetRepositoriesV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -29,6 +39,18 @@ func GetRepositoriesV0(c *gin.Context) {
 	c.JSON(http.StatusOK, repositories)
 }
 
+// GetRepositoryV0 returns a repository by ID.
+// @Summary      Get repository
+// @Description  Returns a single repository by its ID.
+// @Tags         repositories
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Repository ID"
+// @Success      200  {object}  models.Repository
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /repositories/{id} [get]
 func GetRepositoryV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -51,6 +73,19 @@ func GetRepositoryV0(c *gin.Context) {
 	c.JSON(http.StatusOK, repository)
 }
 
+// CreateRepositoryV0 creates a new repository.
+// @Summary      Create repository
+// @Description  Creates a new repository record.
+// @Tags         repositories
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        repository  body      models.Repository  true  "Repository data"
+// @Success      200         {object}  models.Repository
+// @Failure      400         {string}  string
+// @Failure      401         {object}  map[string]string
+// @Failure      500         {string}  string
+// @Router       /repositories [post]
 func CreateRepositoryV0(c *gin.Context) {
 	token, err := checkToken(c)
 	if err != nil {
@@ -84,6 +119,18 @@ func CreateRepositoryV0(c *gin.Context) {
 	c.JSON(http.StatusOK, repo)
 }
 
+// DeleteRepositoryV0 deletes a repository by ID.
+// @Summary      Delete repository
+// @Description  Deletes a repository by its ID.
+// @Tags         repositories
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Repository ID"
+// @Success      200  {string}  string
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /repositories/{id} [delete]
 func DeleteRepositoryV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {
@@ -107,6 +154,21 @@ func DeleteRepositoryV0(c *gin.Context) {
 
 }
 
+// GetRepositoryEntriesV0 returns entries for a repository.
+// @Summary      Get repository entries
+// @Description  Returns paginated entries for a given repository. Use all_ids=true to return only entry UUIDs.
+// @Tags         repositories
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id         path   int   true   "Repository ID"
+// @Param        all_ids    query  bool  false  "Return all entry IDs (no pagination)"
+// @Param        page       query  int   false  "Page number"
+// @Param        page_size  query  int   false  "Results per page (default 25)"
+// @Success      200  {object}  EntryResultSet
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /repositories/{id}/entries [get]
 func GetRepositoryEntriesV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {
@@ -180,6 +242,18 @@ func GetRepositoryEntriesV0(c *gin.Context) {
 	}
 }
 
+// GetRepositorySummaryV0 returns a media type summary for a repository.
+// @Summary      Get repository summary
+// @Description  Returns media type totals and per-type summaries for a given repository.
+// @Tags         repositories
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Repository ID"
+// @Success      200  {object}  SummaryTotalsRepo
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /repositories/{id}/summary [get]
 func GetRepositorySummaryV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {

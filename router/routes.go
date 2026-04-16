@@ -6,9 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/api/v0"
 	"github.com/nyudlts/go-medialog/controllers"
+	_ "github.com/nyudlts/go-medialog/docs"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
 )
 
 func LoadRoutes(router *gin.Engine) {
+
+	// Swagger UI
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Unprotected routes
 	router.GET("/test", func(c *gin.Context) { Test(c) })

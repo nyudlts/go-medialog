@@ -11,6 +11,19 @@ import (
 	"github.com/nyudlts/go-medialog/models"
 )
 
+// CreateAccessionV0 creates a new accession.
+// @Summary      Create accession
+// @Description  Creates a new accession within a resource.
+// @Tags         accessions
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        accession  body      models.Accession  true  "Accession data"
+// @Success      200        {object}  models.Accession
+// @Failure      400        {string}  string
+// @Failure      401        {object}  map[string]string
+// @Failure      500        {string}  string
+// @Router       /accessions [post]
 func CreateAccessionV0(c *gin.Context) {
 	token, err := checkToken(c)
 	if err != nil {
@@ -52,6 +65,16 @@ func CreateAccessionV0(c *gin.Context) {
 
 }
 
+// GetAccessionsV0 returns all accessions.
+// @Summary      List accessions
+// @Description  Returns a list of all accessions.
+// @Tags         accessions
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Success      200  {array}   models.Accession
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /accessions [get]
 func GetAccessionsV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -69,6 +92,18 @@ func GetAccessionsV0(c *gin.Context) {
 	c.JSON(http.StatusOK, accessions)
 }
 
+// GetAccessionV0 returns an accession by ID.
+// @Summary      Get accession
+// @Description  Returns a single accession by its ID.
+// @Tags         accessions
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Accession ID"
+// @Success      200  {object}  models.Accession
+// @Failure      400  {string}  string
+// @Failure      401  {string}  string
+// @Failure      500  {string}  string
+// @Router       /accessions/{id} [get]
 func GetAccessionV0(c *gin.Context) {
 
 	_, err := checkToken(c)
@@ -99,6 +134,18 @@ func GetAccessionV0(c *gin.Context) {
 	c.JSON(http.StatusOK, accession)
 }
 
+// DeleteAccessionV0 deletes an accession by ID.
+// @Summary      Delete accession
+// @Description  Deletes an accession by its ID.
+// @Tags         accessions
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Accession ID"
+// @Success      200  {string}  string
+// @Failure      400  {string}  string
+// @Failure      401  {string}  string
+// @Failure      500  {string}  string
+// @Router       /accessions/{id} [delete]
 func DeleteAccessionV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {
@@ -122,6 +169,21 @@ func DeleteAccessionV0(c *gin.Context) {
 
 }
 
+// GetAccessionEntriesV0 returns entries for an accession.
+// @Summary      Get accession entries
+// @Description  Returns paginated entries for a given accession. Use all_ids=true to return only entry UUIDs.
+// @Tags         accessions
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id         path   int   true   "Accession ID"
+// @Param        all_ids    query  bool  false  "Return all entry IDs (no pagination)"
+// @Param        page       query  int   false  "Page number"
+// @Param        page_size  query  int   false  "Results per page (default 25)"
+// @Success      200  {object}  EntryResultSet
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /accessions/{id}/entries [get]
 func GetAccessionEntriesV0(c *gin.Context) {
 	_, err := checkToken(c)
 	if err != nil {
@@ -196,6 +258,18 @@ func GetAccessionEntriesV0(c *gin.Context) {
 
 }
 
+// GetAccessionSummaryV0 returns a media type summary for an accession.
+// @Summary      Get accession summary
+// @Description  Returns media type totals and per-type summaries for a given accession.
+// @Tags         accessions
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Accession ID"
+// @Success      200  {object}  SummaryTotalsAccession
+// @Failure      400  {string}  string
+// @Failure      401  {object}  map[string]string
+// @Failure      500  {string}  string
+// @Router       /accessions/{id}/summary [get]
 func GetAccessionSummaryV0(c *gin.Context) {
 
 	_, err := checkToken(c)

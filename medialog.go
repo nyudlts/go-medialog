@@ -1,3 +1,12 @@
+// @title           Go-Medialog API
+// @version         0.1.5
+// @description     REST API for managing digital media in archival collections.
+// @BasePath        /api/v0
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in              header
+// @name            X-Medialog-Token
+
 package main
 
 import (

@@ -19,6 +19,21 @@ type SummaryAndTotals struct {
 	Summaries    database.Summaries `json:"summaries"`
 }
 
+// SummaryDateRange returns a media summary for a date range.
+// @Summary      Date range summary
+// @Description  Returns total counts and sizes of media ingested within a date range. Dates must be in YYYYMMDD format.
+// @Tags         reports
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        start_date     query  string  true   "Start date (YYYYMMDD)"
+// @Param        end_date       query  string  true   "End date (YYYYMMDD)"
+// @Param        repository_id  query  int     false  "Filter by repository ID (0 = all)"
+// @Param        is_refreshed   query  bool    false  "Filter by refreshed status"
+// @Success      200  {object}  SummaryAndTotals
+// @Failure      400  {string}  string
+// @Failure      401  {string}  string
+// @Failure      500  {string}  string
+// @Router       /reports/range [get]
 func SummaryDateRange(c *gin.Context) {
 	if _, err := checkToken(c); err != nil {
 		c.JSON(http.StatusUnauthorized, err.Error())

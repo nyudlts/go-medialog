@@ -271,10 +271,10 @@ type TestCreds struct {
 }
 
 type MedialogInfo struct {
-	Version       string
-	GinVersion    string
-	GolangVersion string
-	APIVersion    string
+	GolangVersion string "json:\"golang-version\""
+	GinVersion    string "json:\"gin-version\""
+	Version       string "json:\"go-medialog-version\""
+	APIVersion    string "json:\"go-medialog-api-version\""
 }
 
 func (mli MedialogInfo) String() string {
