@@ -1,0 +1,97 @@
+<!--header.html-->
+
+<!doctype html>
+<html>
+
+<head>
+    <!--Use the title variable to set the title of the page-->
+    <title>Medialog</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta charset="UTF-8">
+    <link href="/public/favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <link href="/public/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/medialog.css" rel="stylesheet">
+    <link href="/public/jquery-ui.min.css" rel="stylesheet">
+    <link href="/public/jquery-ui.structure.min.css" rel="stylesheet">
+    <link href="/public/jquery-ui.theme.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container">
+    <br>
+    <h1>Medialog API V0 </h1>
+    <br>
+    {{ .medialog_info}}
+    <h2>Table of Contents</h2>
+    <ul>
+        <li><a href="#authentication">Authentication</a></li>
+        <li><a href="#repositories">Repositories</a></li>
+        <li><a href="#resources">Resources</a></li>
+        <li><a href="#accessions">Accessions</a></li>
+        <li><a href="#entries">Entries</a></li>
+        <li><a href="#reports">Reports</a></li>
+        <li><a href="#sessions">Sessions</a></li>
+    </ul>
+    <h2 id="authentication">Authentication</h2>
+    <h4>POST /users/:email/login</h4>
+    <p>Request a session token.<br>
+        Params:
+        <ul>
+            <li><strong>password</strong>: Authorized user's password</li>
+        </ul>
+        <br/>
+        Response:
+        <pre>
+            <code>
+            {
+                "token": "814ccc7a858c050d64337c647de83444b917076cf4bbb3a3033f284ca63c75b54be69648bdd7cfd2eb04640d5e20addc8fe84beb212cfec6a0b5d8a2404ac37a",
+                "id": 517,
+                "is_valid": true,
+                "expires": "2025-06-12T13:44:27.336711-04:00",
+                "user_id": 1,
+            }
+            </code>
+        </pre>
+    </p>
+    <h4>DELETE /logout</h4>
+    <hr>
+    <h2 id="repositories">Repositories</h2>
+    <h4>GET /repositories</h4>
+    <h4>GET /repositories/:id</h4>
+    <h4>POST /repositories</h4>
+    <h4>GET /repositories/:id/entries</h4>
+    <h4>GET /repositories/:id/summary</h4>
+    <hr>
+    <h2 id="resources">Resources</h2>
+    <h4>GET /resources</h4>
+    <h4>GET /resources/:id</h4>
+    <h4>POST /resources</h4>
+    <h4>DELETE /resources/:id</h4>
+    <h4>GET /api/v0/resources/:id/entries</h4>
+    <h4>GET /api/v0/resources/:id/summary</h4>
+    <hr>
+    <h2 id="accessions">Accessions</h2>
+    <h4>GET /api/v0/accessions</h4>
+    <h4>GET /api/v0/accessions/:id</h4>
+    <h4>GET /api/v0/accessions/:id/entries</h4>
+    <h4>GET /api/v0/accessions/:id/summary</h4>
+    <h4>POST /api/v0/accessions</h4>
+    <h4>DELETE /api/v0/accessions/:id</h4>
+    <hr>
+    <h2 id="entries">Entries</h2>
+    <h4>GET /api/v0/entries</h4>
+    <h4>GET /api/v0/entries/:id</h4>
+    <h4>PATCH /api/v0/entries/:id/update_location</h4>
+    <h4>POST /api/v0/entries</h4>
+    <h4>POST /api/v0/entries/:id/update</h4>
+    <h4>DELETE /api/v0/entries/:id</h4>
+    <hr>
+    <h2 id="reports">Reports</h2>
+    <h4>GET /api/v0/reports/range</h4>
+    <hr>
+    <h2 id="sessions">Sessions</h2>
+    <h4>GET /api/v0/delete_sessions</h4>
+    
+    </div>
+</body>

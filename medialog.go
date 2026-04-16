@@ -48,7 +48,7 @@ func main() {
 	flag.Parse()
 
 	if vers {
-		fmt.Printf("{ \"version\": \"%s\"\n}", version.AppVersion)
+		fmt.Printf("{ \"version\": \"%s\"}", version.GetAppVersion())
 		os.Exit(0)
 	}
 
@@ -59,17 +59,17 @@ func main() {
 	}
 
 	if migrate || rollback {
-		fmt.Println("  * running migrations")
+		fmt.Println("[]running migrations")
 
 		if err := database.MigrateDatabase(rollback, env.DatabaseConfig); err != nil {
-			panic(err)
+			fmt.Println("[]migrations failed, ERROR: ", err)
 		}
 
 		os.Exit(0)
 	}
 
 	if automigrate {
-		fmt.Println("  * auto-migrating database")
+		fmt.Println("auto-migrating database")
 		if err := database.AutoMigrate(env.DatabaseConfig); err != nil {
 			panic(err)
 		}
@@ -112,9 +112,9 @@ func main() {
 	}
 
 	//start the application
-	log.Printf("[INFO] Running Go-Medialog %s", version.AppVersion)
+	log.Printf("[INFO] Running Go-Medialog %s", version.GetAppVersion())
 
-	if err := r.Run(fmt.Sprintf(":%s", env.Port)); err != nil {
+	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
 

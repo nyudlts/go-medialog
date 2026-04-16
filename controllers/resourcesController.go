@@ -14,51 +14,33 @@ import (
 )
 
 func GetResource(c *gin.Context) {
-	//check if user is logged in
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-	isLoggedIn := true
-
-	//get session cookies
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	//get the user
-	user, err := database.GetRedactedUser(sessionCookies.UserID)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
-	}
+	sessionCookies := c.MustGet(ContextKeySessionCookies).(SessionCookies)
+	user := c.MustGet(ContextKeyUser).(models.User)
 
 	//get the resource
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	resource, err := database.FindResource(uint(id))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	//get the summary
 	summary, err := database.GetSummaryByResource(resource.ID)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	//get associacted accessions
 	accessions, err := database.FindAccessionsByResourceID(resource.ID)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -69,7 +51,7 @@ func GetResource(c *gin.Context) {
 	if len(page) > 0 {
 		p, err = strconv.Atoi(page[0])
 		if err != nil {
-			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+			ThrowError(http.StatusBadRequest, err.Error(), c, true)
 			return
 		}
 	}
@@ -83,7 +65,7 @@ func GetResource(c *gin.Context) {
 	if len(l) > 0 {
 		limit, err = strconv.Atoi(l[0])
 		if err != nil {
-			ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+			ThrowError(http.StatusBadRequest, err.Error(), c, true)
 			return
 		}
 	}
@@ -107,13 +89,13 @@ func GetResource(c *gin.Context) {
 	//get entries
 	entries, err := database.FindEntriesByResourceIDPaginated(resource.ID, pagination)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	entryUsers, err := database.FindEntryUsers(resource.CreatedBy, resource.UpdatedBy)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -127,7 +109,7 @@ func GetResource(c *gin.Context) {
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
 		"entry_users":     entryUsers,
-		"isLoggedIn":      isLoggedIn,
+		"isLoggedIn": true,
 		"user":            user,
 		"overlimit":       overlimit,
 		"limitValues":     LimitValues,
@@ -136,34 +118,18 @@ func GetResource(c *gin.Context) {
 }
 
 func GetResources(c *gin.Context) {
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
-
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	user, err := database.GetRedactedUser(sessionCookies.UserID)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
-	}
+	sessionCookies := c.MustGet(ContextKeySessionCookies).(SessionCookies)
+	user := c.MustGet(ContextKeyUser).(models.User)
 
 	resources, err := database.FindResources()
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -172,71 +138,47 @@ func GetResources(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         sessionCookies.IsAdmin,
 		"repositoryMap":   repositoryMap,
-		"isLoggedIn":      isLoggedIn,
+		"isLoggedIn": true,
 		"user":            user,
 	})
 }
 
 func NewResource(c *gin.Context) {
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
-
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	user, err := database.GetRedactedUser(sessionCookies.UserID)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
-	}
+	sessionCookies := c.MustGet(ContextKeySessionCookies).(SessionCookies)
+	user := c.MustGet(ContextKeyUser).(models.User)
 
 	repoID, err := strconv.Atoi(c.Query("repository_id"))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	repository, err := database.FindRepository(uint(repoID))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	c.HTML(200, "resources-new.html", gin.H{
 		"isAdmin":    sessionCookies.IsAdmin,
 		"repository": repository,
-		"isLoggedIn": isLoggedIn,
+		"isLoggedIn": true,
 		"user":       user,
 	})
 }
 
 func CreateResource(c *gin.Context) {
-	//ensure user is logged in
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
-
 	//bind the form to a resource
 	var resource = models.Resource{}
 	if err := c.Bind(&resource); err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	//get the repository
 	repository, err := database.FindRepository(uint(resource.RepositoryID))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -246,7 +188,7 @@ func CreateResource(c *gin.Context) {
 	//get the current user id
 	userID, err := getUserkey(c)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -259,7 +201,7 @@ func CreateResource(c *gin.Context) {
 	//insert the new resource
 	resourceID, err := database.InsertResource(&resource)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -268,74 +210,51 @@ func CreateResource(c *gin.Context) {
 }
 
 func EditResource(c *gin.Context) {
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
-
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	user, err := database.GetRedactedUser(sessionCookies.UserID)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
-	}
+	sessionCookies := c.MustGet(ContextKeySessionCookies).(SessionCookies)
+	user := c.MustGet(ContextKeyUser).(models.User)
 
 	resourceID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	resource, err := database.FindResource(uint(resourceID))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	c.HTML(200, "resources-edit.html", gin.H{
 		"isAdmin":    sessionCookies.IsAdmin,
 		"resource":   resource,
-		"isLoggedIn": isLoggedIn,
+		"isLoggedIn": true,
 		"user":       user,
 	})
 }
 
 func UpdateResource(c *gin.Context) {
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
-
 	var updateResource = models.Resource{}
 	if err := c.Bind(&updateResource); err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	userID, err := getUserkey(c)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	resource, err := database.FindResource(uint(id))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -345,7 +264,7 @@ func UpdateResource(c *gin.Context) {
 	resource.CollectionCode = updateResource.CollectionCode
 
 	if err := database.UpdateResource(&resource); err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -353,26 +272,20 @@ func UpdateResource(c *gin.Context) {
 }
 
 func DeleteResource(c *gin.Context) {
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	resource, err := database.FindResource(uint(id))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	if err := database.DeleteResource(uint(id)); err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -380,22 +293,15 @@ func DeleteResource(c *gin.Context) {
 }
 
 func ResourceGenCSV(c *gin.Context) {
-
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-	isLoggedIn := true
-
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	resource, err := database.FindResource(uint(id))
 	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, true)
 		return
 	}
 
@@ -403,7 +309,7 @@ func ResourceGenCSV(c *gin.Context) {
 
 	entries, err := database.FindEntriesByResourceIDFiltered(uint(id), filter)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 

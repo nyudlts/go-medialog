@@ -12,29 +12,12 @@ import (
 )
 
 func ReportsIndex(c *gin.Context) {
-
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
+	sessionCookies := c.MustGet(ContextKeySessionCookies).(SessionCookies)
+	user := c.MustGet(ContextKeyUser).(models.User)
 
 	partnerCodes, err := database.GetRepositoryMap()
 	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	user, err := database.GetRedactedUser(sessionCookies.UserID)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, true)
 		return
 	}
 
@@ -43,48 +26,31 @@ func ReportsIndex(c *gin.Context) {
 		"days":          days,
 		"years":         years,
 		"partner_codes": partnerCodes,
-		"isLoggedIn":    isLoggedIn,
+		"isLoggedIn":    true,
 		"isAdmin":       sessionCookies.IsAdmin,
 		"user":          user,
 	})
 }
 
 func ReportsRange(c *gin.Context) {
-
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
-
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	user, err := database.GetRedactedUser(sessionCookies.UserID)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
-	}
+	sessionCookies := c.MustGet(ContextKeySessionCookies).(SessionCookies)
+	user := c.MustGet(ContextKeyUser).(models.User)
 
 	var dateRange = database.DateRange{}
 	if err := c.Bind(&dateRange); err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	summary, err := database.GetSummaryByDateRange(dateRange)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	partnerCodes, err := database.GetRepositoryMap()
 	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusInternalServerError, err.Error(), c, true)
 		return
 	}
 
@@ -97,7 +63,7 @@ func ReportsRange(c *gin.Context) {
 		"days":          days,
 		"repository":    partnerCodes[dateRange.RepositoryID],
 		"partner_codes": partnerCodes,
-		"isLoggedIn":    isLoggedIn,
+		"isLoggedIn":    true,
 		"isAdmin":       sessionCookies.IsAdmin,
 		"user":          user,
 	})

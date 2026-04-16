@@ -10,12 +10,23 @@ import (
 
 func LoadRoutes(router *gin.Engine) {
 
-	//Main Index
-	router.GET("", func(c *gin.Context) { controllers.GetIndex(c) })
+	// Unprotected routes
 	router.GET("/test", func(c *gin.Context) { Test(c) })
+	router.GET("/users/login", func(c *gin.Context) { controllers.LoginUser(c) })
+	router.POST("/users/authenticate", func(c *gin.Context) { controllers.AuthenticateUser(c) })
+	router.GET("/errors/test", func(c *gin.Context) { controllers.TestError(c) })
+	router.NoRoute(func(c *gin.Context) { controllers.NoRoute(c) })
+	router.NoMethod(func(c *gin.Context) { c.JSON(http.StatusMethodNotAllowed, "NO METHOD") })
+
+	// Protected routes (require authentication)
+	authorized := router.Group("")
+	authorized.Use(controllers.RequireAuth)
+
+	// Main Index
+	authorized.GET("", func(c *gin.Context) { controllers.GetIndex(c) })
 
 	//Accessions Group
-	accessionsRoutes := router.Group("/accessions")
+	accessionsRoutes := authorized.Group("/accessions")
 	accessionsRoutes.GET("new", func(c *gin.Context) { controllers.NewAccession(c) })
 	accessionsRoutes.POST("", func(c *gin.Context) { controllers.CreateAccession(c) })
 	accessionsRoutes.GET("", func(c *gin.Context) { controllers.GetAccessions(c) })
@@ -28,7 +39,7 @@ func LoadRoutes(router *gin.Engine) {
 	accessionsRoutes.GET(":id/csv", func(c *gin.Context) { controllers.AccessionGenCSV(c) })
 
 	//Repository Group
-	repositoryRoutes := router.Group("/repositories")
+	repositoryRoutes := authorized.Group("/repositories")
 	repositoryRoutes.GET("", func(c *gin.Context) { controllers.GetRepositories(c) })
 	repositoryRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetRepository(c) })
 	repositoryRoutes.GET("new", func(c *gin.Context) { controllers.NewRepository(c) })
@@ -38,7 +49,7 @@ func LoadRoutes(router *gin.Engine) {
 	repositoryRoutes.GET(":id/delete", func(c *gin.Context) { controllers.DeleteRepository(c) })
 
 	//Resources Group
-	resourceRoutes := router.Group("/resources")
+	resourceRoutes := authorized.Group("/resources")
 	resourceRoutes.GET("", func(c *gin.Context) { controllers.GetResources(c) })
 	resourceRoutes.GET(":id/show", func(c *gin.Context) { controllers.GetResource(c) })
 	resourceRoutes.GET("new", func(c *gin.Context) { controllers.NewResource(c) })
@@ -49,7 +60,7 @@ func LoadRoutes(router *gin.Engine) {
 	resourceRoutes.GET(":id/csv", func(c *gin.Context) { controllers.ResourceGenCSV(c) })
 
 	//Entries Group
-	entryRoutes := router.Group("/entries")
+	entryRoutes := authorized.Group("/entries")
 	entryRoutes.GET("", func(c *gin.Context) { controllers.GetEntries(c) })
 	entryRoutes.GET("new", func(c *gin.Context) { controllers.NewEntry(c) })
 	entryRoutes.POST("", func(c *gin.Context) { controllers.CreateEntry(c) })
@@ -63,14 +74,12 @@ func LoadRoutes(router *gin.Engine) {
 	entryRoutes.POST("find", func(c *gin.Context) { controllers.FindEntry(c) })
 	entryRoutes.GET("/csv", func(c *gin.Context) { controllers.EntriesGenCSV(c) })
 
-	//Users Group
-	userRoutes := router.Group("/users")
+	//Users Group (protected routes only — login and authenticate are unprotected above)
+	userRoutes := authorized.Group("/users")
 	userRoutes.GET("", func(c *gin.Context) { controllers.GetUsers(c) })
 	userRoutes.GET("new", func(c *gin.Context) { controllers.NewUser(c) })
 	userRoutes.POST("create", func(c *gin.Context) { controllers.CreateUser(c) })
-	userRoutes.GET("login", func(c *gin.Context) { controllers.LoginUser(c) })
 	userRoutes.GET("logout", func(c *gin.Context) { controllers.LogoutUser(c) })
-	userRoutes.POST("authenticate", func(c *gin.Context) { controllers.AuthenticateUser(c) })
 	userRoutes.GET(":id/reset_password", func(c *gin.Context) { controllers.ResetUserPassword(c) })
 	userRoutes.POST(":id/reset_password", func(c *gin.Context) { controllers.ResetPassword(c) })
 	userRoutes.GET(":id/deactivate", func(c *gin.Context) { controllers.DeactivateUser(c) })
@@ -84,26 +93,18 @@ func LoadRoutes(router *gin.Engine) {
 	userRoutes.GET(":id/revoke_api", func(c *gin.Context) { controllers.RevokeAPI(c) })
 
 	//Report Group
-	reportsRoutes := router.Group("/reports")
+	reportsRoutes := authorized.Group("/reports")
 	reportsRoutes.GET("", func(c *gin.Context) { controllers.ReportsIndex(c) })
 	reportsRoutes.POST("/range", func(c *gin.Context) { controllers.ReportsRange(c) })
 	reportsRoutes.POST("/csv", func(c *gin.Context) { controllers.ReportsCSV(c) })
 
 	//Search Group
-	searchRoutes := router.Group("/search")
+	searchRoutes := authorized.Group("/search")
 	searchRoutes.GET("", func(c *gin.Context) { controllers.GlobalSearch(c) })
 
 	//Session Group
-	sessionRoutes := router.Group("/sessions")
+	sessionRoutes := authorized.Group("/sessions")
 	sessionRoutes.GET("/dump", func(c *gin.Context) { controllers.DumpSession(c) })
-
-	// general
-	router.NoRoute(func(c *gin.Context) { controllers.NoRoute(c) })
-	router.NoMethod(func(c *gin.Context) { c.JSON(http.StatusMethodNotAllowed, "NO METHOD") })
-
-	//error group
-	errorRoutes := router.Group("errors")
-	errorRoutes.GET("/test", func(c *gin.Context) { controllers.TestError(c) })
 
 }
 

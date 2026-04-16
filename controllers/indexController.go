@@ -6,16 +6,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
 )
 
 func GetIndex(c *gin.Context) {
-
-	if err := isLoggedIn(c); err != nil {
-		ThrowError(http.StatusUnauthorized, err.Error(), c, false)
-		return
-	}
-
-	isLoggedIn := true
+	sessionCookies := c.MustGet(ContextKeySessionCookies).(SessionCookies)
+	user := c.MustGet(ContextKeyUser).(models.User)
 
 	pagination := database.Pagination{Limit: 10, Offset: 0, Sort: "updated_at desc", Page: 0}
 	pagination.TotalRecords = database.GetCountOfEntriesInDB()
@@ -27,25 +23,13 @@ func GetIndex(c *gin.Context) {
 
 	entries, err := database.FindPaginatedEntries(pagination)
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	sessionCookies, err := getSessionCookies(c)
-	if err != nil {
-		ThrowError(http.StatusInternalServerError, err.Error(), c, isLoggedIn)
-		return
-	}
-
-	user, err := database.GetRedactedUser(sessionCookies.UserID)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
 	repositoryMap, err := database.GetRepositoryMap()
 	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, isLoggedIn)
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
 		return
 	}
 
@@ -54,7 +38,7 @@ func GetIndex(c *gin.Context) {
 		"isAdmin":       sessionCookies.IsAdmin,
 		"pagination":    pagination,
 		"repositoryMap": repositoryMap,
-		"isLoggedIn":    isLoggedIn,
+		"isLoggedIn":    true,
 		"user":          user,
 		"limitValues":   LimitValues,
 		"mediatypes":    GetMediatypes(),

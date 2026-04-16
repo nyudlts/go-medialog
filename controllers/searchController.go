@@ -5,15 +5,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/nyudlts/go-medialog/database"
+	"github.com/nyudlts/go-medialog/models"
 )
 
 func GlobalSearch(c *gin.Context) {
-
-	user, err := checkLogin(c)
-	if err != nil {
-		ThrowError(http.StatusBadRequest, err.Error(), c, false)
-		return
-	}
+	sessionCookies := c.MustGet(ContextKeySessionCookies).(SessionCookies)
+	user := c.MustGet(ContextKeyUser).(models.User)
 	query := c.Query("query")
 
 	//get Entry matches
@@ -26,7 +23,7 @@ func GlobalSearch(c *gin.Context) {
 	c.HTML(200, "results.html", gin.H{
 		"user":       user,
 		"isLoggedIn": true,
-		"isAdmin":    user.IsAdmin,
+		"isAdmin": sessionCookies.IsAdmin,
 		"query":      query,
 		"entries":    entries,
 	})
