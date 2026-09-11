@@ -8,3 +8,6 @@ local:
     port: 3306
     database_name: medialog_prod
     admin_email: admin@medialog.dlib.nyu.edu
+  https_keys:
+    certificate: path/to/cert
+    key: path/to/key

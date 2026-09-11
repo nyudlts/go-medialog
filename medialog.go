@@ -29,6 +29,7 @@ var (
 	gormDebug     bool
 	vers          bool
 	prod          bool
+	https         bool
 	migrate       bool
 	rollback      bool
 	automigrate   bool
@@ -47,6 +48,7 @@ func init() {
 	flag.BoolVar(&rollback, "rollback", false, "")
 	flag.BoolVar(&createAdmin, "create-admin", false, "")
 	flag.BoolVar(&createJSON, "create-json", false, "")
+	flag.BoolVar(&https, "https", false, "Enable HTTPS for the server")
 }
 
 var r *gin.Engine
@@ -123,8 +125,14 @@ func main() {
 	//start the application
 	log.Printf("[INFO] Running Go-Medialog %s", version.GetAppVersion())
 
-	if err := r.Run(":8080"); err != nil {
-		log.Fatal(err)
+	if https {
+		if err := r.RunTLS(":8080", "certs/localhost.pem", "certs/localhost-key.pem"); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		if err := r.Run(":8080"); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 }

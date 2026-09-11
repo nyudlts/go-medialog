@@ -255,6 +255,12 @@ type Environment struct {
 	TestCreds      TestCreds      `yaml:"test_creds"`
 	AdminEmail     string         `yaml:"admin_email"`
 	Port           string         `yaml:"port"`
+	HttpsKeys      HttpsKeys      `yaml:"https_keys"`
+}
+
+type HttpsKeys struct {
+	Certificate string `yaml:"certificate"`
+	Key         string `yaml:"key"`
 }
 
 type DatabaseConfig struct {
