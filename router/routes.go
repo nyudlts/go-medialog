@@ -7,8 +7,8 @@ import (
 	"github.com/nyudlts/go-medialog/api/v0"
 	"github.com/nyudlts/go-medialog/controllers"
 	_ "github.com/nyudlts/go-medialog/docs"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func LoadRoutes(router *gin.Engine) {
@@ -139,6 +139,7 @@ func LoadAPI(router *gin.Engine) {
 	apiV0Routes.GET("resources/:id", func(c *gin.Context) { api.GetResourceV0(c) })
 	apiV0Routes.DELETE("resources/:id", func(c *gin.Context) { api.DeleteResourceV0(c) })
 	apiV0Routes.GET("resources/:id/entries", func(c *gin.Context) { api.GetResourceEntriesV0(c) })
+	apiV0Routes.GET("resources/:id/entry_and_media_ids", func(c *gin.Context) { api.GetEntryAndMediaIDsByResourceIDV0(c) })
 	apiV0Routes.GET("resources/:id/summary", func(c *gin.Context) { api.GetResourceSummaryV0(c) })
 
 	//accessions

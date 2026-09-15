@@ -41,9 +41,9 @@ func DeleteEntry(id uuid.UUID) error {
 }
 
 func UpdateEntry(entry *models.Entry) error {
-	if err := db.Save(entry).Error; err != nil {
-		return err
-	}
+	return db.Model(&models.Entry{}).
+		Where("id = ?", entry.ID).
+		Updates(entry).Error
 
 	ej, err := FindEntryJSONByEntryID(entry.ID)
 	if err != nil {
@@ -99,6 +99,30 @@ func FindEntriesByResourceID(id uint) ([]models.Entry, error) {
 		return []models.Entry{}, err
 	}
 	return entries, nil
+}
+
+func FindEntryAndMediaIDsByResourceID(id uint) (map[string]string, error) {
+	type resultRow struct {
+		ID      string `gorm:"column:id"`
+		MediaID string `gorm:"column:media_id"`
+	}
+
+	var rows []resultRow
+
+	if err := db.Table("entries").
+		Where("resource_id = ?", id).
+		Select("id", "media_id").
+		Find(&rows).Error; err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]string, len(rows))
+
+	for _, row := range rows {
+		result[row.ID] = row.MediaID
+	}
+
+	return result, nil
 }
 
 func FindEntriesByResourceIDFiltered(id uint, filter string) ([]models.Entry, error) {

@@ -349,6 +349,7 @@ func UpdateEntryV0(c *gin.Context) {
 	entry := models.Entry{}
 	if err := json.Unmarshal(body, &entry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	userID, err := database.FindUserIDByToken(tkn)
@@ -365,5 +366,5 @@ func UpdateEntryV0(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, fmt.Sprintf("entry %s updated", id))
+	c.JSON(http.StatusAccepted, fmt.Sprintf("entry %s updated", id))
 }

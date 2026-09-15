@@ -248,6 +248,30 @@ func GetResourceEntriesV0(c *gin.Context) {
 	}
 }
 
+func GetEntryAndMediaIDsByResourceIDV0(c *gin.Context) {
+
+	_, err := checkToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
+		return
+	}
+
+	resourceIDParam := c.Param("id")
+	resourceID, err := strconv.Atoi(resourceIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	result, err := database.FindEntryAndMediaIDsByResourceID(uint(resourceID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 // GetResourceSummaryV0 returns a media type summary for a resource.
 // @Summary      Get resource summary
 // @Description  Returns media type totals and per-type summaries for a given resource.
