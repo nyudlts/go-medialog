@@ -141,6 +141,7 @@ func LoadAPI(router *gin.Engine) {
 	apiV0Routes.GET("resources/:id/entries", func(c *gin.Context) { api.GetResourceEntriesV0(c) })
 	apiV0Routes.GET("resources/:id/entry_and_media_ids", func(c *gin.Context) { api.GetEntryAndMediaIDsByResourceIDV0(c) })
 	apiV0Routes.GET("resources/:id/summary", func(c *gin.Context) { api.GetResourceSummaryV0(c) })
+	apiV0Routes.GET("resources/find/:collection_code", func(c *gin.Context) { api.GetResourceIDByCollectionCodeV0(c) })
 
 	//accessions
 	apiV0Routes.POST("accessions", func(c *gin.Context) { api.CreateAccessionV0(c) })

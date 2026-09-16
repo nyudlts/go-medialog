@@ -75,3 +75,11 @@ func GetResourceMap() (map[uint]string, error) {
 	}
 	return resourceMap, nil
 }
+
+func FindResourceIDByCollectionCode(collectionCode string) (uint, error) {
+	resource := models.Resource{}
+	if err := db.Select("id").Where("collection_code = ?", collectionCode).First(&resource).Error; err != nil {
+		return 0, err
+	}
+	return resource.ID, nil
+}

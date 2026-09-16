@@ -68,17 +68,17 @@ func UpdateEntryJSON(ej models.EntryJSON) error {
 	return nil
 }
 
+func FindEntryJSONByEntryID(u uuid.UUID) (models.EntryJSON, error) {
+	var ej models.EntryJSON
+	if err := db.Where("entry_id = ?", u).First(&ej).Error; err != nil {
+		return ej, err
+	}
+	return ej, nil
+}
+
 func DeleteEntryJSON(id uint) error {
 	if err := db.Unscoped().Delete(&models.EntryJSON{}, id).Error; err != nil {
 		return err
 	}
 	return nil
-}
-
-func FindEntryJSONByEntryID(u uuid.UUID) (models.EntryJSON, error) {
-	var ej models.EntryJSON
-	if err := db.First(&ej).Where("entry_id = ?", u).Error; err != nil {
-		return ej, err
-	}
-	return ej, nil
 }

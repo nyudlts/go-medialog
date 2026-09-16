@@ -319,3 +319,19 @@ func GetResourceSummaryV0(c *gin.Context) {
 
 	c.JSON(http.StatusOK, resourceSummary)
 }
+
+func GetResourceIDByCollectionCodeV0(c *gin.Context) {
+	collectionCode := c.Param("collection_code")
+	if collectionCode == "" {
+		c.JSON(http.StatusBadRequest, "collection code is required")
+		return
+	}
+
+	resourceID, err := database.FindResourceIDByCollectionCode(collectionCode)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusFound, gin.H{"resource_id": resourceID})
+}
