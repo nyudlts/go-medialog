@@ -61,6 +61,11 @@ func MigrateDatabase(rollback bool, dbc models.DatabaseConfig) error {
 			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.Entry{}, "Status") },
 			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.Entry{}, "Status") },
 		},
+		{
+			ID:       "20260917 - adding physical size to EWntry",
+			Migrate:  func(tx *gorm.DB) error { return tx.Migrator().AddColumn(&models.Entry{}, "PhysicalSize") },
+			Rollback: func(tx *gorm.DB) error { return tx.Migrator().DropColumn(&models.Entry{}, "PhysicalSize") },
+		},
 	}
 
 	m := gormigrate.New(db, gormigrate.DefaultOptions, migrations)

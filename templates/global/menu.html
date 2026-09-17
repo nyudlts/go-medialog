@@ -7,8 +7,8 @@
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav">
+    <div class="collapse navbar-collapse align-items-center" id="navbarSupportedContent">
+        <ul class="navbar-nav align-items-center">
             {{ if .isLoggedIn }}    
                 <li class="nav-item">
                     <a class="nav-link" href="/repositories">Repositories</a>
@@ -35,7 +35,10 @@
                 {{ end }}
                 <li class="nav-item">
                     <div class="nav-link">
-                        <input type="text" name="globalSearch" id="globalSearch" placeholder="search entries"/>
+                        <input class="form-control" type="text"
+                            name="globalSearch"
+                            id="globalSearch"
+                            placeholder="search entries"/>
                     </div>
                 </li>
             {{ end }}   

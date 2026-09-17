@@ -13,6 +13,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	gormsessions "github.com/gin-contrib/sessions/gorm"
 	"github.com/gin-gonic/gin"
+	"github.com/nyudlts/bytemath"
 	"github.com/nyudlts/go-medialog/controllers"
 	"github.com/nyudlts/go-medialog/database"
 	"github.com/nyudlts/go-medialog/models"
@@ -105,6 +106,10 @@ func Iterate(count int) []int {
 	return Items
 }
 
+func GetHumanReadableSize(size uint64) string {
+	return bytemath.ConvertBytesToHumanReadable(int64(size))
+}
+
 func SetGlobalFuncs(router *gin.Engine) {
 	router.SetFuncMap(template.FuncMap{
 		"AppVersion":            version.GetAppVersion,
@@ -121,6 +126,7 @@ func SetGlobalFuncs(router *gin.Engine) {
 		"getEntryStatus":        controllers.GetEntryStatus,
 		"getOpticalContentType": controllers.GetOpticalContentType,
 		"iterate":               Iterate,
+		"getHumanSize":          GetHumanReadableSize,
 	})
 }
 

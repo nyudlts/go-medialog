@@ -83,6 +83,7 @@ type Entry struct {
 	ContentType           string     `json:"content_type" form:"content_type"`
 	Structure             string     `json:"structure"`
 	Location              string     `json:"location" form:"location"`
+	PhysicalSize          uint64     `json:"physical_size" form:"physical_size"`
 }
 
 func (e Entry) Minimal() EntryMin {
