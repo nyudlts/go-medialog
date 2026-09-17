@@ -93,6 +93,7 @@ var interfaces = map[string]string{
 	"interface_tableau_ultrablock":      "Tableau Ultrablock USB",
 	"interface_tableau_ultrablock_card": "Tableau Ultrablock Forensic Card Reader",
 	"interface_optical_HP":              "CD/DVD Drive",
+	"interface_optical_NIMBIE":          "Nimbie CD/DVD Drive",
 }
 
 func getInterface(s string) string {
@@ -118,6 +119,7 @@ var imaging_software = map[string]string{
 	"imaging_software_isobusterpro_v56":     "IsoBuster (v5.6)",
 	"imaging_software_eac_v13":              "Exact Audio Copy (v1.3)",
 	"imaging_software_winscp":               "WinSCP",
+	"imaging_software_imgburn":              "ImgBurn",
 }
 
 func getHDDInterfaces() map[string]string { return hdd_interfaces }
@@ -164,7 +166,7 @@ var filesystems = map[string]string{
 	"filesystem_9660":        "ISO 9660",
 	"filesystem_9660_joliet": "ISO 9660 Joliet",
 	"filesystem_udf":         "UDF",
-	"filesystem_uknown":      "Uknown",
+	"filesystem_unknown":     "Unknown",
 }
 
 func getImageSuccess() map[string]string { return image_success }
