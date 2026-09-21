@@ -35,10 +35,6 @@ type SummaryAndTotals struct {
 // @Failure      500  {string}  string
 // @Router       /reports/range [get]
 func SummaryDateRange(c *gin.Context) {
-	if _, err := checkToken(c); err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
 
 	//get the start and end dates
 	datePattern := regexp.MustCompile("^[0-9]{8}$")

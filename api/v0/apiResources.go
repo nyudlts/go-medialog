@@ -25,11 +25,6 @@ import (
 // @Failure      500       {string}  string
 // @Router       /resources [post]
 func CreateResourceV0(c *gin.Context) {
-	token, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	resource := models.Resource{}
 	if err := c.Bind(&resource); err != nil {
@@ -37,11 +32,7 @@ func CreateResourceV0(c *gin.Context) {
 		return
 	}
 
-	userID, err := database.FindUserIDByToken(token)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		return
-	}
+	userID := c.MustGet("userID").(uint)
 
 	repository, err := database.FindRepository(resource.RepositoryID)
 	if err != nil {
@@ -77,11 +68,6 @@ func CreateResourceV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /resources/{id} [delete]
 func DeleteResourceV0(c *gin.Context) {
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	resourceIDParam := c.Param("id")
 	resourceID, err := strconv.Atoi(resourceIDParam)
@@ -111,12 +97,6 @@ func DeleteResourceV0(c *gin.Context) {
 // @Router       /resources [get]
 func GetResourcesV0(c *gin.Context) {
 
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
-
 	resources, err := database.FindResources()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error)
@@ -139,12 +119,6 @@ func GetResourcesV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /resources/{id} [get]
 func GetResourceV0(c *gin.Context) {
-
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -176,12 +150,6 @@ func GetResourceV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /resources/{id}/entries [get]
 func GetResourceEntriesV0(c *gin.Context) {
-
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	resourceIDParam := c.Param("id")
 	resourceID, err := strconv.Atoi(resourceIDParam)
@@ -250,12 +218,6 @@ func GetResourceEntriesV0(c *gin.Context) {
 
 func GetEntryAndMediaIDsByResourceIDV0(c *gin.Context) {
 
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
-
 	resourceIDParam := c.Param("id")
 	resourceID, err := strconv.Atoi(resourceIDParam)
 	if err != nil {
@@ -285,12 +247,6 @@ func GetEntryAndMediaIDsByResourceIDV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /resources/{id}/summary [get]
 func GetResourceSummaryV0(c *gin.Context) {
-
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

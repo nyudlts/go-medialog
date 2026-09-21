@@ -25,11 +25,6 @@ import (
 // @Failure      500        {string}  string
 // @Router       /accessions [post]
 func CreateAccessionV0(c *gin.Context) {
-	token, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	accession := models.Accession{}
 	if err := c.Bind(&accession); err != nil {
@@ -37,11 +32,7 @@ func CreateAccessionV0(c *gin.Context) {
 		return
 	}
 
-	userId, err := database.FindUserIDByToken(token)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		return
-	}
+	userId := c.MustGet("userID").(uint)
 
 	resource, err := database.FindResource(accession.ResourceID)
 	if err != nil {
@@ -77,12 +68,6 @@ func CreateAccessionV0(c *gin.Context) {
 // @Router       /accessions [get]
 func GetAccessionsV0(c *gin.Context) {
 
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
-
 	accessions, err := database.FindAccessions()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error)
@@ -105,12 +90,6 @@ func GetAccessionsV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /accessions/{id} [get]
 func GetAccessionV0(c *gin.Context) {
-
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -147,11 +126,6 @@ func GetAccessionV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /accessions/{id} [delete]
 func DeleteAccessionV0(c *gin.Context) {
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
 
 	accessionIDParam := c.Param("id")
 	accessionID, err := strconv.Atoi(accessionIDParam)
@@ -185,11 +159,6 @@ func DeleteAccessionV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /accessions/{id}/entries [get]
 func GetAccessionEntriesV0(c *gin.Context) {
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	accessionIDParam := c.Param("id")
 	accessionID, err := strconv.Atoi(accessionIDParam)
@@ -271,12 +240,6 @@ func GetAccessionEntriesV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /accessions/{id}/summary [get]
 func GetAccessionSummaryV0(c *gin.Context) {
-
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	idParam := c.Param("id")
 	accessionID, err := strconv.Atoi(idParam)

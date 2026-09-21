@@ -126,7 +126,7 @@ func main() {
 	log.Printf("[INFO] Running Go-Medialog %s", version.GetAppVersion())
 
 	if https {
-		if err := r.RunTLS(":8080", "certs/localhost.pem", "certs/localhost-key.pem"); err != nil {
+		if err := r.RunTLS(":8080", env.HttpsKeys.Certificate, env.HttpsKeys.Key); err != nil {
 			log.Fatal(err)
 		}
 	} else {

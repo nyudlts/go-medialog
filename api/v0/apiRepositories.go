@@ -24,12 +24,6 @@ import (
 // @Router       /repositories [get]
 func GetRepositoriesV0(c *gin.Context) {
 
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
-
 	repositories, err := database.FindRepositories()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error)
@@ -52,12 +46,6 @@ func GetRepositoriesV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /repositories/{id} [get]
 func GetRepositoryV0(c *gin.Context) {
-
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -87,11 +75,6 @@ func GetRepositoryV0(c *gin.Context) {
 // @Failure      500         {string}  string
 // @Router       /repositories [post]
 func CreateRepositoryV0(c *gin.Context) {
-	token, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	repo := models.Repository{}
 	if err := c.Bind(&repo); err != nil {
@@ -99,19 +82,14 @@ func CreateRepositoryV0(c *gin.Context) {
 		return
 	}
 
-	userID, err := database.FindUserIDByToken(token)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		return
-	}
+	userID := c.MustGet("userID").(uint)
 
 	repo.CreatedBy = int(userID)
 	repo.UpdatedBy = int(userID)
 	repo.CreatedAt = time.Now()
 	repo.UpdatedAt = time.Now()
 
-	_, err = database.CreateRepository(&repo)
-	if err != nil {
+	if _, err := database.CreateRepository(&repo); err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -132,11 +110,6 @@ func CreateRepositoryV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /repositories/{id} [delete]
 func DeleteRepositoryV0(c *gin.Context) {
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	repositoryIDParam := c.Param("id")
 	repositoryID, err := strconv.Atoi(repositoryIDParam)
@@ -170,11 +143,6 @@ func DeleteRepositoryV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /repositories/{id}/entries [get]
 func GetRepositoryEntriesV0(c *gin.Context) {
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	repositoryIDParam := c.Param("id")
 	repositoryID, err := strconv.Atoi(repositoryIDParam)
@@ -255,11 +223,6 @@ func GetRepositoryEntriesV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /repositories/{id}/summary [get]
 func GetRepositorySummaryV0(c *gin.Context) {
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

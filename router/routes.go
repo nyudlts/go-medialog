@@ -125,45 +125,47 @@ func LoadAPI(router *gin.Engine) {
 	apiV0Routes.POST("users/:user/login", func(c *gin.Context) { api.APILogin(c) })
 	apiV0Routes.DELETE("logout", func(c *gin.Context) { api.APILogout(c) })
 
+	authorizedAPIRoutes := apiV0Routes.Group("/")
+	authorizedAPIRoutes.Use(controllers.RequireAPIAuth)
 	//repositories
-	apiV0Routes.GET("repositories/:id", func(c *gin.Context) { api.GetRepositoryV0(c) })
-	apiV0Routes.GET("repositories", func(c *gin.Context) { api.GetRepositoriesV0(c) })
-	apiV0Routes.POST("repositories", func(c *gin.Context) { api.CreateRepositoryV0(c) })
-	apiV0Routes.DELETE("repositories/:id", func(c *gin.Context) { api.DeleteRepositoryV0(c) })
-	apiV0Routes.GET("repositories/:id/entries", func(c *gin.Context) { api.GetRepositoryEntriesV0(c) })
-	apiV0Routes.GET("repositories/:id/summary", func(c *gin.Context) { api.GetRepositorySummaryV0(c) })
+	authorizedAPIRoutes.GET("repositories/:id", func(c *gin.Context) { api.GetRepositoryV0(c) })
+	authorizedAPIRoutes.GET("repositories", func(c *gin.Context) { api.GetRepositoriesV0(c) })
+	authorizedAPIRoutes.POST("repositories", func(c *gin.Context) { api.CreateRepositoryV0(c) })
+	authorizedAPIRoutes.DELETE("repositories/:id", func(c *gin.Context) { api.DeleteRepositoryV0(c) })
+	authorizedAPIRoutes.GET("repositories/:id/entries", func(c *gin.Context) { api.GetRepositoryEntriesV0(c) })
+	authorizedAPIRoutes.GET("repositories/:id/summary", func(c *gin.Context) { api.GetRepositorySummaryV0(c) })
 
 	//resources
-	apiV0Routes.POST("resources", func(c *gin.Context) { api.CreateResourceV0(c) })
-	apiV0Routes.GET("resources", func(c *gin.Context) { api.GetResourcesV0(c) })
-	apiV0Routes.GET("resources/:id", func(c *gin.Context) { api.GetResourceV0(c) })
-	apiV0Routes.DELETE("resources/:id", func(c *gin.Context) { api.DeleteResourceV0(c) })
-	apiV0Routes.GET("resources/:id/entries", func(c *gin.Context) { api.GetResourceEntriesV0(c) })
-	apiV0Routes.GET("resources/:id/entry_and_media_ids", func(c *gin.Context) { api.GetEntryAndMediaIDsByResourceIDV0(c) })
-	apiV0Routes.GET("resources/:id/summary", func(c *gin.Context) { api.GetResourceSummaryV0(c) })
-	apiV0Routes.GET("resources/find/:collection_code", func(c *gin.Context) { api.GetResourceIDByCollectionCodeV0(c) })
+	authorizedAPIRoutes.POST("resources", func(c *gin.Context) { api.CreateResourceV0(c) })
+	authorizedAPIRoutes.GET("resources", func(c *gin.Context) { api.GetResourcesV0(c) })
+	authorizedAPIRoutes.GET("resources/:id", func(c *gin.Context) { api.GetResourceV0(c) })
+	authorizedAPIRoutes.DELETE("resources/:id", func(c *gin.Context) { api.DeleteResourceV0(c) })
+	authorizedAPIRoutes.GET("resources/:id/entries", func(c *gin.Context) { api.GetResourceEntriesV0(c) })
+	authorizedAPIRoutes.GET("resources/:id/entry_and_media_ids", func(c *gin.Context) { api.GetEntryAndMediaIDsByResourceIDV0(c) })
+	authorizedAPIRoutes.GET("resources/:id/summary", func(c *gin.Context) { api.GetResourceSummaryV0(c) })
+	authorizedAPIRoutes.GET("resources/find/:collection_code", func(c *gin.Context) { api.GetResourceIDByCollectionCodeV0(c) })
 
 	//accessions
-	apiV0Routes.POST("accessions", func(c *gin.Context) { api.CreateAccessionV0(c) })
-	apiV0Routes.DELETE("accessions/:id", func(c *gin.Context) { api.DeleteAccessionV0(c) })
-	apiV0Routes.GET("accessions", func(c *gin.Context) { api.GetAccessionsV0(c) })
-	apiV0Routes.GET("accessions/:id", func(c *gin.Context) { api.GetAccessionV0(c) })
-	apiV0Routes.GET("accessions/:id/entries", func(c *gin.Context) { api.GetAccessionEntriesV0(c) })
-	apiV0Routes.GET("accessions/:id/summary", func(c *gin.Context) { api.GetAccessionSummaryV0(c) })
+	authorizedAPIRoutes.POST("accessions", func(c *gin.Context) { api.CreateAccessionV0(c) })
+	authorizedAPIRoutes.DELETE("accessions/:id", func(c *gin.Context) { api.DeleteAccessionV0(c) })
+	authorizedAPIRoutes.GET("accessions", func(c *gin.Context) { api.GetAccessionsV0(c) })
+	authorizedAPIRoutes.GET("accessions/:id", func(c *gin.Context) { api.GetAccessionV0(c) })
+	authorizedAPIRoutes.GET("accessions/:id/entries", func(c *gin.Context) { api.GetAccessionEntriesV0(c) })
+	authorizedAPIRoutes.GET("accessions/:id/summary", func(c *gin.Context) { api.GetAccessionSummaryV0(c) })
 
 	//entries
-	apiV0Routes.POST("entries", func(c *gin.Context) { api.CreateEntryV0(c) })
-	apiV0Routes.DELETE("entries/:id", func(c *gin.Context) { api.DeleteEntryV0(c) })
-	apiV0Routes.GET("entries", func(c *gin.Context) { api.GetEntriesV0(c) })
-	apiV0Routes.GET("entries/:id", func(c *gin.Context) { api.GetEntryV0(c) })
-	apiV0Routes.PATCH("entries/:id/update_location", func(c *gin.Context) { api.UpdateEntryLocationV0(c) })
-	apiV0Routes.POST("entries/:id/update", func(c *gin.Context) { api.UpdateEntryV0(c) })
+	authorizedAPIRoutes.POST("entries", func(c *gin.Context) { api.CreateEntryV0(c) })
+	authorizedAPIRoutes.DELETE("entries/:id", func(c *gin.Context) { api.DeleteEntryV0(c) })
+	authorizedAPIRoutes.GET("entries", func(c *gin.Context) { api.GetEntriesV0(c) })
+	authorizedAPIRoutes.GET("entries/:id", func(c *gin.Context) { api.GetEntryV0(c) })
+	authorizedAPIRoutes.PATCH("entries/:id/update_location", func(c *gin.Context) { api.UpdateEntryLocationV0(c) })
+	authorizedAPIRoutes.POST("entries/:id/update", func(c *gin.Context) { api.UpdateEntryV0(c) })
 
 	//sessions
-	apiV0Routes.DELETE("delete_sessions", func(c *gin.Context) { api.DeleteSessionsV0(c) })
+	authorizedAPIRoutes.DELETE("delete_sessions", func(c *gin.Context) { api.DeleteSessionsV0(c) })
 
 	//reports
-	apiV0Routes.GET("reports/range", func(c *gin.Context) { api.SummaryDateRange(c) })
+	authorizedAPIRoutes.GET("reports/range", func(c *gin.Context) { api.SummaryDateRange(c) })
 }
 
 func Test(c *gin.Context) {

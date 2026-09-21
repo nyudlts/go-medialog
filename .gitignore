@@ -8,3 +8,4 @@ tmp/*
 config/go-medialog.yml
 *.http
 certs/*
+medialog.rest

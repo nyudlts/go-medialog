@@ -29,17 +29,8 @@ import (
 // @Failure      500    {string}  string
 // @Router       /entries [post]
 func CreateEntryV0(c *gin.Context) {
-	token, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
 
-	userID, err := database.FindUserIDByToken(token)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
+	userID := c.MustGet("userID").(uint)
 
 	entry := models.Entry{}
 	if err := c.Bind(&entry); err != nil {
@@ -94,11 +85,6 @@ func CreateEntryV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /entries/{id} [delete]
 func DeleteEntryV0(c *gin.Context) {
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
 
 	entryID := c.Param("id")
 	entryUUID, err := uuid.Parse(entryID)
@@ -127,11 +113,6 @@ func DeleteEntryV0(c *gin.Context) {
 // @Failure      401  {string}  string
 // @Router       /entries/{id} [get]
 func GetEntryV0(c *gin.Context) {
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
 
 	id := c.Param("id")
 
@@ -164,12 +145,6 @@ func GetEntryV0(c *gin.Context) {
 // @Failure      401  {object}  map[string]string
 // @Router       /entries [get]
 func GetEntriesV0(c *gin.Context) {
-
-	_, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, ACCESS_DENIED)
-		return
-	}
 
 	allIDsParam := c.Query("all_ids")
 
@@ -261,11 +236,8 @@ func GetEntriesV0(c *gin.Context) {
 // @Failure      500  {string}  string
 // @Router       /entries/{id}/update_location [patch]
 func UpdateEntryLocationV0(c *gin.Context) {
-	token, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
+
+	userID := c.MustGet("userID").(uint)
 
 	id := c.Param("id")
 	if id == "" {
@@ -295,12 +267,6 @@ func UpdateEntryLocationV0(c *gin.Context) {
 	entry, err := database.FindEntry(uid)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	userID, err := database.FindUserIDByToken(token)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -334,11 +300,7 @@ func UpdateEntryLocationV0(c *gin.Context) {
 func UpdateEntryV0(c *gin.Context) {
 	id := c.Param("id")
 
-	tkn, err := checkToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
-		return
-	}
+	userID := c.MustGet("userID").(uint)
 
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
@@ -349,12 +311,6 @@ func UpdateEntryV0(c *gin.Context) {
 	entry := models.Entry{}
 	if err := json.Unmarshal(body, &entry); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	userID, err := database.FindUserIDByToken(tkn)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
