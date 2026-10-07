@@ -9,3 +9,4 @@ config/go-medialog.yml
 *.http
 certs/*
 medialog.rest
+go-medialog.yml

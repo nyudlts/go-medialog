@@ -13,46 +13,27 @@
         <h5 class="card-title">{{ .accession.AccessionNum }}</h5>
     </div>
     <div class="card-body">
-        <div class="row">
-            <div class="col">
-                <dl class="row">
-                    <dt class="col-sm-4">created by</dt>
-                    <dd class="col-sm-8">{{ index .users .accession.CreatedBy }} at {{ formatAsDate .accession.CreatedAt }}</dd>
-                    <dt class="col-sm-4">updated by</dt>
-                    <dd class="col-sm-8">{{ index .users .accession.UpdatedBy }} at {{ formatAsDate .accession.UpdatedAt }}</dd> 
-                </dl>
-            </div>
-            <div class="col">{{ template "summary-table.html" . }}</div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <a href="/accessions/{{ .accession.ID }}/edit" class="btn btn-secondary">edit</a>
-                {{ if $.user.IsAdmin }}
-                    <a href="/accessions/{{ .accession.ID }}/delete" class="btn btn-danger">delete</a>
-                {{ end }}
-            </div>
-        </div>
-    </div>
-</div>
-<br>
+        <div class="row align-items-center mb-3">
 
-<br/>
-<div class="card card-default">
-    <div class="card-header">
-        <h5 class="card-title">Entries</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col">
-                {{ if .overlimit }}
-                    entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ .pagination.TotalRecords }} of {{ .pagination.TotalRecords }}
-                {{ else }}
-                    entries {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ multAndAdd  .pagination.Page .pagination.Limit .pagination.Limit }} of {{ .pagination.TotalRecords }}
-                {{ end }}
+            <!-- Entry count -->
+            <div class="col-auto">
+                <span>
+                    entries
+                    {{ if .overlimit }}
+                        {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-{{ .pagination.TotalRecords }}
+                        of {{ .pagination.TotalRecords }}
+                    {{ else }}
+                        {{ multAndAdd .pagination.Page .pagination.Limit 1 }}-
+                        {{ multAndAdd .pagination.Page .pagination.Limit .pagination.Limit }}
+                        of {{ .pagination.TotalRecords }}
+                    {{ end }}
+                </span>
             </div>
-            <div class="col">
-                jump to page:
-                <select id="page" name="page">
+
+            <!-- Jump to page -->
+            <div class="col-auto">
+                <label for="page" class="mb-0 mr-1">jump to page:</label>
+                <select id="page" name="page" class="custom-select custom-select-sm">
                     {{ range $val := iterate .pagination.TotalPages }}
                         {{ if eq $val $.pagination.Page }}
                             <option value="{{ $val }}" selected>{{ add $val 1 }}</option>
@@ -62,9 +43,11 @@
                     {{ end }}
                 </select>
             </div>
-            <div class="col">
-                num. entries:
-                <select id="limit" name="limit">
+
+            <!-- Number of entries -->
+            <div class="col-auto">
+                <label for="limit" class="mb-0 mr-1">num. entries:</label>
+                <select id="limit" name="limit" class="custom-select custom-select-sm">
                     {{ range $val := .limitValues }}
                         {{ if eq $val $.pagination.Limit }}
                             <option value="{{ $val }}" selected>{{ $val }}</option>
@@ -74,27 +57,44 @@
                     {{ end }}
                 </select>
             </div>
-            <div class="col">
-                filter:
-                <select id="filter" name="filter">
-                    {{ range $key,  $val := .mediatypes }}
+
+            <!-- Filter -->
+            <div class="col-auto">
+                <label for="filter" class="mb-0 mr-1">filter:</label>
+                <select id="filter" name="filter" class="custom-select custom-select-sm">
+                    {{ range $key, $val := .mediatypes }}
                         {{ if eq $key $.pagination.Filter }}
-                             <option value="{{ $key }}" selected>{{ $val }}</option>
+                            <option value="{{ $key }}" selected>{{ $val }}</option>
                         {{ else }}
                             <option value="{{ $key }}">{{ $val }}</option>
                         {{ end }}
                     {{ end }}
-                </select>  
+                </select>
             </div>
-            <div class="col">
+
+            <!-- Navigation -->
+            <div class="col-auto ml-auto">
                 {{ if gt .pagination.Page 0 }}
-                    <a href="/accessions/{{ .accession.ID}}/show?page={{ subtract  .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}" class="btn btn-primary btn-sm">prev. {{ .pagination.Limit }}</a>
+                    <a href="/entries?page={{ subtract .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}"
+                    class="btn btn-primary btn-sm">
+                        prev {{ .pagination.Limit }}
+                    </a>
                 {{ end }}
+
                 {{ if lt (add .pagination.Page 1) .pagination.TotalPages }}
-                    <a href="/accessions/{{ .accession.ID}}/show?page={{ add  .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}" class="btn btn-primary btn-sm">next {{ .pagination.Limit }}</a>
+                    <a href="/entries?page={{ add .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}"
+                    class="btn btn-primary btn-sm">
+                        next {{ .pagination.Limit }}
+                    </a>
                 {{ end }}
-                <a href="/accessions/{{ .accession.ID}}/csv?filter={{ .pagination.Filter }}" target="_blank" class="btn btn-info btn-sm">CSV</a>
+
+                <a href="/entries/csv?filter={{ .pagination.Filter }}"
+                target="_blank"
+                class="btn btn-info btn-sm">
+                    CSV
+                </a>
             </div>
+
         </div>
         {{ template "entry-table-accession.html" . }}
         <a href="/entries/new?accession_id={{ .accession.ID }}" class="btn btn-primary">add entry</a>
