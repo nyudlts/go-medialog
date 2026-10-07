@@ -15,6 +15,7 @@ import (
 	"github.com/nyudlts/go-medialog/api/v0"
 	"github.com/nyudlts/go-medialog/models"
 	router "github.com/nyudlts/go-medialog/router"
+	"github.com/nyudlts/go-medialog/version"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,7 +37,7 @@ func TestAPI(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	t.Logf("[INFO] Running Go-Medialog %s", version)
+	t.Logf("[INFO] Running Go-Medialog %s", version.GetAppVersion())
 
 	t.Run("test get API root", func(t *testing.T) {
 		recorder := httptest.NewRecorder()

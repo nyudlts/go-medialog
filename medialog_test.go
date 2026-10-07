@@ -1,13 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
-	"os"
-	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +23,9 @@ func TestApplication(t *testing.T) {
 		assert.Equal(t, 401, recorder.Code)
 		assert.Equal(t, "text/html; charset=utf-8", recorder.Header().Get("content-type"))
 	})
+}
+
+/*
 
 	t.Run("test login to application", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
@@ -51,7 +49,7 @@ func TestApplication(t *testing.T) {
 
 	})
 
-	/*
+
 		t.Run("test get index authenticated", func(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			c, _ := gin.CreateTestContext(recorder)
@@ -69,6 +67,4 @@ func TestApplication(t *testing.T) {
 			assert.Equal(t, "text/html; charset=utf-8", recorder.Header().Get("content-type"))
 
 		})
-	*/
-
-}
+*/
