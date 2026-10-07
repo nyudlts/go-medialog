@@ -1,5 +1,5 @@
-Go-Medialog
-===========
+Go-Medialog v1.1.0
+==================
 A digital media logging and reporting application
 
 ## Running the Application
@@ -15,15 +15,18 @@ The config file defines environments (e.g., `dev`, `prod`) with database connect
 
 ```yaml
 dev:
-  log: medialog_dev.log
-  port: 8080
+  admin_email: admin@example.com
   database:
     username: <db_user>
     password: <db_password>
     url: <db_host>
     port: 3306
-    database_name: <db_name>
-  admin_email: admin@example.com
+  database_name: <db_name>
+    https_keys:
+    certificate: path/to/cert
+    key: path/to/key
+  log: /path/to/logfile
+  port: 8080
 ```
 
 ### CLI Flags
@@ -40,7 +43,7 @@ dev:
 | `--create-admin` | bool | Create the admin user (email from config) and exit |
 | `--create-json` | bool | Export database to JSON and exit |
 | `--gorm-debug` | bool | Enable GORM debug logging |
-
+| `--https` | bool | run on https using cert and key defined in config
 ### Common Commands
 
 **Start the server (development):**
@@ -51,6 +54,11 @@ dev:
 **Start the server (production):**
 ```sh
 ./medialog --config go-medialog.yml --environment prod --prod
+```
+
+**Start the server (production) using https:**
+```sh
+./medialog --config go-medialog.yml --environment prod --prod --https
 ```
 
 **Run database migrations:**
@@ -77,5 +85,3 @@ dev:
 ```sh
 ./medialog --version
 ```
-
-The server listens on port **8080** by default.
