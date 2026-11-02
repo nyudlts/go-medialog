@@ -1,6 +1,6 @@
 module github.com/nyudlts/go-medialog
 
-go 1.26.2
+go 1.27.3
 
 require (
 	github.com/gin-contrib/sessions v1.0.2
