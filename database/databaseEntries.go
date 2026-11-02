@@ -41,9 +41,13 @@ func DeleteEntry(id uuid.UUID) error {
 }
 
 func UpdateEntry(entry *models.Entry) error {
-	return db.Model(&models.Entry{}).
+
+	if err := db.Model(&models.Entry{}).
 		Where("id = ?", entry.ID).
-		Updates(entry).Error
+		Select("*").
+		Updates(entry).Error; err != nil {
+		return err
+	}
 
 	ej, err := FindEntryJSONByEntryID(entry.ID)
 	if err != nil {
