@@ -1,4 +1,4 @@
-Go-Medialog v1.1.0
+Go-Medialog v1.1.1
 ==================
 A digital media logging and reporting application
 
@@ -21,8 +21,8 @@ dev:
     password: <db_password>
     url: <db_host>
     port: 3306
-  database_name: <db_name>
-    https_keys:
+    database_name: <db_name>
+  https_keys:
     certificate: path/to/cert
     key: path/to/key
   log: /path/to/logfile
