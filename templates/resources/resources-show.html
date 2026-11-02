@@ -137,24 +137,12 @@
             <!-- Navigation -->
             <div class="col-auto ml-auto">
                 {{ if gt .pagination.Page 0 }}
-                    <a href="/entries?page={{ subtract .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}"
-                    class="btn btn-primary btn-sm">
-                        prev {{ .pagination.Limit }}
-                    </a>
+                    <a href="/resources/{{ .resource.ID}}/show?page={{ subtract .pagination.Page 1}}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}" class="btn btn-primary btn-sm">prev. {{ .pagination.Limit }}</a>
                 {{ end }}
-
                 {{ if lt (add .pagination.Page 1) .pagination.TotalPages }}
-                    <a href="/entries?page={{ add .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}"
-                    class="btn btn-primary btn-sm">
-                        next {{ .pagination.Limit }}
-                    </a>
+                    <a href="/resources/{{ .resource.ID}}/show?page={{ add .pagination.Page 1 }}&limit={{ .pagination.Limit }}&filter={{ .pagination.Filter }}" class="btn btn-primary btn-sm">next {{ .pagination.Limit }}</a>
                 {{ end }}
-
-                <a href="/entries/csv?filter={{ .pagination.Filter }}"
-                target="_blank"
-                class="btn btn-info btn-sm">
-                    CSV
-                </a>
+                <a href="/resources/{{ .resource.ID}}/csv?filter={{ .pagination.Filter }}" target="_blank" class="btn btn-info btn-sm">CSV</a>
             </div>
 
         </div>
