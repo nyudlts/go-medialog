@@ -42,10 +42,7 @@ func DeleteEntry(id uuid.UUID) error {
 
 func UpdateEntry(entry *models.Entry) error {
 
-	if err := db.Model(&models.Entry{}).
-		Where("id = ?", entry.ID).
-		Select("*").
-		Updates(entry).Error; err != nil {
+	if err := db.Save(entry).Error; err != nil {
 		return err
 	}
 
