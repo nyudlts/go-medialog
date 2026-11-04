@@ -364,6 +364,31 @@ func (s Summaries) GetTotals() Totals {
 	return totals
 }
 
+func GetSystemSummary() (Summaries, error) {
+	entries := []models.Entry{}
+	if err := db.Find(&entries).Error; err != nil {
+		return Summaries{}, err
+	}
+	return getSummary(entries), nil
+}
+
+func GetCountAndSizeOfEntries() (int, string, error) {
+	entries := []models.Entry{}
+	if err := db.Find(&entries).Error; err != nil {
+		return 0, "", err
+	}
+	count := len(entries)
+	var size float64
+	for _, entry := range entries {
+		stockType := entry.StockUnit
+		stockNum := entry.StockSizeNum
+		s := bytemath.ConvertToBytes(float64(stockNum), *bytemath.GetSuffixByString(stockType))
+		size += s
+	}
+	humanSize := bytemath.ConvertBytesToHumanReadable(int64(size))
+	return count, humanSize, nil
+}
+
 func GetSummaryByRepository(repositoryID uint) (Summaries, error) {
 	entries := []models.Entry{}
 	if err := db.Where("repository_id = ?", repositoryID).Find(&entries).Error; err != nil {

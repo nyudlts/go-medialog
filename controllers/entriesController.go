@@ -66,7 +66,7 @@ func GetEntry(c *gin.Context) {
 		"repository":       repository,
 		"isAdmin":          sessionCookies.IsAdmin,
 		"entryUsers":       entryUsers,
-		"isLoggedIn": true,
+		"isLoggedIn":       true,
 		"maxMediaID":       maxMediaID,
 		"interfaces":       getInterfaces(),
 		"hddInterfaces":    getHDDInterfaces(),
@@ -184,17 +184,24 @@ func GetEntries(c *gin.Context) {
 		return
 	}
 
+	count, size, err := database.GetCountAndSizeOfEntries()
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
+		return
+	}
+
 	//return
 	c.HTML(http.StatusOK, "entries-index.html", gin.H{
 		"entries":       entries,
 		"isAdmin":       sessionCookies.IsAdmin,
 		"pagination":    pagination,
 		"repositoryMap": repositoryMap,
-		"isLoggedIn": true,
+		"isLoggedIn":    true,
 		"user":          user,
 		"overlimit":     overlimit,
 		"limitValues":   LimitValues,
 		"mediatypes":    GetMediatypes(),
+		"summary":       fmt.Sprintf("%d (%s)", count, size),
 	})
 }
 
@@ -253,7 +260,7 @@ func NewEntry(c *gin.Context) {
 		"image_formats":          getImageFormats(),
 		"media_id":               mediaID,
 		"is_refreshed":           is_refreshed,
-		"isLoggedIn": true,
+		"isLoggedIn":             true,
 		"user":                   user,
 	})
 
@@ -410,7 +417,7 @@ func EditEntry(c *gin.Context) {
 		"imaging_software":       getImagingSoftware(),
 		"image_formats":          getImageFormats(),
 		"is_refreshed":           is_refreshed,
-		"isLoggedIn": true,
+		"isLoggedIn":             true,
 		"user":                   user,
 	})
 }
