@@ -1,6 +1,6 @@
 package version
 
-const AppVersion = "1.1.2"
+const AppVersion = "1.1.3"
 const APIVersion = "0.3.0"
 
 func GetAppVersion() string {

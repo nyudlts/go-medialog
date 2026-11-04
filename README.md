@@ -1,4 +1,4 @@
-Go-Medialog v1.1.2
+Go-Medialog v1.1.3
 ==================
 A digital media logging and reporting application
 

@@ -37,7 +37,7 @@ func GetResource(c *gin.Context) {
 		return
 	}
 
-	//get associacted accessions
+	//get associated accessions
 	accessions, err := database.FindAccessionsByResourceID(resource.ID)
 	if err != nil {
 		ThrowError(http.StatusBadRequest, err.Error(), c, true)
@@ -109,7 +109,7 @@ func GetResource(c *gin.Context) {
 		"summary":         summary,
 		"totals":          summary.GetTotals(),
 		"entry_users":     entryUsers,
-		"isLoggedIn": true,
+		"isLoggedIn":      true,
 		"user":            user,
 		"overlimit":       overlimit,
 		"limitValues":     LimitValues,
@@ -138,7 +138,7 @@ func GetResources(c *gin.Context) {
 		"isAuthenticated": true,
 		"isAdmin":         sessionCookies.IsAdmin,
 		"repositoryMap":   repositoryMap,
-		"isLoggedIn": true,
+		"isLoggedIn":      true,
 		"user":            user,
 	})
 }

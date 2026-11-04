@@ -33,6 +33,12 @@ func GetIndex(c *gin.Context) {
 		return
 	}
 
+	count, size, err := database.GetCountAndSizeOfEntries()
+	if err != nil {
+		ThrowError(http.StatusBadRequest, err.Error(), c, true)
+		return
+	}
+
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"entries":       entries,
 		"isAdmin":       sessionCookies.IsAdmin,
@@ -42,6 +48,7 @@ func GetIndex(c *gin.Context) {
 		"user":          user,
 		"limitValues":   LimitValues,
 		"mediatypes":    GetMediatypes(),
+		"summary":       fmt.Sprintf("%d (%s)", count, size),
 	})
 }
 
