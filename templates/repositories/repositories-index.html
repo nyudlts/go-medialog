@@ -6,25 +6,27 @@
         <h5 class="card-title">Repositories</h5>
     </div>
     <div class="card-body">
-        <table class="table table-striped table-bordered">
-            <thead class="thead thead-dark">
-                <tr>
-                    <th>title</th>
-                    <th>actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {{ range $repository := .repositories }}
-            <tr>
-                <td>{{ $repository.Title }} ({{ $repository.Slug }})</td>
-                <td>
-                    <a class="btn btn-primary" href="/repositories/{{ $repository.ID }}/show">View</a>
-                    <a class="btn btn-secondary" href="/repositories/{{ $repository.ID }}/edit">Edit</a>
-                </td>
-            </tr>
-            {{ end }}
-            </tbody>
-        </table>   
+        <div class="card">
+            <div class="card-header">
+                <strong>Repositories</strong>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {{ range $repository := .repositories }}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ $repository.Title }}</strong>
+                            <small class="text-muted">({{ $repository.Slug }})</small>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <a class="btn btn-primary" href="/repositories/{{ $repository.ID }}/show">View</a>
+                            <a class="btn btn-secondary" href="/repositories/{{ $repository.ID }}/edit">Edit</a>
+                        </div>
+                    </div>
+                    {{ end }}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
